@@ -1,0 +1,32 @@
+{
+  "name": "merge2",
+  "version": "0.0.1",
+  "description": "Application for merging MARC records",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "babel-node index.js",
+    "lint": "eslint *.js **/*.js",
+    "watch": "nodemon --ignore 'package.json' --exec babel-node --presets=es2015 index.js"
+  },
+  "keywords": [
+    "MARC",
+    "merge"
+  ],
+  "author": "Pasi Tuominen <pasi.tuominen@gmail.com>",
+  "license": "MIT",
+  "dependencies": {
+    "express": "^4.14.0",
+    "winston": "^2.2.0"
+  },
+  "devDependencies": {
+    "babel-cli": "^6.14.0",
+    "babel-preset-es2015": "^6.14.0",
+    "eslint": "^3.3.1",
+    "eslint-config-airbnb": "^10.0.1",
+    "eslint-plugin-import": "^1.14.0",
+    "eslint-plugin-jsx-a11y": "^2.1.0",
+    "eslint-plugin-react": "^6.1.2",
+    "nodemon": "^1.10.2"
+  }
+}
