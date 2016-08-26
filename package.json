@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "build": "npm run lint",
-    "test": "echo \"Error: no test specified\" && exit 1",
+    "test": "npm run lint",
     "start": "babel-node index.js",
     "lint": "eslint *.js **/*.js",
     "watch": "nodemon --ignore 'package.json' --exec babel-node --presets=es2015 index.js"
