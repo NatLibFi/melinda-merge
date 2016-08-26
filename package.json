@@ -6,15 +6,14 @@
   "scripts": {
     "clean:build": "node ./bin/clean.js createdir",
     "build:html": "node ./bin/buildHtml.js",
-    "prestart": "node ./bin/clean.js",
-    "start": "npm run dev",
+    "start": "node build/index.js",
     "prebuild": "npm run clean:build && npm run build:html",
     "build": "npm run build:server && npm run build:frontend",
     "build:frontend": "export NODE_ENV=production & NODE_ENV=production & webpack -p --config ./config/webpack.config.prod.js --progress",
     "build:server": "babel server --out-dir build --source-maps",
     "test": "npm run lint",
     "lint": "eslint .",
-    "dev": "npm run watch",
+    "dev": "node ./bin/clean.js && npm run watch",
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
     "watch:server": "nodemon --watch server --exec babel-node --presets=es2015 server/index.js"
@@ -27,6 +26,7 @@
   "license": "MIT",
   "dependencies": {
     "express": "^4.14.0",
+    "lodash": "^4.15.0",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "winston": "^2.2.0"
