@@ -2,3 +2,8 @@ language: node_js
 node_js:
   - "4.5.0"
   - "node"
+after_script:
+  - curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-application-checkout-reference $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/25301283-47c1-4025-a40e-7c43b7f0a4d5/executions
+env:
+  - secure: "U1i2pEwB3DevPbugMdGAOeBCQKm5G6yPnfPMZ4411AEu400RBYi4dZpcj04Xli+hHkiXm98LsN40hi35Np+eG5f1MgJkkgaWI+rASnK4CPUxVeTbMwDrcS0uTaW8w2TPvQJz4bcZU0/CEt99R8BGME6pERUCE9ZOx6K1gmCd/VhbCmTsNwNn1JlzUobLtfl5KDB68PhQKrmPgYaDsk75oLRvux4rqEGFx9mPbodINWrS9tbwQZsopAmBKT0ruKUfUkfvgF33JlkXZhmK4rKUyOV/16gZku+5zU5PzoZvtnAfJUvXh27I6VgjlMh0wJBm1t0KevK3IlYQt97FwqblX3/OQOJZ+SsRXKX1Uc/rEgmEMU7h2SkXbHWlceKjPYpdpOTncP1hj9L43Jcm/hU92tgOSW5CEUNycNErx8O5X9VMFVkRx6EbwBLya2lrLLeJioVZ8yeRzOBKmHCBuvPv0Tg5GI5cXOm7rTFSDLaG5bEyYiRYyNTWGIh/xvZMdHYGJpx1DI/I7Z30+s9NYIlhylWUKMcg+GYCVewoC5W52IP/9Jc7h2UtGQiwUzQhDC0r62irl7/gN8dQibF7KkcH58ey/EdTZlihk4lBpmEgQydHZgSpUvxAm09j7g03ks1dsdtqVoA1IzBwA//51jNEe80/D4KLaEbkZdXdEFwIjrg="
+
