@@ -1,7 +1,8 @@
 'use strict';
 import express from 'express';
-import _ from 'lodash';
 import { logger } from './logger';
+import { marcIOController } from './marc-io-controller';
+import { readEnvironmentVariable } from './utils';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
@@ -22,17 +23,9 @@ app.get('/err', (req, res) => {
   res.status(500).send(error.message);
 });
 
+app.use('/api', marcIOController);
+
 app.use(express.static('public'));
 
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 
-
-function readEnvironmentVariable(name, defaultValue) {
-
-  if (process.env[name] === undefined) {
-    logger.log('info', `No environment variable set for ${name}, using default value: ${defaultValue}`);
-  }
-
-  return _.get(process.env, name, defaultValue);
-
-}
