@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {List, Map} from 'immutable';
+import {Map} from 'immutable';
 import {loadSourceRecord, setSourceRecord} from '../js/ui-reducers';
 
 

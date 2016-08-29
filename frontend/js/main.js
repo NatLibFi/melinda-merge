@@ -15,16 +15,13 @@ const loggerMiddleware = createLogger();
 const store = createStore(
   rootReducer,
   applyMiddleware(
-    thunkMiddleware, // lets us dispatch() functions
-    loggerMiddleware // neat middleware that logs actions
+    thunkMiddleware,
+    loggerMiddleware
   )
 );
 
-store.dispatch(fetchSourceRecord('30000')).then(() =>
-  console.log(store.getState())
-);
+store.dispatch(fetchSourceRecord('30000'));
 
-window.store = store;
 
 const rootElement = document.getElementById('app');
 
