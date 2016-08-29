@@ -1,18 +1,4 @@
 
-#app {
-  height: 100px;
-  width: 100px;
-  
-  border: 2px dashed #CCC;
-  border-radius: 5px;
-  
-  transform: translate(10px, 10px);
+@import 'vendor/materialize/materialize';
 
-  display: flex;
-  justify-content: center;
-  align-items: center;
 
-  div {
-    font-weight: 200;
-  }
-}

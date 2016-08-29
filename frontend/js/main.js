@@ -1,18 +1,18 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 import '../styles/main.scss';
+import { NavBar } from './components/navbar';
+import { HelloMessage } from './components/hello';
+import { RecordSelectionControls } from './components/record-selection-controls';
+import { RecordMergePanel } from './components/record-merge-panel';
 
 const rootElement = document.getElementById('app');
 
-class HelloMessage extends React.Component {
+ReactDOM.render(
+  <div>
+    <NavBar name="test"/>
+    <RecordSelectionControls />
+    <RecordMergePanel />
+    <HelloMessage name="world" />
+  </div>, rootElement);
 
-  static propTypes = {
-    name: React.PropTypes.string.isRequired
-  };
-
-  render() {
-    return <div>Hello {this.props.name}</div>;
-  }
-}
-
-ReactDOM.render(<HelloMessage name="world" />, rootElement);
