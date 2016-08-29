@@ -7,7 +7,7 @@ import _ from 'lodash';
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
-    sourceRecordId: React.PropTypes.String.isRequired,
+    sourceRecordId: React.PropTypes.string.isRequired,
     fetchSourceRecord: React.PropTypes.func.isRequired,
   }
 
