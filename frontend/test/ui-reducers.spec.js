@@ -1,9 +1,9 @@
 import {expect} from 'chai';
 import {List, Map} from 'immutable';
-import {loadSourceRecord, setSourceRecord} from '../js/ui-actions';
+import {loadSourceRecord, setSourceRecord} from '../js/ui-reducers';
 
 
-describe('ui actions', () => {
+describe('ui reducers', () => {
 
   describe('loadSourceRecord', () => {
 
