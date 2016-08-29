@@ -1,4 +1,5 @@
 import express from 'express';
+import cors from 'cors';
 import { readEnvironmentVariable } from './utils';
 import { logger } from './logger';
 
@@ -11,11 +12,19 @@ const config = {
   password: ''
 };
 
+const whitelist = ['http://localhost:3000', 'http://localhost:3001'];
+const corsOptions = {
+  origin: function(origin, callback){
+    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+  }
+};
+
 export const marcIOController = express();
 
 marcIOController.set('etag', false);
 
-marcIOController.get('/:id', (req, res) => {
+marcIOController.get('/:id', cors(corsOptions), (req, res) => {
 
   const client = new MelindaClient(config);
 

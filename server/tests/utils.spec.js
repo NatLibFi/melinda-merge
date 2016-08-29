@@ -24,10 +24,8 @@ describe('utils', () => {
 
     it('should throw if environment variable is missing and no default value is given', () => {
       const testKey = 'TEST_VAR_THROW';
-      expect(readEnvironmentVariable.bind(null, testKey)).to.throw(Error);
-      
+      expect(readEnvironmentVariable.bind(null, testKey)).to.throw(Error);      
     });
-
 
   });
 
