@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import {Map, fromJS} from 'immutable';
 import {loadSourceRecord, loadTargetRecord, setSourceRecord, setTargetRecord, setTargetRecordError, setSourceRecordError} from '../js/ui-reducers';
 import { INITIAL_STATE } from '../js/root-reducer';
 
