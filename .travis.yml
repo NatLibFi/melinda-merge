@@ -3,9 +3,15 @@ node_js:
   - "4.5.0"
   - "node"
 after_script:
-  - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;fi
+language: node_js
+node_js:
+  - "4.5.0"
+  - "node"
+after_script:
+  - if test $TRAVIS_BRANCH = "master";then JOB=$JOB_PROD;elif test $TRAVIS_BRANCH = "test";then JOB=$JOB_TEST;elif test $TRAVIS_BRANCH = "fix-ci";then JOB=$JOB_TEST;fi
   - if test ! -z $JOB;then curl -X POST --data "authtoken=$AUTH_TOKEN&argString=-checkout-reference $TRAVIS_COMMIT" https://melinda-ci.lib.helsinki.fi/api/14/job/$JOB/executions;fi
 env:
-  - JOB_PROD=47200f32-c664-4906-841b-9e829d878fc0
-  - JOB_TEST=25301283-47c1-4025-a40e-7c43b7f0a4d5
-  - secure: "GTk8m2Gy7dWc9j2+1DiPBXpvZy7QXUPYnJnIj7ICQm115ShS42BqzTFgxekz+dQKb3xgBn0WJOxrHg9UoS+V4XvR3wLYsC453Wf92JAgfJ5krxo9oX2KguTM33B9xWatXGeRK8BMxZUcCjvzvr2ameath486RvxZXOEbEGwMlYFqQbG2tQ7F0rJe/mApsFSk7tB6QRZXnVNmMibqMMqwjVOr9RklonUIoQQEt/zPKiRuEOGDr39ejf7DcpoYRyzq3OO9JFS2rKCNZNyTmE5NQj3N2mAB0WEN2lEkbIb3LYwbGfz/txOnVM+b23gKbhOZpSnHk9WZkm88+OIqFSqX8Oacir2m/H2RtHFmob3l0smRrze18EKQUWlO6cpCz/qgrj8iGrrqrAnXTjh15g19nhrikGC1daBWgQOi/s4+uUs8SeITxFFurfsdcTE4dnzUWJuxSFrSjJ3XZnOePZANgDLFADGLggdBPI1JWpFJYMooA+iVk9QUAPx6Jf9XgtMlH2SfFtrInjYwwnrvRb689sJvpuVc+11zaTqzJb1p1IDu0qK0QFV+HL9Qdq3ik65eLl2TLrUrJah+JKnMnHovFigDAk+Et5vytAmd81xoLGohQOInW9xqmHI/kicYfuopETtCb43vmrho81HeLhcUYmwZc+1iQ3GfKOHs0+pLfHk="
+  global:
+    - JOB_PROD=47200f32-c664-4906-841b-9e829d878fc0
+    - JOB_TEST=25301283-47c1-4025-a40e-7c43b7f0a4d5
+    - secure: "Rxk3ijfUBlLgwAG0Y3TLczg6XZx9Mdjpy0fn6ezqsHzCNtPvpo1f2NDhoqqd6rMTYbK6G77lXO2DaRYtls8x5nmBpO039HfztORTJd8XO7WK01G6NQ/9jCcogjt6FFiqlBCsKZsyiCdPYCOO67M0pys45GiYFWqthJrd5OkZ4kevMZB4hLNnQ9nbaEMswWkWpaVkZc7rZmIBbVzIN3yMBWU7xw/vgM+2+RSXnieG3ADgTqAQjw6jw1UsGGZD3OhnqQPFEFjVYTtD7drHrv3TJq2smXkrUGNsQmtMj1szuuov0hhst1pVIDbPbP3/r3WPB5S5kp8GCgd3/XEi/8PkRKp0sHAOLWVijDYaLzaHBWgC5reI9Sbx61gUFu35TQCw0iU2E7hymB4XlHqxoD+yKECh+n1fOXLZDu3lNMRHKXh0PMzNw5BPMg2cJzQEfl65YrJUgngZ/TI6cc50K2VATarpvoWh3fLIPHpngGwoKKHmcXDWG+iEq5VG9Q81XcsHBjnmGivsOtDRqOx33J3qia3SSWiazaGyZHuxn/jzvX5o8Pz/XPxbw/40PirI67oAaAmo8tIrekarwLmc+ciS5Tt9Ryg0KE2sJhG3PlYP9k2GC8MwbAyox2CT/b5t8t4sQK2nhTVs3plY++GqkR4UPsg7P/vF+M+p9KgK4IshsAc="
