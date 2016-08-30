@@ -12,9 +12,9 @@ const config = {
   password: ''
 };
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001'];
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', undefined];
 const corsOptions = {
-  origin: function(origin, callback){
+  origin: function(origin, callback) {
     var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
     callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
   }
