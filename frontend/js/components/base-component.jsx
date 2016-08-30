@@ -2,7 +2,7 @@ import React from 'react';
 import '../../styles/main.scss';
 import { NavBar } from './navbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
-import { RecordMergePanel } from './record-merge-panel';
+import { RecordMergePanelContainer } from './record-merge-panel';
 import { HelloMessage } from './hello';
 
 export class BaseComponent extends React.Component {
@@ -12,7 +12,7 @@ export class BaseComponent extends React.Component {
       <div>
         <NavBar name="test"/>
         <RecordSelectionControlsContainer />
-        <RecordMergePanel />
+        <RecordMergePanelContainer />
         <HelloMessage name="world" />
       </div>
     );

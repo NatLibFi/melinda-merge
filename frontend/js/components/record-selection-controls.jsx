@@ -7,15 +7,30 @@ import _ from 'lodash';
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
-    sourceRecordId: React.PropTypes.string.isRequired,
-    fetchSourceRecord: React.PropTypes.func.isRequired,
+    fetchRecord: React.PropTypes.func.isRequired,
   }
 
   constructor() {
     super();
-    this.handleChangeDebounced = _.debounce((event) => {
-      this.props.fetchSourceRecord(event.target.value);
+    this.handleSourceChangeDebounced = _.debounce((event) => {
+      this.props.fetchRecord(event.target.value, 'SOURCE');
     }, 500);
+
+    this.handleTargetChangeDebounced = _.debounce((event) => {
+      this.props.fetchRecord(event.target.value, 'TARGET');
+    }, 500);
+  }
+
+  handleChange(event) {
+    event.persist();
+    
+    if (event.target.id === 'source_record') {
+      this.handleSourceChangeDebounced(event);
+    }
+    if (event.target.id === 'target_record') {
+      this.handleTargetChangeDebounced(event);
+    }
+
   }
 
   render() {
@@ -36,22 +51,18 @@ export class RecordSelectionControls extends React.Component {
         </div>
 
         <div className="col s2 input-field">
-          <input id="target_record" type="tel" className="validate" />
+          <input id="target_record" type="tel" className="validate" onChange={this.handleChange.bind(this)} />
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
       
     </div>);
   }
 
-  handleChange(event) {
-    event.persist();
-    this.handleChangeDebounced(event);
-  }
 }
 
 function mapStateToProps(state) {
   return {
-    sourceRecordId: state.get('sourceRecord').get('id')
+    sourceRecordId: state.getIn(['sourceRecord', 'id'])
   };
 }
 
