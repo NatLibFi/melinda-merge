@@ -59,6 +59,8 @@ export const fetchRecord = (function() {
   let currentSourceRecordId;
   let currentTargetRecordId;
 
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+
   return function(recordId, type) {
 
     return function (dispatch) {
@@ -71,7 +73,7 @@ export const fetchRecord = (function() {
         dispatch(loadSourceRecord(recordId));
         currentSourceRecordId = recordId;
 
-        return fetch(`http://localhost:3001/api/${recordId}`)
+        return fetch(`${APIBasePath}/${recordId}`)
           .then(response => {
 
             if (response.status == 200) {
@@ -97,7 +99,7 @@ export const fetchRecord = (function() {
         dispatch(loadTargetRecord(recordId));
         currentTargetRecordId = recordId;
 
-        return fetch(`http://localhost:3001/api/${recordId}`)
+        return fetch(`${APIBasePath}/${recordId}`)
           .then(response => {
 
             if (response.status == 200) {
