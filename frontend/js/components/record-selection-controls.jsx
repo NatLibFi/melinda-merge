@@ -7,7 +7,12 @@ import _ from 'lodash';
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
+    sourceRecordId: React.PropTypes.string.isRequired,
+    targetRecordId: React.PropTypes.string.isRequired,
     fetchRecord: React.PropTypes.func.isRequired,
+    swapRecords: React.PropTypes.func.isRequired,
+    setSourceRecordId: React.PropTypes.func.isRequired,
+    setTargetRecordId: React.PropTypes.func.isRequired
   }
 
   constructor() {
@@ -25,12 +30,13 @@ export class RecordSelectionControls extends React.Component {
     event.persist();
     
     if (event.target.id === 'source_record') {
+      this.props.setSourceRecordId(event.target.value);
       this.handleSourceChangeDebounced(event);
     }
     if (event.target.id === 'target_record') {
+      this.props.setTargetRecordId(event.target.value);
       this.handleTargetChangeDebounced(event);
     }
-
   }
 
   render() {
@@ -39,19 +45,19 @@ export class RecordSelectionControls extends React.Component {
       <div className="row row-margin-swap record-selection-controls">
       
         <div className="col s2 offset-s1 input-field">
-          <input id="source_record" type="tel" className="validate" onChange={this.handleChange.bind(this)} />
+          <input id="source_record" type="tel" className="validate" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} />
           <label htmlFor="source_record">Poistuva tietue</label>
         </div>
         <div className="col s2 control-swap-horizontal input-field">
           <div>
-            <a className="btn-floating waves-effect waves-light blue">
+            <a className="btn-floating waves-effect waves-light blue" onClick={this.props.swapRecords}>
               <i className="material-icons tooltip small" title="Vaihda keskenään">swap_horiz</i>
             </a>
           </div>
         </div>
 
         <div className="col s2 input-field">
-          <input id="target_record" type="tel" className="validate" onChange={this.handleChange.bind(this)} />
+          <input id="target_record" type="tel" className="validate" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} />
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
       
@@ -62,7 +68,8 @@ export class RecordSelectionControls extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    sourceRecordId: state.getIn(['sourceRecord', 'id'])
+    sourceRecordId: state.getIn(['sourceRecord', 'id']) || '',
+    targetRecordId: state.getIn(['targetRecord', 'id']) || ''
   };
 }
 
