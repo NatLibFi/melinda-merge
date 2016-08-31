@@ -9,26 +9,29 @@ import { ErrorMessagePanel } from './error-message-panel';
 export class RecordMergePanel extends React.Component {
 
   static propTypes = {
-    sourceRecordError: React.PropTypes.string,
-    targetRecordError: React.PropTypes.string,
-    sourceRecordState: React.PropTypes.string.isRequired,
-    targetRecordState: React.PropTypes.string.isRequired,
+    mergedRecord: React.PropTypes.string.isRequired,
+    mergedRecordError: React.PropTypes.string,
+    mergedRecordState: React.PropTypes.string.isRequired,
     sourceRecord: React.PropTypes.string.isRequired,
-    targetRecord: React.PropTypes.string.isRequired
+    sourceRecordError: React.PropTypes.string,
+    sourceRecordState: React.PropTypes.string.isRequired,
+    targetRecord: React.PropTypes.string.isRequired,
+    targetRecordError: React.PropTypes.string,
+    targetRecordState: React.PropTypes.string.isRequired
   }
 
   getRecord(type) {
     switch(type) {
     case 'SOURCE': return this.props.sourceRecord;
     case 'TARGET': return this.props.targetRecord;
-    case 'MERGED': return this.props.targetRecord; //TODO
+    case 'MERGED': return this.props.mergedRecord;
     }
   }
   getErrorMessage(type) {
     switch(type) {
     case 'SOURCE': return this.props.sourceRecordError;
     case 'TARGET': return this.props.targetRecordError;
-    case 'MERGED': return this.props.targetRecordError; //TODO
+    case 'MERGED': return this.props.mergedRecordError;
     }
   }
 
@@ -66,7 +69,7 @@ export class RecordMergePanel extends React.Component {
         </div>
         <div className="col s4">
           <div className="card-panel darken-1 marc-record">
-            {this.getContent(this.props.targetRecordState, 'MERGED')}
+            {this.getContent(this.props.mergedRecordState, 'MERGED')}
           </div>
         </div>
 
@@ -83,6 +86,8 @@ function mapStateToProps(state) {
     targetRecordState: state.getIn(['targetRecord', 'state']),
     sourceRecordError: state.getIn(['sourceRecord', 'errorMessage']),
     targetRecordError: state.getIn(['targetRecord', 'errorMessage']),
+    mergedRecord: (state.getIn(['mergedRecord', 'record']) || '').toString(),
+    mergedRecordState: state.getIn(['mergedRecord', 'state'])
   };
 }
 
