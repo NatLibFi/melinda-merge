@@ -29,7 +29,7 @@ marcIOController.get('/:id', cors(corsOptions), (req, res) => {
   const client = new MelindaClient(config);
 
   logger.log('debug', `Loading record ${req.params.id}`);
-  client.loadRecord(req.params.id).then((record) => {
+  client.loadRecord(req.params.id, {handle_deleted: 1}).then((record) => {
     logger.log('debug', `Record ${req.params.id} loaded`);
     res.send(record);
   }).done();
