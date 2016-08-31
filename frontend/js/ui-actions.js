@@ -55,6 +55,34 @@ export function setSourceRecordError(error) {
   };
 }
 
+export const SWAP_RECORDS = 'SWAP_RECORDS';
+
+export function swapRecords() {
+
+  return function(dispatch, getState) {
+    const sourceRecordId = getState().getIn(['sourceRecord', 'id']);
+    const targetRecordId = getState().getIn(['targetRecord', 'id']);
+    dispatch(fetchRecord(sourceRecordId, 'TARGET'));
+    dispatch(fetchRecord(targetRecordId, 'SOURCE'));
+  };
+
+}
+
+export const SET_SOURCE_RECORD_ID = 'SET_SOURCE_RECORD_ID';
+
+export function setSourceRecordId(recordId) {
+  return { 'type': SET_SOURCE_RECORD_ID, 'recordId': recordId };
+}
+
+
+export const SET_TARGET_RECORD_ID = 'SET_TARGET_RECORD_ID';
+
+export function setTargetRecordId(recordId) {
+  return { 'type': SET_TARGET_RECORD_ID, 'recordId': recordId };
+}
+
+
+
 export const fetchRecord = (function() {
   let currentSourceRecordId;
   let currentTargetRecordId;

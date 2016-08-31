@@ -46,3 +46,10 @@ export function setSourceRecordError(state, error) {
   })));
 }
 
+export function setTargetRecordId(state, recordId) {
+  return state.setIn(['targetRecord', 'id'], recordId);
+}
+
+export function setSourceRecordId(state, recordId) {
+  return state.setIn(['sourceRecord', 'id'], recordId);
+}
