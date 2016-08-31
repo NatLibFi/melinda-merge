@@ -36,6 +36,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "marc-record-js": "^0.1.1",
+    "marc-record-merge": "^2.0.1",
     "melinda-api-client": "^1.1.0",
     "winston": "^2.2.0"
   },

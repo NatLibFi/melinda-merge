@@ -10,6 +10,9 @@ export const INITIAL_STATE = fromJS({
   },
   targetRecord: {
     state: 'EMPTY'
+  },
+  mergedRecord: {
+    state: 'EMPTY'
   }
 });
 
