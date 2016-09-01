@@ -1,7 +1,18 @@
 import React from 'react';
 import '../../styles/components/signin-form-panel.scss';
+import * as uiActionCreators from '../ui-actions';
+import {connect} from 'react-redux';
 
 export class SigninFormPanel extends React.Component {
+
+  static propTypes = {
+    startSession: React.PropTypes.func.isRequired
+  }
+  constructor() {
+    super();
+
+    this.state = {};
+  }
 
   render() {
     const title = 'marc-merge-ui';
@@ -20,12 +31,12 @@ export class SigninFormPanel extends React.Component {
         <div className="card-content">
          
           <div className="col s2 offset-s1 input-field">
-            <input id="username" type="text" className="validate" />
+            <input id="username" type="text" className="validate" onChange={this.updateUsername.bind(this)}/>
             <label htmlFor="username">{usernameLabel}</label>
           </div>
 
           <div className="col s2 offset-s1 input-field">
-            <input id="password" type="password" className="validate" />
+            <input id="password" type="password" className="validate" onChange={this.updatePassword.bind(this)}/>
             <label htmlFor="password">{passwordLabel}</label>
           </div>
 
@@ -33,7 +44,7 @@ export class SigninFormPanel extends React.Component {
           <div className="spacer" />
 
           <div className="right-align">
-            <button className="btn waves-effect waves-light" type="submit" name="action">{signinButtonLabel}
+            <button className="btn waves-effect waves-light" type="submit" name="action" onClick={this.executeSignin.bind(this)}>{signinButtonLabel}
               <i className="material-icons right">send</i>
             </button>
           </div>
@@ -43,4 +54,23 @@ export class SigninFormPanel extends React.Component {
 
     );
   }
+  updateUsername(event) {
+    this.setState({username: event.target.value});
+  }
+  updatePassword(event) {
+    this.setState({password: event.target.value});
+  }
+  executeSignin() {
+ 
+    const {username, password} = this.state;
+    window.x = this.props;
+    this.props.startSession(username, password);
+
+  }
 }
+
+export const SigninFormPanelContainer = connect(
+  null,
+  uiActionCreators
+)(SigninFormPanel);
+

@@ -2,7 +2,7 @@ import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
 import { BaseComponent } from './components/base-component';
-import { SigninFormPanel } from './components/signin-form-panel';
+import { SigninFormPanelContainer } from './components/signin-form-panel';
 
 import thunkMiddleware from 'redux-thunk';
 import createLogger from 'redux-logger';
@@ -25,7 +25,7 @@ const store = createStore(
 
 const routes = (
   <Route component={App}>
-    <Route path='/signin' component={SigninFormPanel} />
+    <Route path='/signin' component={SigninFormPanelContainer} />
     <Route path='/' component={BaseComponent} />
   </Route>
 );
