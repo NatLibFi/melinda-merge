@@ -1,6 +1,6 @@
 import express from 'express';
 import cors from 'cors';
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable, corsOptions } from './utils';
 import { logger } from './logger';
 
 const MelindaClient = require('melinda-api-client');
@@ -10,14 +10,6 @@ const config = {
   endpoint: apiUrl,
   user: '',
   password: ''
-};
-
-const whitelist = ['http://localhost:3000', 'http://localhost:3001', undefined];
-const corsOptions = {
-  origin: function(origin, callback) {
-    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
-  }
 };
 
 export const marcIOController = express();

@@ -15,3 +15,11 @@ export function readEnvironmentVariable(name, defaultValue) {
 
   return _.get(process.env, name, defaultValue);
 }
+
+const whitelist = ['http://localhost:3000', 'http://localhost:3001', undefined];
+export const corsOptions = {
+  origin: function(origin, callback) {
+    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+  }
+};
