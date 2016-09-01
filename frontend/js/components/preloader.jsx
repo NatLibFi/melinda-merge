@@ -17,6 +17,6 @@ export class Preloader extends React.Component {
         </div>
       </div>
 
-      );
+    );
   }
 }
