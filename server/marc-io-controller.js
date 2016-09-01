@@ -4,10 +4,10 @@ import { readEnvironmentVariable, corsOptions } from './utils';
 import { logger } from './logger';
 
 const MelindaClient = require('melinda-api-client');
-const apiUrl = readEnvironmentVariable('MELINDA_API');
+const alephUrl = readEnvironmentVariable('ALEPH_URL');
 
 const config = {
-  endpoint: apiUrl,
+  endpoint: `${alephUrl}/api`,
   user: '',
   password: ''
 };
