@@ -1,22 +1,29 @@
 import express from 'express';
+import cors from 'cors';
 import { authProvider } from './melinda-auth-provider';
 import { createSessionToken, readSessionToken } from './session-crypt'
 import bodyParser from 'body-parser';
 import { logger } from './logger';
 import _ from 'lodash';
+import { corsOptions } from './utils';
 
 export const sessionController = express();
 
 sessionController.use(bodyParser.json());
 
-sessionController.post('/start', requireBodyParams('username', 'password'), (req, res) => {
+sessionController.options('/start', cors(corsOptions)); // enable pre-flight
+sessionController.post('/start', cors(corsOptions), requireBodyParams('username', 'password'), (req, res) => {
   const {username, password} = req.body;
+
+  logger.log('info', `Checking credentials for user ${username}`);
 
   authProvider.validateCredentials(username, password).then(authResponse => {
     if (authResponse.credentialsValid) {
       const sessionToken = createSessionToken(username, password);
       res.send({sessionToken});
+      logger.log('info', `Succesful signin from ${username}`);
     } else {
+      logger.log('info', `Credentials not valid for user ${username}`);
       res.status(401).send("Authentication failed");
     }
     
@@ -27,7 +34,6 @@ sessionController.post('/start', requireBodyParams('username', 'password'), (req
     res.status(500).send('Internal server error');
     
   });
-
 });
 
 sessionController.post('/validate', (req, res) => {
