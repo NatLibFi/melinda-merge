@@ -1,7 +1,7 @@
 import express from 'express';
 import cors from 'cors';
 import { authProvider } from './melinda-auth-provider';
-import { createSessionToken, readSessionToken } from './session-crypt'
+import { createSessionToken, readSessionToken } from './session-crypt';
 import bodyParser from 'body-parser';
 import { logger } from './logger';
 import _ from 'lodash';
@@ -24,10 +24,10 @@ sessionController.post('/start', cors(corsOptions), requireBodyParams('username'
       logger.log('info', `Succesful signin from ${username}`);
     } else {
       logger.log('info', `Credentials not valid for user ${username}`);
-      res.status(401).send("Authentication failed");
+      res.status(401).send('Authentication failed');
     }
     
-  }).catch(err => {
+  }).catch(error => {
 
     logger.log('error', 'Error validating credentials', error);
 
@@ -39,19 +39,13 @@ sessionController.post('/start', cors(corsOptions), requireBodyParams('username'
 sessionController.post('/validate', (req, res) => {
   const {sessionToken} = req.body;
   try {
-    const {username, password} = readSessionToken(sessionToken);
+    const {username} = readSessionToken(sessionToken);
     res.send(username);
   } catch (e) {
     res.sendStatus(500);
   }
 
 });
-
-function validateSessionToken(sessionToken) {
- 
-  const {username, password} = readSessionToken(sessionToken);
-
-}
 
 function requireBodyParams(...requiredParams) {
   return function _requireBodyParams(req, res, next) {
@@ -60,5 +54,5 @@ function requireBodyParams(...requiredParams) {
       return next();  
     }
     res.sendStatus(400);
-  }
+  };
 }
