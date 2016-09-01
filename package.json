@@ -32,6 +32,7 @@
     "body-parser": "^1.15.2",
     "cors": "^2.8.0",
     "es6-promise": "^3.2.1",
+    "es6-promisify": "^4.1.0",
     "express": "^4.14.0",
     "express-winston": "^2.0.0",
     "immutable": "^3.8.1",
@@ -40,7 +41,8 @@
     "marc-record-js": "^0.1.1",
     "marc-record-merge": "^2.0.1",
     "melinda-api-client": "^1.1.0",
-    "winston": "^2.2.0"
+    "winston": "^2.2.0",
+    "xml2js": "^0.4.17"
   },
   "devDependencies": {
     "autoprefixer": "^6.4.0",
