@@ -177,7 +177,7 @@ export const startSession = (function() {
             return response.json().then(json => {
 
               const sessionToken = json.sessionToken;
-              console.log('Got token: ', sessionToken);
+              window.sessionToken = sessionToken;
             });
 
           } else {

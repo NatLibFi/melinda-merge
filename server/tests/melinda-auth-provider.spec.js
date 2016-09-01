@@ -4,7 +4,7 @@ import { __RewireAPI__ as AuthProviderRewireAPI } from '../melinda-auth-provider
 import sinon from 'sinon';
 import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 
-describe.only('melinda auth provider', () => {
+describe('melinda auth provider', () => {
 
   describe('validateCredentials', () => {
     let fetchStub;

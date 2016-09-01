@@ -30,11 +30,11 @@ export function readSessionToken(sessionToken) {
 
 function createToken(username, encryptionResult) {
   const {encrypted, iv, tag} = encryptionResult;
-  return [username, iv.toString('hex'), tag.toString('hex'), encrypted].join(":");
+  return [username, iv.toString('hex'), tag.toString('hex'), encrypted].join(':');
 }
 
 function parseToken(token) {
-  const [username, iv, tag, encrypted] = token.split(":");
+  const [username, iv, tag, encrypted] = token.split(':');
   return {
     username,
     encrypted, 
@@ -44,7 +44,7 @@ function parseToken(token) {
 }
 
 function encrypt(text, iv, key) {
-  const cipher = crypto.createCipheriv(algorithm, key, iv)
+  const cipher = crypto.createCipheriv(algorithm, key, iv);
   const encrypted = cipher.update(text, 'utf8', 'hex') + cipher.final('hex');
   
   return {
