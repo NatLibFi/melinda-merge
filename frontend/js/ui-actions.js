@@ -138,6 +138,61 @@ export function clearMergedRecord() {
 }
 
 
+export const CREATE_SESSION_START = 'CREATE_SESSION_START';
+
+export function createSessionStart() {
+  return { 'type': CREATE_SESSION_START };
+}
+
+
+export const CREATE_SESSION_ERROR = 'CREATE_SESSION_ERROR';
+
+export function startSessionError(message) {
+  return { 'type': CREATE_SESSION_ERROR, message};
+}
+
+
+export const startSession = (function() {
+  const sessionBasePath = __DEV__ ? 'http://localhost:3001/session': '/session';
+
+  return function(username, password) {
+
+    return function(dispatch) {
+
+      dispatch(createSessionStart());
+
+      const fetchOptions = {
+        method: 'POST',
+        body: JSON.stringify({ username, password }),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+      };
+
+      return fetch(`${sessionBasePath}/start`, fetchOptions)
+        .then(response => {
+
+          if (response.status == 200) {
+
+            return response.json().then(json => {
+
+              const sessionToken = json.sessionToken;
+              console.log('Got token: ', sessionToken);
+            });
+
+          } else {
+            dispatch(startSessionError('There has been a problem with operation: ' + response.status));
+          }
+
+        }).catch((error) => {
+          dispatch(startSessionError('There has been a problem with operation: ' + error.message));
+        });
+
+    };
+
+  };
+})();
+
 
 export const fetchRecord = (function() {
   let currentSourceRecordId;
@@ -162,7 +217,7 @@ export const fetchRecord = (function() {
 
             if (response.status == 200) {
 
-              response.json().then(json => {
+              return response.json().then(json => {
                 
                 if (currentSourceRecordId === recordId) {
                   const marcRecord = new MARCRecord(json);
