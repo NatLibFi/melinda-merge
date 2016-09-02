@@ -141,6 +141,14 @@ export function validateSession(sessionToken) {
   };
 }
 
+export function removeSession() {
+  return function() {
+    Cookies.remove('sessionToken');
+    setTimeout(() => {
+      hashHistory.push('/signin');
+    }, 150);
+  };
+}
 
 export const startSession = (function() {
   const sessionBasePath = __DEV__ ? 'http://localhost:3001/session': '/session';
