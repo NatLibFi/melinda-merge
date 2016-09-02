@@ -4,10 +4,10 @@
 	"use strict";
 
 	if (typeof exports === 'object') {
-    module.exports = factory(require('q'), require('xregexp')); // jshint ignore:line
+    module.exports = factory(require('q'), require('xregexp'), require('marc-record-js')); // jshint ignore:line
 	}
 
-}(this, function(Q, XRegExp) {
+}(this, function(Q, XRegExp, MarcRecord) {
 	"use strict";
 
 	function makeError(name, message) {
@@ -115,6 +115,7 @@
 				});
 			});
 
+      /*
 			checkForDiacritics(['245'], otherRecord, preferredRecord).forEach(function(msg) {
 				Q.nextTick(function() {
 					deferred.notify("STAT DIAC] " + msg);
@@ -122,6 +123,7 @@
 			});
 			var diacriticsErrors = validateDiacritics(['245'], otherRecord, preferredRecord);
 			errors = errors.concat(diacriticsErrors);
+      */
 
 			var requiredIndenticalCounts = ["100","110","111"];
 			requiredIndenticalCounts.forEach(function(countField) {
@@ -373,10 +375,13 @@
 				return obj[property] === value;
 			};
 		}
-		function applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord) {
+		function applyPostMergeModifications(preferredRecord, otherRecord, originalMergedRecord) {
 			// Handle low tags by moving them from "otherRecord" to mergedRecord
 			//	and then creating SID links to both preferred and other record
 			//	
+      
+      var mergedRecord = new MarcRecord(originalMergedRecord);
+
 			
 			var deferred = Q.defer();
 

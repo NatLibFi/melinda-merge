@@ -209,3 +209,7 @@ export const fetchRecord = (function() {
     };
   };
 })();
+
+if (__DEV__) {
+  window.fetchRecord = fetchRecord;
+}
