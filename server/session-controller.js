@@ -58,6 +58,7 @@ function requireBodyParams(...requiredParams) {
     if (_.every(values)) {
       return next();  
     }
+    logger.log('info', 'Request did not have required body parameters', requiredParams);
     res.sendStatus(400);
   };
 }
