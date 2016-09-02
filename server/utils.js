@@ -17,10 +17,17 @@ export function readEnvironmentVariable(name, defaultValue, opts) {
   return _.get(process.env, name, defaultValue);
 }
 
-const whitelist = ['http://localhost:3000', 'http://localhost:3001', undefined];
+
+const whitelist = JSON.parse(readEnvironmentVariable('CORS_WHITELIST', '["http://localhost:3000"]'));
+
 export const corsOptions = {
   origin: function(origin, callback) {
-    var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
-    callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+    if (origin === undefined) {
+      callback(null, true);
+    } else {
+      var originIsWhitelisted = whitelist.indexOf(origin) !== -1;
+      logger.log('info', `Request from origin ${origin} is not whitelisted.`);
+      callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
+    }
   }
 };
