@@ -47,12 +47,22 @@ function calculateMergedRecord(sourceRecord, targetRecord) {
     const merge = createRecordMerger(mergeConfiguration);
     const preferredRecord = targetRecord.get('record');
     const otherRecord = sourceRecord.get('record');
-    const mergedRecord = merge(preferredRecord, otherRecord);
 
-    return Map({
-      record: mergedRecord,
-      state: 'LOADED'
-    });
+    try {
+      const mergedRecord = merge(preferredRecord, otherRecord);
+
+      return Map({
+        record: mergedRecord,
+        state: 'LOADED'
+      });
+
+    } catch(error) {
+      return Map({
+        state: 'ERROR',
+        errorMessage: error.message
+      });
+    }
+
   } else {
     return DEFAULT_MERGED_RECORD;
   }
