@@ -1,5 +1,9 @@
 import fetch from 'isomorphic-fetch';
 import MARCRecord from 'marc-record-js';
+import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
+import createRecordMerger from 'marc-record-merge';
+import mergeConfiguration from './config/merge-config';
+
 
 export const LOAD_SOURCE_RECORD = 'LOAD_SOURCE_RECORD';
 
@@ -81,6 +85,58 @@ export function setTargetRecordId(recordId) {
   return { 'type': SET_TARGET_RECORD_ID, 'recordId': recordId };
 }
 
+export function updateMergedRecord() {
+
+  return function(dispatch, getState) {
+
+    const preferredRecord = getState().getIn(['targetRecord', 'record']);
+    const otherRecord = getState().getIn(['sourceRecord', 'record']);
+    
+    if (preferredRecord && otherRecord) {
+      const mergeChecks = new MarcRecordMergeMelindaUtils();
+      const merge = createRecordMerger(mergeConfiguration);
+
+      mergeChecks.canMerge(preferredRecord, otherRecord)
+        .then(() => merge(preferredRecord, otherRecord))
+        .then(mergedRecord => mergeChecks.applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord))
+        .then(mergedRecord => dispatch(setMergedRecord(mergedRecord)))
+        .catch(error => {
+          dispatch(setMergedRecordError(error.message));
+        }).done();
+
+
+    }
+  };
+}
+
+
+export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';
+
+export function setMergedRecord(record) {
+  return {
+    'type': SET_MERGED_RECORD,
+    'record': record
+  };
+}
+
+export const SET_MERGED_RECORD_ERROR = 'SET_MERGED_RECORD_ERROR';
+
+export function setMergedRecordError(error) {
+  return {
+    'type': SET_MERGED_RECORD_ERROR,
+    'error': error
+  };
+}
+
+
+export const CLEAR_MERGED_RECORD = 'CLEAR_MERGED_RECORD';
+
+export function clearMergedRecord() {
+  return {
+    'type': CLEAR_MERGED_RECORD
+  };
+}
+
 
 
 export const fetchRecord = (function() {
@@ -111,6 +167,7 @@ export const fetchRecord = (function() {
                 if (currentSourceRecordId === recordId) {
                   const marcRecord = new MARCRecord(json);
                   dispatch(setSourceRecord(marcRecord));
+                  dispatch(updateMergedRecord());
                 }
               });
             } else {
@@ -137,6 +194,7 @@ export const fetchRecord = (function() {
                 if (currentTargetRecordId === recordId) {
                   const marcRecord = new MARCRecord(json);
                   dispatch(setTargetRecord(marcRecord));
+                  dispatch(updateMergedRecord());
                 }
               });
             } else {

@@ -116,61 +116,6 @@ describe('ui reducers', () => {
       });
     });
 
-    it('is calculated from source and target records', () => {
-
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
-      const finalState = setTargetRecord(nextState, otherTestRecordObject);
-
-      expect(finalState.toJS().mergedRecord.state).to.eql('LOADED');
-
-      expect(finalState.toJS().mergedRecord.record.toJsonObject()).to.eql(
-        {
-          'leader': '^^^^^cam^a22002897i^4500',
-          'fields': [
-            {
-              'tag': '001',
-              'value': '00384794',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '003',
-              'value': 'FI-MELINDA',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '005',
-              'value': 'FIELD-005',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '008',
-              'value': 'TARGET',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '009',
-              'value': 'TARGET',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '222',
-              'subfields': [{
-                'code': 'a',
-                'value': 'The field'
-              }],
-              'fromOther': true,
-              'wasUsed': true
-            }
-          ]
-        }
-      );
-    });
-
     it('is has state=EMPTY if target record is not ready', () => {
 
       let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
