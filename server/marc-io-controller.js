@@ -7,7 +7,7 @@ const MelindaClient = require('melinda-api-client');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 
 const config = {
-  endpoint: `${alephUrl}/api`,
+  endpoint: `${alephUrl}/API`,
   user: '',
   password: ''
 };
@@ -24,6 +24,9 @@ marcIOController.get('/:id', cors(corsOptions), (req, res) => {
   client.loadRecord(req.params.id, {handle_deleted: 1}).then((record) => {
     logger.log('debug', `Record ${req.params.id} loaded`);
     res.send(record);
+  }).catch(error => {
+    logger.log('error', `Error loading record ${req.params.id}`, error);
+    res.sendStatus(500);
   }).done();
 
 });
