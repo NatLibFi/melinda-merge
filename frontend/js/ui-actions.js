@@ -8,6 +8,38 @@ import * as Cookies from 'js-cookie';
 import {hashHistory} from 'react-router';
 import _ from 'lodash';
 
+export function commitMerge() {
+  return function(dispatch) {
+    dispatch(commitMergeStart());
+  };
+}
+
+export const COMMIT_MERGE_START = 'COMMIT_MERGE_START';
+
+export function commitMergeStart() {
+  return {
+    type: COMMIT_MERGE_START
+  };
+}
+
+export const COMMIT_MERGE_ERROR = 'COMMIT_MERGE_ERROR';
+
+export function commitMergeError(errorMessage) {
+  return {
+    type: COMMIT_MERGE_ERROR,
+    error: errorMessage
+  };
+}
+
+export const COMMIT_MERGE_SUCCESS = 'COMMIT_MERGE_SUCCESS';
+
+export function commitMergeSuccess() {
+  return {
+    type: COMMIT_MERGE_SUCCESS
+  };
+}
+
+
 export const LOAD_SOURCE_RECORD = 'LOAD_SOURCE_RECORD';
 
 export function loadSourceRecord(recordId) {
