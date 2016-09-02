@@ -32,7 +32,7 @@
 		}
 
 		// this must be sync
-		function applyPreMergeModifications(otherRecord, preferredRecord) {
+		function applyPreMergeModifications(preferredRecord, otherRecord) {
 
 		}
 
@@ -46,7 +46,7 @@
 		 *	}
 		 *
 		 */
-		function canMerge(otherRecord, preferredRecord) {
+		function canMerge(preferredRecord, otherRecord) {
 		
 			var errors = [];
 
@@ -97,10 +97,10 @@
 
 			
 			var stopFields = {
-				'027': { validate: ["neitherHas"] },
+			/*	'027': { validate: ["neitherHas"] },
 				'240': { validate: ["identical", "neitherHas"] },
 				'830': { validate: ["identical", "preferredIsSupersetExceptIfEmpty"] }, 
-				'880': { validate: ["identical", "otherHas"]}
+				'880': { validate: ["identical", "otherHas"]} */
 			};
 
 			var stopFieldErrors = validateFields(stopFields, otherRecord, preferredRecord);
@@ -373,7 +373,7 @@
 				return obj[property] === value;
 			};
 		}
-		function applyPostMergeModifications(otherRecord, preferredRecord, mergedRecord) {
+		function applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord) {
 			// Handle low tags by moving them from "otherRecord" to mergedRecord
 			//	and then creating SID links to both preferred and other record
 			//	
