@@ -11,6 +11,10 @@ describe('ui reducers', () => {
       { tag: '001', value: '00384794' },
       { tag: '003', value: 'FI-MELINDA' },
       { tag: '008', value: 'SOURCE' },
+      { tag: '222', subfields: [{
+        code: 'a',
+        value: 'The field'
+      }]}
 
     ]
   });
@@ -23,11 +27,7 @@ describe('ui reducers', () => {
       { tag: '005', value: 'FIELD-005' },
       { tag: '008', value: 'TARGET' },
       { tag: '009', value: 'TARGET' },
-      { tag: '222', subfields: [{
-        code: 'a',
-        value: 'The field'
-      }]
-      }
+    
     ]
   }); 
 
@@ -140,8 +140,20 @@ describe('ui reducers', () => {
               'wasUsed': true
             },
             {
+              'tag': '005',
+              'value': 'FIELD-005',
+              'fromPreferred': true,
+              'wasUsed': true
+            },
+            {
               'tag': '008',
-              'value': 'SOURCE',
+              'value': 'TARGET',
+              'fromPreferred': true,
+              'wasUsed': true
+            },
+            {
+              'tag': '009',
+              'value': 'TARGET',
               'fromPreferred': true,
               'wasUsed': true
             },

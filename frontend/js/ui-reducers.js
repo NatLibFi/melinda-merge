@@ -45,7 +45,9 @@ export function setTargetRecord(state, record) {
 function calculateMergedRecord(sourceRecord, targetRecord) {
   if (sourceRecord.get('state') === 'LOADED' && targetRecord.get('state') === 'LOADED') {
     const merge = createRecordMerger(mergeConfiguration);
-    const mergedRecord = merge(sourceRecord.get('record'), targetRecord.get('record'));
+    const preferredRecord = targetRecord.get('record');
+    const otherRecord = sourceRecord.get('record');
+    const mergedRecord = merge(preferredRecord, otherRecord);
 
     return Map({
       record: mergedRecord,
