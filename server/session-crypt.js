@@ -1,11 +1,13 @@
 import crypto from 'crypto';
+import { readEnvironmentVariable } from './utils';
 
 const algorithm = 'aes-256-gcm';
-const randomKey = crypto.randomBytes(32);
+
+// Using random key means that every time the app restarts all sessions will invalidate
+const key = readEnvironmentVariable('SECRET_ENCRYPTION_KEY', crypto.randomBytes(32).toString('base64'), {hideDefaultValue: true});
 
 function readKey() {
-  // Using random key means that every time the app restarts all sessions will invalidate
-  return randomKey;
+  return new Buffer(key, 'base64');
 }
 
 export function createSessionToken(username, password) {
