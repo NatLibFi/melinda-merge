@@ -12,6 +12,8 @@ export const sessionController = express();
 sessionController.use(bodyParser.json());
 
 sessionController.options('/start', cors(corsOptions)); // enable pre-flight
+sessionController.options('/validate', cors(corsOptions)); // enable pre-flight
+
 sessionController.post('/start', cors(corsOptions), requireBodyParams('username', 'password'), (req, res) => {
   const {username, password} = req.body;
 
@@ -36,13 +38,16 @@ sessionController.post('/start', cors(corsOptions), requireBodyParams('username'
   });
 });
 
-sessionController.post('/validate', (req, res) => {
+sessionController.post('/validate', cors(corsOptions), requireBodyParams('sessionToken'), (req, res) => {
   const {sessionToken} = req.body;
   try {
     const {username} = readSessionToken(sessionToken);
-    res.send(username);
-  } catch (e) {
-    res.sendStatus(500);
+    logger.log('info', `Succesful session validation for ${username}`);
+    res.sendStatus(200);
+    
+  } catch (error) {
+    logger.log('error', 'Error validating credentials', error);
+    res.status(401).send('Authentication failed');
   }
 
 });
