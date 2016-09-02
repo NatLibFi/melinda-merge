@@ -1,7 +1,8 @@
 import {fromJS} from 'immutable';
 
-import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, loadTargetRecordError, setTargetRecordError} from './ui-reducers';
-import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RECORD, SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR} from './ui-actions';
+import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId} from './ui-reducers';
+import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, 
+  LOAD_TARGET_RECORD, SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID} from './ui-actions';
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
@@ -26,6 +27,10 @@ export default function reducer(state = INITIAL_STATE, action) {
     return loadTargetRecordError(state, action.error);
   case SET_TARGET_RECORD_ERROR:
     return setTargetRecordError(state, action.error);
+  case SET_SOURCE_RECORD_ID:
+    return setSourceRecordId(state, action.recordId);
+  case SET_TARGET_RECORD_ID:
+    return setTargetRecordId(state, action.recordId);
   }
   return state;
 }
