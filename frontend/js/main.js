@@ -11,7 +11,8 @@ import rootReducer from './root-reducer';
 import {Provider} from 'react-redux';
 import {Router, Route, hashHistory} from 'react-router';
 import App from './components/app';
-
+import * as Cookies from 'js-cookie';
+import { validateSession } from './ui-actions';
 
 const loggerMiddleware = createLogger();
 
@@ -39,3 +40,6 @@ ReactDOM.render(
   rootElement
 );
 
+const sessionToken = Cookies.get('sessionToken');
+
+store.dispatch(validateSession(sessionToken));

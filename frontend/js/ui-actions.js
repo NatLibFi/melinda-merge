@@ -3,7 +3,10 @@ import MARCRecord from 'marc-record-js';
 import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
-
+import HttpStatus from 'http-status-codes';
+import * as Cookies from 'js-cookie';
+import {hashHistory} from 'react-router';
+import _ from 'lodash';
 
 export const LOAD_SOURCE_RECORD = 'LOAD_SOURCE_RECORD';
 
@@ -147,8 +150,50 @@ export function createSessionStart() {
 
 export const CREATE_SESSION_ERROR = 'CREATE_SESSION_ERROR';
 
-export function startSessionError(message) {
+export function createSessionError(message) {
   return { 'type': CREATE_SESSION_ERROR, message};
+}
+
+
+export const CREATE_SESSION_SUCCESS = 'CREATE_SESSION_SUCCESS';
+
+export function createSessionSuccess(userinfo) {
+  return { 'type': CREATE_SESSION_SUCCESS, userinfo };
+}
+
+export const VALIDATE_SESSION = 'VALIDATE_SESSION';
+
+export function validateSession(sessionToken) {
+  const sessionBasePath = __DEV__ ? 'http://localhost:3001/session': '/session';
+
+  return function(dispatch) {
+
+    if (sessionToken === undefined) {
+      return hashHistory.push('/signin');
+    }
+
+    const fetchOptions = {
+      method: 'POST',
+      body: JSON.stringify({ sessionToken }),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+
+    return fetch(`${sessionBasePath}/validate`, fetchOptions)
+      .then(response => {
+        if (response.status == HttpStatus.OK) {
+
+          const username = _.head(sessionToken.split(':'));
+
+          dispatch(createSessionSuccess({username}));
+
+        } else {
+          Cookies.remove('sessionToken');
+          hashHistory.push('/signin');
+        }
+      });
+  };
 }
 
 
@@ -172,20 +217,31 @@ export const startSession = (function() {
       return fetch(`${sessionBasePath}/start`, fetchOptions)
         .then(response => {
 
-          if (response.status == 200) {
+          if (response.status == HttpStatus.OK) {
 
             return response.json().then(json => {
 
               const sessionToken = json.sessionToken;
-              window.sessionToken = sessionToken;
+
+              Cookies.set('sessionToken', sessionToken);
+              dispatch(createSessionSuccess({username}));
+              hashHistory.push('/');
+
             });
 
           } else {
-            dispatch(startSessionError('There has been a problem with operation: ' + response.status));
+            switch (response.status) {
+            case HttpStatus.BAD_REQUEST: return dispatch(createSessionError('Syötä käyttäjätunnus ja salasana'));
+            case HttpStatus.UNAUTHORIZED: return dispatch(createSessionError('Käyttäjätunnus ja salasana eivät täsmää'));
+            case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(createSessionError('Käyttäjätunnuksen tarkastuksessa tapahtui virhe. Yritä hetken päästä uudestaan.'));
+            }
+
+            dispatch(createSessionError('Käyttäjätunnuksen tarkastuksessa tapahtui virhe. Yritä hetken päästä uudestaan.'));
+            
           }
 
         }).catch((error) => {
-          dispatch(startSessionError('There has been a problem with operation: ' + error.message));
+          dispatch(createSessionError('There has been a problem with operation: ' + error.message));
         });
 
     };
@@ -215,7 +271,7 @@ export const fetchRecord = (function() {
         return fetch(`${APIBasePath}/${recordId}`)
           .then(response => {
 
-            if (response.status == 200) {
+            if (response.status == HttpStatus.OK) {
 
               return response.json().then(json => {
                 
@@ -242,7 +298,7 @@ export const fetchRecord = (function() {
         return fetch(`${APIBasePath}/${recordId}`)
           .then(response => {
 
-            if (response.status == 200) {
+            if (response.status == HttpStatus.OK) {
 
               response.json().then(json => {
 
