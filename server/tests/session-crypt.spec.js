@@ -4,7 +4,7 @@ import { createSessionToken, readSessionToken } from '../session-crypt';
 const USERNAME = 'test_username';
 const PASSWORD = 'password';
 
-describe.only('Session crypt', () => {
+describe('Session crypt', () => {
   describe('createSessionToken', () => {
     it('generates session token', () => {
 
