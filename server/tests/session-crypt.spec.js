@@ -4,7 +4,7 @@ import { createSessionToken, readSessionToken } from '../session-crypt';
 const USERNAME = 'test_username';
 const PASSWORD = 'password';
 
-describe('Session crypt', () => {
+describe.only('Session crypt', () => {
   describe('createSessionToken', () => {
     it('generates session token', () => {
 
@@ -27,6 +27,20 @@ describe('Session crypt', () => {
         username: USERNAME,
         password: PASSWORD
       });
+
+    });
+
+    it('fails when the username is tampered with', () => {
+
+      const generatedSessionToken = createSessionToken(USERNAME, PASSWORD);
+
+      const tamperedSessionToken = generatedSessionToken.split(':')
+        .map((val, i) => i == 0 ? 'changed_username' : val)
+        .join(':');
+
+      expect(() => {
+        readSessionToken(tamperedSessionToken);
+      }).to.throw('Unsupported state or unable to authenticate data');
 
     });
   });
