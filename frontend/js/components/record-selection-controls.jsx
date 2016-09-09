@@ -3,6 +3,7 @@ import '../../styles/components/record-selection-controls';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
+import {hashHistory} from 'react-router';
 
 export class RecordSelectionControls extends React.Component {
 
@@ -24,6 +25,12 @@ export class RecordSelectionControls extends React.Component {
     this.handleTargetChangeDebounced = _.debounce((event) => {
       this.props.fetchRecord(event.target.value, 'TARGET');
     }, 500);
+  }
+
+  componentWillReceiveProps(next) {
+    if (this.props.targetRecordId !== undefined && this.props.sourceRecordId !== undefined) {
+      hashHistory.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
+    }
   }
 
   handleChange(event) {

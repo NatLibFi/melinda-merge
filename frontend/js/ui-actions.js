@@ -12,6 +12,29 @@ export function resetState() {
   };
 }
 
+export function locationDidChange(location) {
+  return function(dispatch, getState) {
+
+    const match = _.get(location, 'pathname', '').match('/records/(\\d+)/and/(\\d+)$');
+    if (match !== null) {
+      const [, nextOtherId, nextPreferredId] = match;
+
+      const currentPreferredId = getState().getIn(['targetRecord', 'id']);
+      const currentOtherId = getState().getIn(['sourceRecord', 'id']);
+
+      if (nextOtherId !== currentOtherId) {
+        dispatch(fetchRecord(nextOtherId, 'SOURCE'));
+        dispatch(setSourceRecordId(nextOtherId));
+      }
+
+      if (nextPreferredId !== currentPreferredId) {
+        dispatch(fetchRecord(nextPreferredId, 'TARGET'));
+        dispatch(setTargetRecordId(nextPreferredId));
+      }
+    }
+  };
+}
+
 export const LOAD_SOURCE_RECORD = 'LOAD_SOURCE_RECORD';
 
 export function loadSourceRecord(recordId) {
