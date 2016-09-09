@@ -1,7 +1,8 @@
 import React from 'react';
-import '../../styles/components/signin-form-panel.scss';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
+
+import '../../styles/components/signin-form-panel.scss';
 
 export class SigninFormPanel extends React.Component {
 

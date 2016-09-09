@@ -15,14 +15,16 @@ export function loadSourceRecord(state, recordId) {
   return state.set('sourceRecord', Map({
     id: recordId,
     state: 'LOADING'
-  })).set('mergedRecord', DEFAULT_MERGED_RECORD);
+  })).set('mergedRecord', DEFAULT_MERGED_RECORD)
+  .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
 }
 
 export function loadTargetRecord(state, recordId) {
   return state.set('targetRecord', Map({
     id: recordId,
     state: 'LOADING'
-  })).set('mergedRecord', DEFAULT_MERGED_RECORD);
+  })).set('mergedRecord', DEFAULT_MERGED_RECORD)
+  .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
 }
 
 export function setSourceRecord(state, record) {
@@ -43,7 +45,8 @@ export function setMergedRecord(state, record) {
 
   return state
     .updateIn(['mergedRecord', 'state'], () => 'LOADED')
-    .updateIn(['mergedRecord', 'record'], () => record);
+    .updateIn(['mergedRecord', 'record'], () => record)
+    .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_AVAILABLE');
 }
 
 export function clearMergedRecord(state) {
@@ -53,7 +56,8 @@ export function clearMergedRecord(state) {
 export function setMergedRecordError(state, errorMessage) {
   return state
     .updateIn(['mergedRecord', 'state'], () => 'ERROR')
-    .updateIn(['mergedRecord', 'errorMessage'], () => errorMessage);
+    .updateIn(['mergedRecord', 'errorMessage'], () => errorMessage)
+    .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
 }
 
 export function setTargetRecordError(state, error) {

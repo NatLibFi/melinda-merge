@@ -9,8 +9,48 @@ import {hashHistory} from 'react-router';
 import _ from 'lodash';
 
 export function commitMerge() {
-  return function(dispatch) {
+
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+
+  return function(dispatch, getState) {
     dispatch(commitMergeStart());
+
+    const sourceRecord = getState().getIn(['sourceRecord', 'record']);
+    const targetRecord = getState().getIn(['targetRecord', 'record']);
+    const mergedRecord = getState().getIn(['mergedRecord', 'record']);
+
+    const fetchOptions = {
+      method: 'POST',
+      body: JSON.stringify({ 
+        preferredRecord: targetRecord,
+        otherRecord: sourceRecord,
+        mergedRecord
+      }),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+    };
+
+    return fetch(`${APIBasePath}/commit-merge`, fetchOptions)
+      .then(response => {
+
+        if (response.status == HttpStatus.OK) {
+
+          dispatch(commitMergeSuccess());
+
+        } else {
+          switch (response.status) {
+          case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
+          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+          }
+
+          dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+        }
+
+      }).catch((error) => {
+        dispatch(commitMergeError('There has been a problem with operation: ' + error.message));
+      });
+
   };
 }
 
