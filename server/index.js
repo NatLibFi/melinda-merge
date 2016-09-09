@@ -4,6 +4,7 @@ import { logger, expressWinston } from './logger';
 import { marcIOController } from './marc-io-controller';
 import { readEnvironmentVariable } from './utils';
 import { sessionController } from './session-controller';
+import cookieParser from 'cookie-parser';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
@@ -11,6 +12,7 @@ const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
 const app = express();
 
 app.use(expressWinston);
+app.use(cookieParser());
 
 app.get('/err', (req, res) => {
   const error = new Error('What a horrble error');

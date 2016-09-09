@@ -62,3 +62,21 @@ function requireBodyParams(...requiredParams) {
     res.sendStatus(400);
   };
 }
+
+export function readSessionMiddleware(req, res, next) {
+  try {
+    const {username, password} = readSessionToken(req.cookies.sessionToken);
+
+    req.session = { 
+      ...req.session,
+      username, password
+    };
+
+  } catch(e) {
+    req.session = { 
+      ...req.session
+    };
+  }
+
+  next();
+}
