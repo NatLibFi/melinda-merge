@@ -4,7 +4,13 @@ import {connect} from 'react-redux';
 
 export class NavBar extends React.Component {
   static propTypes = {
-    commitMerge: React.PropTypes.func.isRequired
+    commitMerge: React.PropTypes.func.isRequired,
+    mergeStatus: React.PropTypes.string.isRequired
+  }
+
+
+  disableIfMergeNotPossible() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_AVAILABLE' ? '' : 'disabled';
   }
 
   render() {
@@ -15,7 +21,7 @@ export class NavBar extends React.Component {
             
             <ul id="nav" className="right">
             
-              <li><a className="waves-effect waves-light btn" href="#" onClick={this.props.commitMerge}>Yhdistä</a></li>
+              <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>
               <li><a className="dropdown-button dropdown-button-menu" href="#!" data-activates="dropdown1"><i className="material-icons">more_vert</i></a></li>
             </ul>
 
@@ -26,8 +32,9 @@ export class NavBar extends React.Component {
   }
 }
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
+    mergeStatus: state.getIn(['mergeStatus', 'status'])
     // prop to be used for disabling the merge button while the action is ongoing
   };
 }
@@ -36,4 +43,3 @@ export const NavBarContainer = connect(
   mapStateToProps,
   uiActionCreators
 )(NavBar);
-

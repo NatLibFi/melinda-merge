@@ -10,6 +10,10 @@ import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RE
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
   CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS} from './ui-actions';
 
+import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
+import {setMergeStatus} from './ui-reducers';
+
+
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
     state: 'EMPTY'
@@ -52,6 +56,12 @@ export default function reducer(state = INITIAL_STATE, action) {
     return createSessionError(state, action.message);
   case CREATE_SESSION_SUCCESS:
     return createSessionSuccess(state);
+  case COMMIT_MERGE_START:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
+  case COMMIT_MERGE_ERROR:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.message});
+  case COMMIT_MERGE_SUCCESS:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: 'Tietueet yhdistetty'});
   }
 
   return state;

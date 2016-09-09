@@ -4,6 +4,13 @@ const DEFAULT_MERGED_RECORD = Map({
   state: 'EMPTY'
 });
 
+export function setMergeStatus(state, mergeStatus) {
+  return state.set('mergeStatus', Map({
+    status: mergeStatus.status,
+    message: mergeStatus.message
+  }));
+}
+
 export function loadSourceRecord(state, recordId) {
   return state.set('sourceRecord', Map({
     id: recordId,
