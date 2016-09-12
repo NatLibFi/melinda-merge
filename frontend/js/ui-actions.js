@@ -5,6 +5,13 @@ import * as Cookies from 'js-cookie';
 import {hashHistory} from 'react-router';
 import _ from 'lodash';
 
+export const RESET_STATE = 'RESET_STATE';
+export function resetState() {
+  return {
+    type: RESET_STATE,
+  };
+}
+
 export const LOAD_SOURCE_RECORD = 'LOAD_SOURCE_RECORD';
 
 export function loadSourceRecord(recordId) {
@@ -141,9 +148,14 @@ export function validateSession(sessionToken) {
   };
 }
 
+
+
 export function removeSession() {
-  return function() {
+  return function(dispatch) {
     Cookies.remove('sessionToken');
+
+    dispatch(resetState());
+
     setTimeout(() => {
       hashHistory.push('/signin');
     }, 150);
