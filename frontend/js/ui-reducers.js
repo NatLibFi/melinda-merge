@@ -97,3 +97,8 @@ export function createSessionSuccess(state, userinfo) {
     .set('userinfo', userinfo);
 }
 
+export function setLocation(state, location) {
+  return state
+    .set('location', location);
+}
+

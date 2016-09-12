@@ -15,6 +15,8 @@ export function resetState() {
 export function locationDidChange(location) {
   return function(dispatch, getState) {
 
+    dispatch(setLocation(location));
+
     const match = _.get(location, 'pathname', '').match('/records/(\\d+)/and/(\\d+)$');
     if (match !== null) {
       const [, nextOtherId, nextPreferredId] = match;
@@ -32,6 +34,15 @@ export function locationDidChange(location) {
         dispatch(setTargetRecordId(nextPreferredId));
       }
     }
+  };
+}
+
+export const SET_LOCATION = 'SET_LOCATION';
+
+export function setLocation(location) {
+  return {
+    type: SET_LOCATION,
+    location: location
   };
 }
 
@@ -144,7 +155,7 @@ export function validateSession(sessionToken) {
   return function(dispatch) {
 
     if (sessionToken === undefined) {
-      return hashHistory.push('/signin');
+      return;
     }
 
     const fetchOptions = {
@@ -165,10 +176,11 @@ export function validateSession(sessionToken) {
 
         } else {
           Cookies.remove('sessionToken');
-          hashHistory.push('/signin');
+
         }
       });
   };
+
 }
 
 
@@ -176,12 +188,7 @@ export function validateSession(sessionToken) {
 export function removeSession() {
   return function(dispatch) {
     Cookies.remove('sessionToken');
-
     dispatch(resetState());
-
-    setTimeout(() => {
-      hashHistory.push('/signin');
-    }, 150);
   };
 }
 
@@ -213,8 +220,7 @@ export const startSession = (function() {
 
               Cookies.set('sessionToken', sessionToken);
               dispatch(createSessionSuccess({username}));
-              hashHistory.push('/');
-
+              
             });
 
           } else {
