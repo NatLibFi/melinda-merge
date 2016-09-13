@@ -114,7 +114,8 @@ function readRecordFromStdin() {
 }
 
 function printResponse(response) {
-  
+  console.log(response);
+
   console.log('Messages:');
   response.messages.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
   
@@ -131,6 +132,7 @@ function printResponse(response) {
 
 function printError(error) {
   console.log(error);
+  
   console.log('Errors:');
   _.get(error, 'errors', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
   
