@@ -32,3 +32,14 @@ export const corsOptions = {
   },
   credentials: true
 };
+
+export function requireBodyParams(...requiredParams) {
+  return function _requireBodyParams(req, res, next) {
+    const values = requiredParams.map(key => req.body[key]);
+    if (_.every(values)) {
+      return next();  
+    }
+    logger.log('info', 'Request did not have required body parameters', requiredParams);
+    res.sendStatus(400);
+  };
+}

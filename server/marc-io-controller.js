@@ -1,13 +1,14 @@
 import express from 'express';
 import cors from 'cors';
-import { readEnvironmentVariable, corsOptions } from './utils';
+import { readEnvironmentVariable, corsOptions, requireBodyParams } from './utils';
 import { logger } from './logger';
 import bodyParser from 'body-parser';
 import MarcRecord from 'marc-record-js';
 import cookieParser from 'cookie-parser';
-
+import HttpStatus from 'http-status-codes';
 import { commitMerge } from './melinda-merge-update';
 import { readSessionMiddleware } from './session-controller';
+import _ from 'lodash';
 
 const MelindaClient = require('melinda-api-client');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
@@ -43,12 +44,12 @@ marcIOController.get('/:id', cors(corsOptions), (req, res) => {
 
 });
 
-marcIOController.post('/commit-merge', cors(corsOptions), (req, res) => {
+marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord','mergedRecord'), (req, res) => {
   
+  const {username, password} = req.session;
+
   const [otherRecord, preferredRecord, mergedRecord] = 
         [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord].map(transformToMarcRecord);
-
-  const {username, password} = req.session;
 
   const clientConfig = { 
     ...defaultConfig,
@@ -68,6 +69,19 @@ marcIOController.post('/commit-merge', cors(corsOptions), (req, res) => {
     });
 
 });
+
+function requireSession(req, res, next) {
+
+  const username = _.get(req, 'session.username');
+  const password = _.get(req, 'session.password');
+
+  if (username && password) {
+    return next();
+  } else {
+    res.sendStatus(HttpStatus.UNAUTHORIZED);    
+  }
+
+}
 
 function transformToMarcRecord(json) {
   return new MarcRecord(json);
