@@ -5,6 +5,8 @@ import {connect} from 'react-redux';
 import _ from 'lodash';
 import {hashHistory} from 'react-router';
 
+const RECORD_LOADING_DELAY = 500;
+
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
@@ -13,23 +15,42 @@ export class RecordSelectionControls extends React.Component {
     fetchRecord: React.PropTypes.func.isRequired,
     swapRecords: React.PropTypes.func.isRequired,
     setSourceRecordId: React.PropTypes.func.isRequired,
-    setTargetRecordId: React.PropTypes.func.isRequired
+    setTargetRecordId: React.PropTypes.func.isRequired,
+    locationDidChange: React.PropTypes.func.isRequired
   }
 
   constructor() {
     super();
     this.handleSourceChangeDebounced = _.debounce((event) => {
       this.props.fetchRecord(event.target.value, 'SOURCE');
-    }, 500);
+    }, RECORD_LOADING_DELAY);
 
     this.handleTargetChangeDebounced = _.debounce((event) => {
       this.props.fetchRecord(event.target.value, 'TARGET');
-    }, 500);
+    }, RECORD_LOADING_DELAY);
+  }
+
+  componentWillMount() {
+    const unlisten = hashHistory.listen(location => this.props.locationDidChange(location));
+    this.setState({ unlisten });
   }
 
   componentWillReceiveProps(next) {
-    if (this.props.targetRecordId !== undefined && this.props.sourceRecordId !== undefined) {
+
+    if (_.identity(next.targetRecordId) || _.identity(next.sourceRecordId)) {
       hashHistory.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
+    }
+  }
+
+  componentDidUpdate() {
+    // update text fields if they are prefilled.
+    window.Materialize && window.Materialize.updateTextFields();
+  }
+
+  componentWillUnmount() {
+    if (typeof this.state.unlisten == 'function') {
+    
+      this.state.unlisten();
     }
   }
 

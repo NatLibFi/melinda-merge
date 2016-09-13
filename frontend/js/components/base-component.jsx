@@ -5,6 +5,7 @@ import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import {connect} from 'react-redux';
+import * as uiActionCreators from '../ui-actions';
 
 export class BaseComponent extends React.Component {
 
@@ -38,6 +39,7 @@ function mapStateToProps(state) {
 }
 
 export const BaseComponentContainer = connect(
-  mapStateToProps
+  mapStateToProps,
+  uiActionCreators
 )(BaseComponent);
 

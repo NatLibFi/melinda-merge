@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import MARCRecord from 'marc-record-js';
 import HttpStatus from 'http-status-codes';
 import * as Cookies from 'js-cookie';
-import {hashHistory} from 'react-router';
 import _ from 'lodash';
 
 export const RESET_STATE = 'RESET_STATE';
