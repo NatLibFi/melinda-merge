@@ -11,6 +11,10 @@ describe('ui reducers', () => {
       { tag: '001', value: '00384794' },
       { tag: '003', value: 'FI-MELINDA' },
       { tag: '008', value: 'SOURCE' },
+      { tag: '222', subfields: [{
+        code: 'a',
+        value: 'The field'
+      }]}
 
     ]
   });
@@ -23,11 +27,7 @@ describe('ui reducers', () => {
       { tag: '005', value: 'FIELD-005' },
       { tag: '008', value: 'TARGET' },
       { tag: '009', value: 'TARGET' },
-      { tag: '222', subfields: [{
-        code: 'a',
-        value: 'The field'
-      }]
-      }
+    
     ]
   }); 
 
@@ -114,49 +114,6 @@ describe('ui reducers', () => {
       expect(INITIAL_STATE.toJS().mergedRecord).to.eql({
         'state': 'EMPTY'
       });
-    });
-
-    it('is calculated from source and target records', () => {
-
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
-      const finalState = setTargetRecord(nextState, otherTestRecordObject);
-
-      expect(finalState.toJS().mergedRecord.state).to.eql('LOADED');
-
-      expect(finalState.toJS().mergedRecord.record.toJsonObject()).to.eql(
-        {
-          'leader': '^^^^^cam^a22002897i^4500',
-          'fields': [
-            {
-              'tag': '001',
-              'value': '00384794',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '003',
-              'value': 'FI-MELINDA',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '008',
-              'value': 'SOURCE',
-              'fromPreferred': true,
-              'wasUsed': true
-            },
-            {
-              'tag': '222',
-              'subfields': [{
-                'code': 'a',
-                'value': 'The field'
-              }],
-              'fromOther': true,
-              'wasUsed': true
-            }
-          ]
-        }
-      );
     });
 
     it('is has state=EMPTY if target record is not ready', () => {

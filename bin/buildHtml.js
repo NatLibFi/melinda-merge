@@ -26,3 +26,18 @@ fs.readFile('frontend/index.html', 'utf8', (err, markup) => {
 
   console.log('index.html written to /build/public'.green);
 });
+
+
+fs.readFile('frontend/favicon.png', (err, data) => {
+  if (err) {
+    return console.log(err);
+  }
+
+  fs.writeFile('build/public/favicon.png', data, function (err) {
+    if (err) {
+      return console.log(err);
+    }
+  });
+
+  console.log('favicon.png written to /build/public'.green);
+});

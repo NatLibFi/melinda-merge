@@ -178,14 +178,6 @@ module.exports = {
       }
     },
 
-    'SID': {
-      'action': 'copy'
-    },
-
-    'LOW': {
-      'action': 'copy'
-    },
-
     'HLI': {
       'action': 'copy'
     }

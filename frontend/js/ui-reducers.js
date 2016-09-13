@@ -1,6 +1,4 @@
 import {Map} from 'immutable';
-import createRecordMerger from 'marc-record-merge';
-import mergeConfiguration from './config/merge-config';
 
 const DEFAULT_MERGED_RECORD = Map({
   state: 'EMPTY'
@@ -22,39 +20,33 @@ export function loadTargetRecord(state, recordId) {
 
 export function setSourceRecord(state, record) {
   
-  const nextState = state
+  return state
     .updateIn(['sourceRecord', 'state'], () => 'LOADED')
     .updateIn(['sourceRecord', 'record'], () => record);
-
-  const mergedRecord = calculateMergedRecord(nextState.get('sourceRecord'), nextState.get('targetRecord'));
-
-  return nextState.set('mergedRecord', mergedRecord);
 }
 
 export function setTargetRecord(state, record) {
 
-  const nextState = state
+  return state
     .updateIn(['targetRecord', 'state'], () => 'LOADED')
     .updateIn(['targetRecord', 'record'], () => record);
-
-  const mergedRecord = calculateMergedRecord(nextState.get('sourceRecord'), nextState.get('targetRecord'));
-
-  return nextState.set('mergedRecord', mergedRecord);
 }
 
-function calculateMergedRecord(sourceRecord, targetRecord) {
-  if (sourceRecord.get('state') === 'LOADED' && targetRecord.get('state') === 'LOADED') {
-    const merge = createRecordMerger(mergeConfiguration);
-    const mergedRecord = merge(sourceRecord.get('record'), targetRecord.get('record'));
+export function setMergedRecord(state, record) {
 
-    return Map({
-      record: mergedRecord,
-      state: 'LOADED'
-    });
-  } else {
-    return DEFAULT_MERGED_RECORD;
-  }
-  
+  return state
+    .updateIn(['mergedRecord', 'state'], () => 'LOADED')
+    .updateIn(['mergedRecord', 'record'], () => record);
+}
+
+export function clearMergedRecord(state) {
+  return state.set('mergedRecord', DEFAULT_MERGED_RECORD);
+}
+
+export function setMergedRecordError(state, errorMessage) {
+  return state
+    .updateIn(['mergedRecord', 'state'], () => 'ERROR')
+    .updateIn(['mergedRecord', 'errorMessage'], () => errorMessage);
 }
 
 export function setTargetRecordError(state, error) {
