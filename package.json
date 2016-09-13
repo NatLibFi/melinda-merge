@@ -36,6 +36,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "marc-record-js": "^0.1.1",
+    "marc-record-merge": "^2.0.1",
     "melinda-api-client": "^1.1.0",
     "winston": "^2.2.0"
   },
@@ -63,10 +64,12 @@
     "extract-text-webpack-plugin": "^1.0.1",
     "file-loader": "^0.9.0",
     "jsdom": "^9.4.2",
+    "json-loader": "^0.5.4",
     "mocha": "^3.0.2",
     "node-sass": "^3.8.0",
     "nodemon": "^1.10.2",
     "postcss-loader": "^0.10.1",
+    "q": "^1.4.1",
     "react": "^15.3.1",
     "react-dom": "^15.3.1",
     "react-hot-loader": "^1.3.0",
@@ -82,6 +85,7 @@
     "style-loader": "^0.13.1",
     "url-loader": "^0.5.7",
     "webpack": "^1.13.2",
-    "webpack-dev-server": "^1.15.0"
+    "webpack-dev-server": "^1.15.0",
+    "xregexp": "^3.1.1"
   }
 }
