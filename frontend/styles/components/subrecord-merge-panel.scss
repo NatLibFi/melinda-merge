@@ -1,0 +1,45 @@
+
+.subrecord-merge-panel {
+
+  table-layout: fixed;
+
+  .empty-droppable {
+    height: 110px;
+    border: 2px dashed #CCC;
+    border-radius: 5px;
+  }
+  .to-remove td:nth-child(1) {
+    background-image: url("../../images/to-remove-start.svg");
+  }
+  .to-remove td:nth-child(2) {
+    background-image: url("../../images/to-remove.svg");
+  }
+  .to-remove td:nth-child(3) {
+    background-image: url("../../images/to-remove-end.svg");
+  }
+
+  .to-result td:nth-child(1) {
+    background-image: url("../../images/to-merged-start.svg");
+  }
+  .to-result td:nth-child(2) {
+    background-image: url("../../images/to-merged.svg");
+  }
+
+  .to-merge td:nth-child(1) {
+    background-image: url("../../images/line-start-green.svg");
+  }
+  .to-merge td:nth-child(2) {
+    background-image: url("../../images/line-middle-green.svg");
+  }
+
+  td {
+    position: relative;
+  }
+
+  .merge-action-button {
+    position: absolute; 
+    top: calc(50% - 22px);
+    left: -18px  
+  }
+
+}
