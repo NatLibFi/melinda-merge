@@ -61,7 +61,7 @@ export default function reducer(state = INITIAL_STATE, action) {
   case COMMIT_MERGE_ERROR:
     return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.message});
   case COMMIT_MERGE_SUCCESS:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: 'Tietueet yhdistetty'});
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
   }
 
   return state;

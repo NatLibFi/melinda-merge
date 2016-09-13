@@ -37,7 +37,10 @@ export function commitMerge() {
 
         if (response.status == HttpStatus.OK) {
 
-          dispatch(commitMergeSuccess());
+          response.json().then(res => {
+            const newMergedRecordId = res.recordId;
+            dispatch(commitMergeSuccess(newMergedRecordId));  
+          });
 
         } else {
           switch (response.status) {
@@ -74,9 +77,10 @@ export function commitMergeError(errorMessage) {
 
 export const COMMIT_MERGE_SUCCESS = 'COMMIT_MERGE_SUCCESS';
 
-export function commitMergeSuccess() {
+export function commitMergeSuccess(recordId) {
   return {
-    type: COMMIT_MERGE_SUCCESS
+    type: COMMIT_MERGE_SUCCESS,
+    recordId: recordId
   };
 }
 
