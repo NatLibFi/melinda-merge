@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import MARCRecord from 'marc-record-js';
 import HttpStatus from 'http-status-codes';
 import * as Cookies from 'js-cookie';
-import {hashHistory} from 'react-router';
 import _ from 'lodash';
 import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
 import createRecordMerger from 'marc-record-merge';
@@ -12,6 +11,40 @@ export const RESET_STATE = 'RESET_STATE';
 export function resetState() {
   return {
     type: RESET_STATE,
+  };
+}
+
+export function locationDidChange(location) {
+  return function(dispatch, getState) {
+
+    dispatch(setLocation(location));
+
+    const match = _.get(location, 'pathname', '').match('/records/(\\d+)/and/(\\d+)$');
+    if (match !== null) {
+      const [, nextOtherId, nextPreferredId] = match;
+
+      const currentPreferredId = getState().getIn(['targetRecord', 'id']);
+      const currentOtherId = getState().getIn(['sourceRecord', 'id']);
+
+      if (nextOtherId !== currentOtherId) {
+        dispatch(fetchRecord(nextOtherId, 'SOURCE'));
+        dispatch(setSourceRecordId(nextOtherId));
+      }
+
+      if (nextPreferredId !== currentPreferredId) {
+        dispatch(fetchRecord(nextPreferredId, 'TARGET'));
+        dispatch(setTargetRecordId(nextPreferredId));
+      }
+    }
+  };
+}
+
+export const SET_LOCATION = 'SET_LOCATION';
+
+export function setLocation(location) {
+  return {
+    type: SET_LOCATION,
+    location: location
   };
 }
 
@@ -176,8 +209,10 @@ export function validateSession(sessionToken) {
   return function(dispatch) {
 
     if (sessionToken === undefined) {
-      return hashHistory.push('/signin');
+      return;
     }
+
+    dispatch(validateSessionStart());
 
     const fetchOptions = {
       method: 'POST',
@@ -197,23 +232,24 @@ export function validateSession(sessionToken) {
 
         } else {
           Cookies.remove('sessionToken');
-          hashHistory.push('/signin');
+
         }
       });
   };
+
 }
 
+export const VALIDATE_SESSION_START = 'VALIDATE_SESSION_START';
+
+export function validateSessionStart() {
+  return { 'type': VALIDATE_SESSION_START };
+}
 
 
 export function removeSession() {
   return function(dispatch) {
     Cookies.remove('sessionToken');
-
     dispatch(resetState());
-
-    setTimeout(() => {
-      hashHistory.push('/signin');
-    }, 150);
   };
 }
 
@@ -245,8 +281,7 @@ export const startSession = (function() {
 
               Cookies.set('sessionToken', sessionToken);
               dispatch(createSessionSuccess({username}));
-              hashHistory.push('/');
-
+              
             });
 
           } else {
