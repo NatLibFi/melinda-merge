@@ -29,5 +29,6 @@ export const corsOptions = {
       logger.log('info', `Request from origin ${origin} is not whitelisted.`);
       callback(originIsWhitelisted ? null : 'Bad Request', originIsWhitelisted);
     }
-  }
+  },
+  credentials: true
 };

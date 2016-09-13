@@ -29,6 +29,7 @@ export function commitMerge() {
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
+      credentials: 'include'
     };
 
     return fetch(`${APIBasePath}/commit-merge`, fetchOptions)

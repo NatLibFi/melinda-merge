@@ -13,14 +13,18 @@ export function executeTransaction(sequence) {
     chain.then(function() {   
       resolve();
     }).catch(function(error) {
+      if (error.rollbacks) {
+        // do a rollback
       
-      // do a rollback
-      executeRollbacks(error.rollbacks)
-        .then(() => reject(error)) // error, but rollback was success
-        .catch(error => {
-          const rollbackError = new RollbackError(error.message);
-          reject(rollbackError);
-        });
+        executeRollbacks(error.rollbacks)
+          .then(() => reject(error)) // error, but rollback was success
+          .catch(error => {
+            const rollbackError = new RollbackError(error.message);
+            reject(rollbackError);
+          });
+      } else {
+        reject(error);
+      }
     });
 
   });

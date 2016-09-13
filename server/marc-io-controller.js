@@ -4,6 +4,7 @@ import { readEnvironmentVariable, corsOptions } from './utils';
 import { logger } from './logger';
 import bodyParser from 'body-parser';
 import MarcRecord from 'marc-record-js';
+import cookieParser from 'cookie-parser';
 
 import { commitMerge } from './melinda-merge-update';
 import { readSessionMiddleware } from './session-controller';
@@ -19,6 +20,7 @@ const defaultConfig = {
 
 export const marcIOController = express();
 
+marcIOController.use(cookieParser());
 marcIOController.use(bodyParser.json());
 marcIOController.use(readSessionMiddleware);
 marcIOController.set('etag', false);
@@ -53,7 +55,7 @@ marcIOController.post('/commit-merge', cors(corsOptions), (req, res) => {
     user: username,
     password: password
   };
-  
+
   const client = new MelindaClient(clientConfig);
 
   commitMerge(client, otherRecord, preferredRecord, mergedRecord)

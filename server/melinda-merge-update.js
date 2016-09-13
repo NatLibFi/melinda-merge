@@ -16,11 +16,6 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
   logger.log('info', `Removing records ${preferredId} and ${otherId}. Creating a new one.`);
 
-  return new Promise((resolve, reject) => {
-    setTimeout(() => resolve(), 4000);
-  });
-  //return Promise.resolve(`Removing records ${preferredId} and ${otherId}. Creating a new one.`);
-
   return executeTransaction([
     { 
       action: () => deleteRecordFromMelinda(preferredRecord), 
@@ -58,7 +53,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
   }
 
   function deleteRecordFromMelinda(record) {
-    record.appendField(['STA', ', ', 'a', 'DELETED']);
+    record.appendField(['STA', '', '', 'a', 'DELETED']);
     updateRecordLeader(record, 5, 'd');
 
     return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {

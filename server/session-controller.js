@@ -64,18 +64,17 @@ function requireBodyParams(...requiredParams) {
 }
 
 export function readSessionMiddleware(req, res, next) {
+  
   try {
     const {username, password} = readSessionToken(req.cookies.sessionToken);
-
+  
     req.session = { 
       ...req.session,
       username, password
     };
 
   } catch(e) {
-    req.session = { 
-      ...req.session
-    };
+    // invalid token
   }
 
   next();
