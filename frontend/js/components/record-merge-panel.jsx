@@ -80,14 +80,15 @@ export class RecordMergePanel extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    mergedRecord: (state.getIn(['mergedRecord', 'record']) || '').toString(),
+    mergedRecordError: state.getIn(['mergedRecord', 'errorMessage']),
+    mergedRecordState: state.getIn(['mergedRecord', 'state']),
     sourceRecord: (state.getIn(['sourceRecord', 'record']) || '').toString(),
+    sourceRecordError: state.getIn(['sourceRecord', 'errorMessage']),
     sourceRecordState: state.getIn(['sourceRecord', 'state']),
     targetRecord: (state.getIn(['targetRecord', 'record']) || '').toString(),
-    targetRecordState: state.getIn(['targetRecord', 'state']),
-    sourceRecordError: state.getIn(['sourceRecord', 'errorMessage']),
     targetRecordError: state.getIn(['targetRecord', 'errorMessage']),
-    mergedRecord: (state.getIn(['mergedRecord', 'record']) || '').toString(),
-    mergedRecordState: state.getIn(['mergedRecord', 'state'])
+    targetRecordState: state.getIn(['targetRecord', 'state'])
   };
 }
 

@@ -7,6 +7,9 @@ import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RE
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
   CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, RESET_STATE} from './ui-actions';
 
+import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
+import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
+
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
     state: 'EMPTY'
@@ -49,8 +52,13 @@ export default function reducer(state = INITIAL_STATE, action) {
     return createSessionSuccess(state);
   case RESET_STATE:
     return resetState(state);
-
+  case CLEAR_MERGED_RECORD:
+    return clearMergedRecord(state);
+  case SET_MERGED_RECORD_ERROR:
+    return setMergedRecordError(state, action.error);
+  case SET_MERGED_RECORD:
+    return setMergedRecord(state, action.record);
   }
-
+  
   return state;
 }
