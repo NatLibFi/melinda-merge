@@ -46,18 +46,20 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
       record.fields = record.fields.filter(field => field.tag !== 'STA');
       updateRecordLeader(record, 5, 'c');
       return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
-        logger.log('info', 'Undelete ok', res.messages);
+        logger.log('info', `Undelete ok for ${recordId}`, res.messages);
         return res;
       });
     }); 
   }
 
   function deleteRecordFromMelinda(record) {
+    const recordId = getRecordId(record);
+    
     record.appendField(['STA', '', '', 'a', 'DELETED']);
     updateRecordLeader(record, 5, 'd');
 
     return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
-      logger.log('info', 'Delete ok', res.messages);
+      logger.log('info', `Delete ok for ${recordId}`, res.messages);
       return res;
     });
   }
