@@ -61,7 +61,7 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
 
   commitMerge(client, otherRecord, preferredRecord, mergedRecord)
     .then((response) => {
-      logger.log('info', `Commit merge successful: ${response}`);
+      logger.log('info', 'Commit merge successful', response);
       res.send(response);
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);

@@ -26,7 +26,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
       rollback: () => undeleteRecordFromMelinda(otherId) 
     },
     { 
-      action: () => client.createRecord(mergedRecord, {bypass_low_validation: 1}),
+      action: () => createRecord(mergedRecord),
       rollback: undefined
     }
   ]).catch(function(error) {
@@ -41,7 +41,16 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
   });
 
+  function createRecord(record) {
+    logger.log('info', 'Creating new record');
+    return client.createRecord(record, {bypass_low_validation: 1}).then(res => {
+      logger.log('info', `Create record ok for ${res.recordId}`, res.messages);
+      return res;
+    });
+  }
+
   function undeleteRecordFromMelinda(recordId) {
+    logger.log('info', `Undeleting ${recordId}`);
     return client.loadRecord(recordId).then(function(record) {
       record.fields = record.fields.filter(field => field.tag !== 'STA');
       updateRecordLeader(record, 5, 'c');
@@ -54,6 +63,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
   function deleteRecordFromMelinda(record) {
     const recordId = getRecordId(record);
+    logger.log('info', `Deleting ${recordId}`);
     
     record.appendField(['STA', '', '', 'a', 'DELETED']);
     updateRecordLeader(record, 5, 'd');
