@@ -18,18 +18,20 @@ export function loadTargetRecord(state, recordId) {
   })).set('mergedRecord', DEFAULT_MERGED_RECORD);
 }
 
-export function setSourceRecord(state, record) {
+export function setSourceRecord(state, record, subrecords) {
   
   return state
     .updateIn(['sourceRecord', 'state'], () => 'LOADED')
-    .updateIn(['sourceRecord', 'record'], () => record);
+    .updateIn(['sourceRecord', 'record'], () => record)
+    .setIn(['sourceRecord', 'subrecords'], subrecords);
 }
 
-export function setTargetRecord(state, record) {
+export function setTargetRecord(state, record, subrecords) {
 
   return state
     .updateIn(['targetRecord', 'state'], () => 'LOADED')
-    .updateIn(['targetRecord', 'record'], () => record);
+    .updateIn(['targetRecord', 'record'], () => record)
+    .setIn(['targetRecord', 'subrecords'], subrecords);
 }
 
 export function setMergedRecord(state, record) {

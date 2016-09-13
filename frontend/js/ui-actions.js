@@ -59,10 +59,11 @@ export function loadSourceRecord(recordId) {
 
 export const SET_SOURCE_RECORD = 'SET_SOURCE_RECORD';
 
-export function setSourceRecord(record) {
+export function setSourceRecord(record, subrecords) {
   return {
     'type': SET_SOURCE_RECORD,
-    'record': record
+    'record': record,
+    'subrecords': subrecords
   };
 }
 
@@ -77,10 +78,11 @@ export function loadTargetRecord(recordId) {
 
 export const SET_TARGET_RECORD = 'SET_TARGET_RECORD';
 
-export function setTargetRecord(record) {
+export function setTargetRecord(record, subrecords) {
   return {
     'type': SET_TARGET_RECORD,
-    'record': record
+    'record': record,
+    'subrecords': subrecords
   };
 }
 
@@ -146,7 +148,6 @@ export function updateMergedRecord() {
         .catch(error => {
           dispatch(setMergedRecordError(error.message));
         }).done();
-
 
     }
   };
@@ -331,8 +332,13 @@ export const fetchRecord = (function() {
               return response.json().then(json => {
                 
                 if (currentSourceRecordId === recordId) {
-                  const marcRecord = new MARCRecord(json);
-                  dispatch(setSourceRecord(marcRecord));
+                  const mainRecord = json.record;
+                  const subrecords = json.subrecords;
+
+                  const marcRecord = new MARCRecord(mainRecord);
+                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+
+                  dispatch(setSourceRecord(marcRecord, marcSubRecords));
                   dispatch(updateMergedRecord());
                 }
               });
@@ -358,8 +364,13 @@ export const fetchRecord = (function() {
               response.json().then(json => {
 
                 if (currentTargetRecordId === recordId) {
-                  const marcRecord = new MARCRecord(json);
-                  dispatch(setTargetRecord(marcRecord));
+                  const mainRecord = json.record;
+                  const subrecords = json.subrecords;
+
+                  const marcRecord = new MARCRecord(mainRecord);
+                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+
+                  dispatch(setTargetRecord(marcRecord, marcSubRecords));
                   dispatch(updateMergedRecord());
                 }
               });
@@ -373,6 +384,7 @@ export const fetchRecord = (function() {
 
       }
     };
+
   };
 })();
 

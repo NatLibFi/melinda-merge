@@ -12,14 +12,6 @@ const app = express();
 
 app.use(expressWinston);
 
-app.get('/err', (req, res) => {
-  const error = new Error('What a horrble error');
-
-  logger.log('error', 'Got error', error);
-
-  res.status(500).send(error.message);
-});
-
 app.use('/api', marcIOController);
 app.use('/session', sessionController);
 

@@ -33,11 +33,11 @@ export default function reducer(state = INITIAL_STATE, action) {
   case LOAD_SOURCE_RECORD:
     return loadSourceRecord(state, action.id);
   case SET_SOURCE_RECORD:
-    return setSourceRecord(state, action.record);
+    return setSourceRecord(state, action.record, action.subrecords);
   case LOAD_TARGET_RECORD:
     return loadTargetRecord(state, action.id);
   case SET_TARGET_RECORD:
-    return setTargetRecord(state, action.record);
+    return setTargetRecord(state, action.record, action.subrecords);
   case SET_SOURCE_RECORD_ERROR:
     return loadTargetRecordError(state, action.error);
   case SET_TARGET_RECORD_ERROR:

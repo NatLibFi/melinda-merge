@@ -64,10 +64,11 @@ describe('ui reducers', () => {
   describe('setSourceRecord', () => {
 
     it('sets the source record', () => {
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
+      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject, []);
       expect(nextState.toJS()).to.eql(INITIAL_STATE.setIn(['sourceRecord'], {
         state: 'LOADED',
-        record: testRecordObject
+        record: testRecordObject,
+        subrecords: []
       }).toJS());
     });
   });
@@ -75,11 +76,12 @@ describe('ui reducers', () => {
   describe('setTargetRecord', () => {
 
     it('sets the target record', () => {
-      let nextState = setTargetRecord(INITIAL_STATE, testRecordObject);
+      let nextState = setTargetRecord(INITIAL_STATE, testRecordObject, []);
       
       expect(nextState.toJS()).to.eql(INITIAL_STATE.setIn(['targetRecord'], {
         state: 'LOADED',
-        record: testRecordObject
+        record: testRecordObject,
+        subrecords: []
       }).toJS());
     });
   });
