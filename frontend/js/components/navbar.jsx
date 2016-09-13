@@ -10,10 +10,6 @@ export class NavBar extends React.Component {
     statusInfo: React.PropTypes.string
   }
 
-  disableIfMergeNotPossible() {
-    return this.props.mergeStatus === 'COMMIT_MERGE_AVAILABLE' ? '' : 'disabled';
-  }
-
   static propTypes = {
     removeSession: React.PropTypes.func.isRequired,
   }
@@ -30,6 +26,14 @@ export class NavBar extends React.Component {
       alignment: 'right' // Displays dropdown with edge aligned to the left of button
     });
 
+  }
+
+  disableIfMergeNotPossible() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_AVAILABLE' ? '' : 'disabled';
+  }
+
+  statusInfo() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
   }
 
   render() {
@@ -58,11 +62,6 @@ export class NavBar extends React.Component {
     );
   }
 } 
-
-function mapStateToProps() {
-  return {
-  };
-}
 
 function mapStateToProps(state) {
   return {
