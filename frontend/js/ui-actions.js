@@ -157,6 +157,8 @@ export function validateSession(sessionToken) {
       return;
     }
 
+    dispatch(validateSessionStart());
+
     const fetchOptions = {
       method: 'POST',
       body: JSON.stringify({ sessionToken }),
@@ -182,6 +184,11 @@ export function validateSession(sessionToken) {
 
 }
 
+export const VALIDATE_SESSION_START = 'VALIDATE_SESSION_START';
+
+export function validateSessionStart() {
+  return { 'type': VALIDATE_SESSION_START };
+}
 
 
 export function removeSession() {

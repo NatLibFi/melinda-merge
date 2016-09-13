@@ -2,10 +2,10 @@ import {fromJS} from 'immutable';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
   loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
-  createSessionStart, createSessionError, createSessionSuccess, setLocation} from './ui-reducers';
+  createSessionStart, createSessionError, createSessionSuccess, validateSessionStart, setLocation} from './ui-reducers';
 import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RECORD, 
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
-  CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, RESET_STATE, SET_LOCATION} from './ui-actions';
+  CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, VALIDATE_SESSION_START, RESET_STATE, SET_LOCATION} from './ui-actions';
 
 
 export const INITIAL_STATE = fromJS({
@@ -49,6 +49,8 @@ export default function reducer(state = INITIAL_STATE, action) {
     return createSessionError(state, action.message);
   case CREATE_SESSION_SUCCESS:
     return createSessionSuccess(state);
+  case VALIDATE_SESSION_START:
+    return validateSessionStart(state);
   case RESET_STATE:
     return resetState(state);
   case SET_LOCATION:

@@ -13,8 +13,12 @@ export class BaseComponent extends React.Component {
     sessionState: React.PropTypes.string.isRequired
   }
 
+  renderValidationIndicator() {
+    return null;
+  }
+
   renderSignin() {
-    return <SigninFormPanelContainer />;
+    return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer />;
   }
 
   renderMainPanel() {
@@ -28,7 +32,15 @@ export class BaseComponent extends React.Component {
   }
 
   render() {
-    return this.props.sessionState !== 'SIGNIN_OK' ? this.renderSignin() : this.renderMainPanel();
+
+    if (this.props.sessionState == 'SIGNIN_OK') {
+      return this.renderMainPanel();
+    } else if (this.props.sessionState == 'VALIDATION_ONGOING') {
+      return this.renderValidationIndicator();
+    } else {
+      return this.renderSignin();
+    }
+
   }
 }
 
