@@ -1,7 +1,11 @@
 import {expect} from 'chai';
 import {readEnvironmentVariable} from '../utils';
+import { __RewireAPI__ as UtilsRewireAPI } from '../utils';
+import sinon from 'sinon';
 
 describe('utils', () => {
+
+  UtilsRewireAPI.__Rewire__('logger', { log: sinon.stub() });
 
   describe('readEnvironmentVariable', () => {
 

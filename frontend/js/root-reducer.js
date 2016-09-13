@@ -1,11 +1,14 @@
 import {fromJS} from 'immutable';
 
+import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
+  loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
+  createSessionStart, createSessionError, createSessionSuccess} from './ui-reducers';
+import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RECORD, 
+  SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
+  CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, RESET_STATE} from './ui-actions';
+
 import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
-
-import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId} from './ui-reducers';
-import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, 
-  LOAD_TARGET_RECORD, SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID} from './ui-actions';
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
@@ -18,6 +21,10 @@ export const INITIAL_STATE = fromJS({
     state: 'EMPTY'
   }
 });
+
+function resetState() {
+  return INITIAL_STATE;
+}
 
 export default function reducer(state = INITIAL_STATE, action) {
   switch (action.type) {
@@ -37,6 +44,14 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setSourceRecordId(state, action.recordId);
   case SET_TARGET_RECORD_ID:
     return setTargetRecordId(state, action.recordId);
+  case CREATE_SESSION_START:
+    return createSessionStart(state);
+  case CREATE_SESSION_ERROR:
+    return createSessionError(state, action.message);
+  case CREATE_SESSION_SUCCESS:
+    return createSessionSuccess(state);
+  case RESET_STATE:
+    return resetState(state);
   case CLEAR_MERGED_RECORD:
     return clearMergedRecord(state);
   case SET_MERGED_RECORD_ERROR:

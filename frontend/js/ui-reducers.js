@@ -72,3 +72,20 @@ export function setTargetRecordId(state, recordId) {
 export function setSourceRecordId(state, recordId) {
   return state.setIn(['sourceRecord', 'id'], recordId);
 }
+
+export function createSessionStart(state) {
+  return state.set('sessionState', 'SIGNIN_ONGOING');
+}
+
+export function createSessionError(state, message) {
+  return state
+    .set('sessionState', 'SIGNIN_ERROR')
+    .set('createSessionErrorMessage', message);
+}
+
+export function createSessionSuccess(state, userinfo) {
+  return state
+    .set('sessionState', 'SIGNIN_OK')
+    .set('userinfo', userinfo);
+}
+

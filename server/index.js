@@ -1,19 +1,16 @@
 'use strict';
 import express from 'express';
-import { logger } from './logger';
+import { logger, expressWinston } from './logger';
 import { marcIOController } from './marc-io-controller';
 import { readEnvironmentVariable } from './utils';
+import { sessionController } from './session-controller';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
 
 const app = express();
 
-app.use((req, res, next) => {
-  const remoteAddress = req.headers['x-forwarded-for'] || req.connection.remoteAddress;
-  logger.log('info', `Got request from ${remoteAddress}`);
-  next();
-});
+app.use(expressWinston);
 
 app.get('/err', (req, res) => {
   const error = new Error('What a horrble error');
@@ -24,6 +21,7 @@ app.get('/err', (req, res) => {
 });
 
 app.use('/api', marcIOController);
+app.use('/session', sessionController);
 
 app.use(express.static('public'));
 
