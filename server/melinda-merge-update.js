@@ -8,10 +8,10 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
   const otherId = getRecordId(otherRecord);
 
   if (preferredId === undefined) {
-    return Promise.reject('Could not find id from preferred record');
+    return Promise.reject(new Error('Could not find id from preferred record'));
   } 
   if (otherId === undefined) {
-    return Promise.reject('Could not find id from other record');
+    return Promise.reject(new Error('Could not find id from other record'));
   }
 
   logger.log('info', `Removing records ${preferredId} and ${otherId}. Creating a new one.`);

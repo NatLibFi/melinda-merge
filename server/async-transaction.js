@@ -10,8 +10,8 @@ export function executeTransaction(sequence) {
       chain = chain.then(step(transactionStepDefinition));
     });
 
-    chain.then(function() {   
-      resolve();
+    chain.then(function(lastResult) {
+      resolve(lastResult);
     }).catch(function(error) {
       if (error.rollbacks) {
         // do a rollback
@@ -26,7 +26,6 @@ export function executeTransaction(sequence) {
         reject(error);
       }
     });
-
   });
 
   // transaction step
