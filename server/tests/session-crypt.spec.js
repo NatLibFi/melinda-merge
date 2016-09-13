@@ -29,6 +29,22 @@ describe('Session crypt', () => {
       });
 
     });
+
+
+    it('fails when the username is tampered with', () => {
+
+      const generatedSessionToken = createSessionToken(USERNAME, PASSWORD);
+
+      const tamperedSessionToken = generatedSessionToken.split(':')
+        .map((val, i) => i == 0 ? 'changed_username' : val)
+        .join(':');
+
+      expect(() => {
+        readSessionToken(tamperedSessionToken);
+      }).to.throw('Unsupported state or unable to authenticate data');
+
+    });
+    
   });
 
 });

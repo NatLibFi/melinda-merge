@@ -15,7 +15,7 @@ export function createSessionToken(username, password) {
   const iv = crypto.randomBytes(12);
   const key = readKey();
 
-  const encryptionResult = encrypt(password, iv, key);
+  const encryptionResult = encrypt(password, username, iv, key);
 
   return createToken(username, encryptionResult);
 }
@@ -26,7 +26,7 @@ export function readSessionToken(sessionToken) {
 
   return {
     username,
-    password: decrypt(encrypted, iv, tag, key)
+    password: decrypt(encrypted, username, iv, tag, key)
   };
 }
 
@@ -45,8 +45,10 @@ function parseToken(token) {
   };
 }
 
-function encrypt(text, iv, key) {
+
+function encrypt(text, aad, iv, key) {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
+  cipher.setAAD(new Buffer(aad, 'utf8'));
   const encrypted = cipher.update(text, 'utf8', 'hex') + cipher.final('hex');
   
   return {
@@ -56,8 +58,10 @@ function encrypt(text, iv, key) {
   };
 }
 
-function decrypt(encrypted, iv, tag, key) {
+
+function decrypt(encrypted, aad, iv, tag, key) {
   const decipher = crypto.createDecipheriv(algorithm, key, iv);
+  decipher.setAAD(new Buffer(aad, 'utf8'));
   decipher.setAuthTag(tag);
   return decipher.update(encrypted, 'hex', 'utf8') + decipher.final('utf8');
 }

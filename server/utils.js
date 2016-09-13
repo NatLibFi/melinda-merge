@@ -17,7 +17,6 @@ export function readEnvironmentVariable(name, defaultValue, opts) {
   return _.get(process.env, name, defaultValue);
 }
 
-
 const whitelist = JSON.parse(readEnvironmentVariable('CORS_WHITELIST', '["http://localhost:3000"]'));
 
 export const corsOptions = {

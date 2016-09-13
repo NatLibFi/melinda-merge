@@ -100,3 +100,12 @@ export function createSessionSuccess(state, userinfo) {
     .set('userinfo', userinfo);
 }
 
+export function validateSessionStart(state) {
+  return state
+    .set('sessionState', 'VALIDATION_ONGOING');
+}
+
+export function setLocation(state, location) {
+  return state
+    .set('location', location);
+}

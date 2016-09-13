@@ -14,6 +14,7 @@ const app = express();
 app.use(expressWinston);
 app.use(cookieParser());
 
+
 app.get('/err', (req, res) => {
   const error = new Error('What a horrble error');
 
