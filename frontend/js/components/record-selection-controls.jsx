@@ -73,7 +73,7 @@ export class RecordSelectionControls extends React.Component {
       <div className="row row-margin-swap record-selection-controls">
       
         <div className="col s2 offset-s1 input-field">
-          <input id="source_record" type="tel" className="validate" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} />
+          <input id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} />
           <label htmlFor="source_record">Poistuva tietue</label>
         </div>
         <div className="col s2 control-swap-horizontal input-field">
@@ -85,7 +85,7 @@ export class RecordSelectionControls extends React.Component {
         </div>
 
         <div className="col s2 input-field">
-          <input id="target_record" type="tel" className="validate" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} />
+          <input id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} />
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
       
