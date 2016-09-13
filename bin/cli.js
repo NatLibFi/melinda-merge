@@ -34,6 +34,16 @@ if (command === 'get') {
   });
 }
 
+
+if (command === 'create') {
+
+  readRecordFromStdin()
+    .then(record => client.createRecord(record))
+    .then(printResponse)
+    .catch(printError);
+
+}
+
 if (command === 'update') {
 
   readRecordFromStdin()
@@ -50,7 +60,7 @@ if (command === 'set') {
       const updateRecordChangeMetadata = _.curry(setRecordChangeMetadata)(record);
 
       const recordId = getRecordId(record);
-      return client.loadRecord(recordId)
+      return client.loadRecord(recordId, {handle_deleted: 1})
         .then(getRecordChangeMetadata)
         .then(updateRecordChangeMetadata);
 
@@ -120,14 +130,14 @@ function printResponse(response) {
 }
 
 function printError(error) {
-  
+  console.log(error);
   console.log('Errors:');
-  error.errors.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
+  _.get(error, 'errors', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
   
   console.log('Triggers:');
-  error.triggers.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
+  _.get(error, 'triggers', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
   
   console.log('Warnings:');
-  error.warnings.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
+  _.get(error, 'warnings', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
   
 }
