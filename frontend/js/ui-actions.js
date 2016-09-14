@@ -379,9 +379,9 @@ export const fetchRecord = (function() {
               dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + response.status));
             }
        
-          }).catch((error) => {
+          }).catch(exceptCoreErrors((error) => {
             dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + error.message));
-          });
+          }));
 
       }
     };
