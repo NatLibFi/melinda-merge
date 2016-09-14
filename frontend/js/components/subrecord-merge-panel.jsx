@@ -1,13 +1,14 @@
 import React from 'react';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
-import { DraggableSubRecordPanel } from './subrecord-panel';
-import { DropTargetEmptySubRecordPanel } from './subrecord-empty-panel';
+import { DraggableSubRecordPanel } from './draggable-subrecord-panel';
+import { DropTargetEmptySubRecordPanel } from './droppable-subrecord-empty-panel';
 import _ from 'lodash';
 import { List } from 'immutable';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
+import compose from 'lodash/flowRight';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -128,9 +129,12 @@ function mapStateToProps(state) {
   };
 }
 
-export const SubrecordMergePanelContainer = connect(
-  mapStateToProps,
-  uiActionCreators
-)(SubrecordMergePanel);
+export const DraggableSubrecordMergePanelContainer = compose(
 
-export const DraggableSubrecordMergePanelContainer = DragDropContext(HTML5Backend)(SubrecordMergePanelContainer);
+  DragDropContext(HTML5Backend),
+
+  connect(
+    mapStateToProps,
+    uiActionCreators
+  )
+)(SubrecordMergePanel);
