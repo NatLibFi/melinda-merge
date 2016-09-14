@@ -40,24 +40,14 @@ export class SubrecordHeader extends React.Component {
             </div>
           </div>
         </div>
-        <div className="col s4">
-
-         
-        </div>
+        <div className="col s4" />
       </div>
-
     );
   }
 }
 
-function mapStateToProps(state) {
-  return {
-
-  };
-}
-
 export const SubrecordHeaderContainer = connect(
-  mapStateToProps,
+  null,
   uiActionCreators
 )(SubrecordHeader);
 

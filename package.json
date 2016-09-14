@@ -16,7 +16,7 @@
     "test:frontend:watch": "npm run test:frontend -- --watch",
     "test:server": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/tests/test_bootstrap.js \"./server/tests\"",
     "test:server:watch": "npm run test:server -- --watch",
-    "lint": "eslint .",
+    "lint": "eslint --ext .jsx,.js .",
     "dev": "node ./bin/clean.js && npm run watch",
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
