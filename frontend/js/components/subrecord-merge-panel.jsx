@@ -24,9 +24,7 @@ export class SubrecordMergePanel extends React.Component {
 
     if (record) {
       return (
-        <div className="card-panel darken-1 marc-record">
-          <DraggableSubRecordPanel record={record} type={type} rowIndex={rowIndex} />
-        </div>
+        <DraggableSubRecordPanel record={record} type={type} rowIndex={rowIndex} />
       );
     } else {
       return <DropTargetEmptySubRecordPanel type={type} rowIndex={rowIndex}/>;

@@ -3,12 +3,14 @@ import { ItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
+import classNames from 'classnames';
 
 export class EmptySubRecordPanel extends React.Component {
 
   static propTypes = {
     connectDropTarget: React.PropTypes.func.isRequired,
     isOver: React.PropTypes.bool.isRequired,
+    canDrop: React.PropTypes.bool.isRequired,
     type: React.PropTypes.string.isRequired,
     rowIndex: React.PropTypes.number.isRequired,
     changeSourceSubrecordRow: React.PropTypes.func.isRequired,
@@ -16,9 +18,16 @@ export class EmptySubRecordPanel extends React.Component {
   }
 
   render() {
-    const { connectDropTarget, isOver } = this.props;
+    const { connectDropTarget, isOver, canDrop} = this.props;
 
-    return connectDropTarget(<div className="empty-droppable" />);
+    const classes = classNames({
+      'empty-droppable': true,
+      'is-over': isOver,
+      'can-drop': canDrop,
+      'cannot-drop': !canDrop
+    });
+
+    return connectDropTarget(<div className={classes} />);
   }
 }
 
@@ -50,7 +59,9 @@ const emptySlotTarget = {
 function collect(connect, monitor) {
   return {
     connectDropTarget: connect.dropTarget(),
-    isOver: monitor.isOver()
+    isOver: monitor.isOver(),
+    canDrop: monitor.canDrop()
+ 
   };
 }
 

@@ -1,6 +1,7 @@
 import React from 'react';
 import { DragSource } from 'react-dnd';
 import { ItemTypes } from '../constants';
+import classNames from 'classnames';
 import '../../styles/components/subrecord-panel';
 
 export class SubRecordPanel extends React.Component {
@@ -28,9 +29,17 @@ export class SubRecordPanel extends React.Component {
       .filter(f => f.substr(0,3) === '245' || f.substr(0,3) === '337')
       .join('\n');
 
+    const classes = classNames({
+      'is-dragging': isDragging,
+      'card-panel': true,
+      'darken-1': true,
+      'marc-record': true
+    });
 
     return connectDragSource(
-      <div>{selectedFields}</div>
+      <div className={classes}>
+        <div>{selectedFields}</div>
+      </div>
     );
   }
 }
@@ -38,7 +47,6 @@ export class SubRecordPanel extends React.Component {
 const subrecordSource = {
   beginDrag(props) {
     const { type, rowIndex } = props;
-    console.log('beginDrag', type, rowIndex);
     return { type, rowIndex };
   }
 };
