@@ -76,8 +76,11 @@
     width: 100%;
     border: 0 !important;
     transition: background-color 150ms ease-in;
-    transition-delay: 300ms;
+    transition-delay: 0ms;
     z-index: 1;
+    &:hover {
+      transition-delay: 300ms;
+    }
   }
   .add-new-row:hover {
     cursor: pointer;
