@@ -136,3 +136,27 @@ function removeUndefined(index, arr) {
   return arr.splice(index, 1);
 }
 
+export function changeSourceSubrecordRow(state, fromRowIndex, toRowIndex) {
+  const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
+
+  return state.updateIn(['sourceRecord', 'subrecords'], swapper);
+}
+
+export function changeTargetSubrecordRow(state, fromRowIndex, toRowIndex) {
+  const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
+
+  return state.updateIn(['targetRecord', 'subrecords'], swapper);
+}
+
+function swapItems(fromRowIndex, toRowIndex, list) {
+  const from = list.get(fromRowIndex);
+  const to = list.get(toRowIndex);
+
+  if (from === undefined || to !== undefined) {
+    return list;
+  }
+
+  return list
+    .splice(fromRowIndex, 1, to)
+    .splice(toRowIndex, 1, from);
+}

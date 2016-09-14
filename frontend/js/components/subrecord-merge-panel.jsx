@@ -1,9 +1,13 @@
 import React from 'react';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
-import { SubRecordPanel } from './subrecord-panel';
+import { DraggableSubRecordPanel } from './subrecord-panel';
+import { DropTargetEmptySubRecordPanel } from './subrecord-empty-panel';
 import _ from 'lodash';
 import { List } from 'immutable';
+import { DragDropContext } from 'react-dnd';
+import HTML5Backend from 'react-dnd-html5-backend';
+import { ItemTypes } from '../constants';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -16,16 +20,16 @@ export class SubrecordMergePanel extends React.Component {
     removeSubrecordRow: React.PropTypes.func.isRequired
   }
 
-  renderSubrecordPanel(record) {
+  renderSubrecordPanel(record, type, rowIndex) {
 
     if (record) {
       return (
         <div className="card-panel darken-1 marc-record">
-          <SubRecordPanel record={record} />
+          <DraggableSubRecordPanel record={record} type={type} rowIndex={rowIndex} />
         </div>
       );
     } else {
-      return <div className="empty-droppable" />;
+      return <DropTargetEmptySubRecordPanel type={type} rowIndex={rowIndex}/>;
     }
   }
 
@@ -39,10 +43,10 @@ export class SubrecordMergePanel extends React.Component {
       return (
         <tr key={key}>
           <td>
-            {this.renderSubrecordPanel(sourceRecord)}
+            {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, i)}
           </td>
           <td>
-            {this.renderSubrecordPanel(targetRecord)}
+            {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, i)}
           </td>
           <td>
             { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergeActionButton() }
@@ -130,3 +134,5 @@ export const SubrecordMergePanelContainer = connect(
   mapStateToProps,
   uiActionCreators
 )(SubrecordMergePanel);
+
+export const DraggableSubrecordMergePanelContainer = DragDropContext(HTML5Backend)(SubrecordMergePanelContainer);

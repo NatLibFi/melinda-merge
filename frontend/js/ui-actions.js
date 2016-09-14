@@ -405,3 +405,15 @@ export const REMOVE_SUBRECORD_ROW = 'REMOVE_SUBRECORD_ROW';
 export function removeSubrecordRow(rowIndex) {
   return { 'type': REMOVE_SUBRECORD_ROW, rowIndex };
 }
+
+export const CHANGE_SOURCE_SUBRECORD_ROW = 'CHANGE_SOURCE_SUBRECORD_ROW';
+export const CHANGE_TARGET_SUBRECORD_ROW = 'CHANGE_TARGET_SUBRECORD_ROW';
+
+export function changeSourceSubrecordRow(fromRowIndex, toRowIndex) {
+  return { 'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+}
+
+export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
+  return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+}
+

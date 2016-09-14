@@ -1,6 +1,6 @@
 import {expect} from 'chai';
 import {loadSourceRecord, loadTargetRecord, setSourceRecord, setTargetRecord, 
-  setTargetRecordError, setSourceRecordError, insertSubrecordRow, removeSubrecordRow} from '../js/ui-reducers';
+  setTargetRecordError, setSourceRecordError, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow} from '../js/ui-reducers';
 import { INITIAL_STATE } from '../js/root-reducer';
 import MarcRecord from 'marc-record-js';
 
@@ -334,6 +334,47 @@ describe('ui reducers', () => {
         expect(targetSubrecords).to.eql([undefined, tsub1, undefined, tsub2, undefined]);
       });
       
+    });
+
+    describe('change row', function() {
+      let state;
+      beforeEach(() => {
+        state = setSourceRecord(INITIAL_STATE, testRecordObject, [undefined, ssub1, ssub2]);
+        state = setTargetRecord(state, otherTestRecordObject, [tsub1, undefined, tsub2]);
+      });
+
+      it('moves source subrecord at 1 to 0', () => {
+
+        state = changeSourceSubrecordRow(state, 1, 0);
+        const { sourceSubrecords } = subrecords(state);
+        expect(sourceSubrecords).to.eql([ssub1, undefined, ssub2]);
+
+      });
+
+      it('moves source subrecord at 2 to 0', () => {
+
+        state = changeSourceSubrecordRow(state, 2, 0);
+        const { sourceSubrecords } = subrecords(state);
+        expect(sourceSubrecords).to.eql([ssub2, ssub1, undefined]);
+
+      });
+
+      it('does nothing if trying to move subrecord to non-undefined index', () => {
+
+        state = changeSourceSubrecordRow(state, 2, 1);
+        const { sourceSubrecords } = subrecords(state);
+        expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
+
+      });
+
+      it('does nothing if trying to move undefined index', () => {
+
+        state = changeSourceSubrecordRow(state, 0, 1);
+        const { sourceSubrecords } = subrecords(state);
+        expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
+
+      });
+
     });
 
   });
