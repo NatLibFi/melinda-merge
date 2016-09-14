@@ -6,6 +6,7 @@ import _ from 'lodash';
 import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
+import { exceptCoreErrors } from './utils';
 
 export const RESET_STATE = 'RESET_STATE';
 export function resetState() {
@@ -296,9 +297,9 @@ export const startSession = (function() {
             
           }
 
-        }).catch((error) => {
+        }).catch(exceptCoreErrors((error) => {
           dispatch(createSessionError('There has been a problem with operation: ' + error.message));
-        });
+        }));
 
     };
 
@@ -346,9 +347,9 @@ export const fetchRecord = (function() {
               dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + response.status));
             }
        
-          }).catch((error) => {
+          }).catch(exceptCoreErrors((error) => {
             dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + error.message));
-          });
+          }));
 
       }
 
@@ -390,4 +391,17 @@ export const fetchRecord = (function() {
 
 if (__DEV__) {
   window.fetchRecord = fetchRecord;
+}
+
+
+export const INSERT_SUBRECORD_ROW = 'INSERT_SUBRECORD_ROW';
+
+export function insertSubrecordRow(rowIndex) {
+  return { 'type': INSERT_SUBRECORD_ROW, rowIndex };
+}
+
+export const REMOVE_SUBRECORD_ROW = 'REMOVE_SUBRECORD_ROW';
+
+export function removeSubrecordRow(rowIndex) {
+  return { 'type': REMOVE_SUBRECORD_ROW, rowIndex };
 }

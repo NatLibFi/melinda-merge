@@ -7,6 +7,7 @@ import { SubrecordComponent } from './subrecord-component';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
+import { List } from 'immutable';
 
 export class BaseComponent extends React.Component {
 
@@ -31,7 +32,6 @@ export class BaseComponent extends React.Component {
       </div>
     );
   }
-
 
   renderMainPanel() {
     return (
@@ -59,8 +59,8 @@ export class BaseComponent extends React.Component {
 
 function mapStateToProps(state) {
 
-  const sourceHasSubrecords = state.getIn(['sourceRecord', 'subrecords'], []).length > 0;
-  const targetHasSubrecords = state.getIn(['targetRecord', 'subrecords'], []).length > 0;
+  const sourceHasSubrecords = state.getIn(['sourceRecord', 'subrecords'], List()).size > 0;
+  const targetHasSubrecords = state.getIn(['targetRecord', 'subrecords'], List()).size > 0;
 
   const shouldRenderSubrecordComponent = sourceHasSubrecords || targetHasSubrecords;
 

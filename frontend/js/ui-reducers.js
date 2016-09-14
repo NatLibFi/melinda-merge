@@ -1,4 +1,5 @@
-import {Map} from 'immutable';
+import {List, Map} from 'immutable';
+import _ from 'lodash';
 
 const DEFAULT_MERGED_RECORD = Map({
   state: 'EMPTY'
@@ -23,7 +24,7 @@ export function setSourceRecord(state, record, subrecords) {
   return state
     .updateIn(['sourceRecord', 'state'], () => 'LOADED')
     .updateIn(['sourceRecord', 'record'], () => record)
-    .setIn(['sourceRecord', 'subrecords'], subrecords);
+    .setIn(['sourceRecord', 'subrecords'], List(subrecords));
 }
 
 export function setTargetRecord(state, record, subrecords) {
@@ -31,7 +32,7 @@ export function setTargetRecord(state, record, subrecords) {
   return state
     .updateIn(['targetRecord', 'state'], () => 'LOADED')
     .updateIn(['targetRecord', 'record'], () => record)
-    .setIn(['targetRecord', 'subrecords'], subrecords);
+    .setIn(['targetRecord', 'subrecords'], List(subrecords));
 }
 
 export function setMergedRecord(state, record) {
@@ -99,5 +100,39 @@ export function validateSessionStart(state) {
 export function setLocation(state, location) {
   return state
     .set('location', location);
+}
+
+
+export function insertSubrecordRow(state, rowIndex) {
+
+  const insertUndefinedAtRow = _.curry(insertUndefined)(rowIndex);
+ 
+  return state
+    .updateIn(['sourceRecord', 'subrecords'], insertUndefinedAtRow)
+    .updateIn(['targetRecord', 'subrecords'], insertUndefinedAtRow);
+
+}
+
+export function removeSubrecordRow(state, rowIndex) {
+  const removeUndefinedAtRow = _.curry(removeUndefined)(rowIndex);
+ 
+  return state
+    .updateIn(['sourceRecord', 'subrecords'], removeUndefinedAtRow)
+    .updateIn(['targetRecord', 'subrecords'], removeUndefinedAtRow);
+
+}
+
+function insertUndefined(index, arr) {
+  if (index > arr.size) {
+    return arr;
+  }
+  return arr.splice(index, 0, undefined);
+}
+
+function removeUndefined(index, arr) {
+  if (index > arr.size || arr.get(index) !== undefined) {
+    return arr;
+  }
+  return arr.splice(index, 1);
 }
 

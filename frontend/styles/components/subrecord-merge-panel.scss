@@ -39,7 +39,40 @@
   .merge-action-button {
     position: absolute; 
     top: calc(50% - 22px);
-    left: -18px  
+    left: -18px;
+  }
+
+  .remove-fab-emptyrow {
+    position: absolute; 
+    top:10px;
+    right: 10px;
+
+    opacity: 0.2;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .add-new-row {
+    margin-top: -8px;
+    height: 16px;
+    display: block;
+    position: absolute;
+    width: 100%;
+    border: 0 !important;
+    transition: background-color 150ms ease-in;
+    transition-delay: 300ms;
+    z-index: 1;
+  }
+  .add-new-row:hover {
+    cursor: pointer;
+    background-color: rgba(200,230,201,0.5);
+  }
+  .add-new-row td {
+    padding: 0;
+  }
+  td {
+    position: relative;
   }
 
 }

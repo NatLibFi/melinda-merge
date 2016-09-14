@@ -11,6 +11,11 @@ import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RE
 import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
 
+
+import {insertSubrecordRow, removeSubrecordRow} from './ui-reducers';
+import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW} from './ui-actions';
+
+
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
     state: 'EMPTY'
@@ -64,6 +69,10 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setMergedRecordError(state, action.error);
   case SET_MERGED_RECORD:
     return setMergedRecord(state, action.record);
+  case INSERT_SUBRECORD_ROW:
+    return insertSubrecordRow(state, action.rowIndex);
+  case REMOVE_SUBRECORD_ROW:
+    return removeSubrecordRow(state, action.rowIndex);
   }
   
   return state;
