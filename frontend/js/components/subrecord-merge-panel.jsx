@@ -9,6 +9,7 @@ import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
 import compose from 'lodash/flowRight';
+import { SubrecordActionButtonContainer } from './subrecord-action-button';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -48,7 +49,7 @@ export class SubrecordMergePanel extends React.Component {
             {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, i)}
           </td>
           <td>
-            { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergeActionButton() }
+            { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergeActionButton(i) }
           </td>
 
         </tr>
@@ -64,12 +65,8 @@ export class SubrecordMergePanel extends React.Component {
 
   }
 
-  renderMergeActionButton() {
-    return (
-      <a className="btn-floating btn-small waves-effect waves-light yellow merge-action-button">
-        <i className="material-icons">more_vert</i>
-      </a>
-    );
+  renderMergeActionButton(rowIndex) {
+    return <SubrecordActionButtonContainer rowIndex={rowIndex} />;
   }
 
   renderRemoveRowButton(rowIndex) {

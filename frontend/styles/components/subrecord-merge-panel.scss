@@ -82,15 +82,43 @@
       transition-delay: 300ms;
     }
   }
+
   .add-new-row:hover {
     cursor: pointer;
     background-color: rgba(200,230,201,0.5);
   }
+
   .add-new-row td {
     padding: 0;
   }
+
   td {
     position: relative;
+  }
+
+  .subrecord-action-button-container {
+      
+    position: absolute; 
+    top: 50%;
+    transform: translateY(-50%);
+    left: -18px; 
+
+    &.fixed-action-btn > ul.open-left {
+      text-align: left;
+      right: auto;
+      left: 50px;
+    }
+    &.fixed-action-btn.horizontal {
+      padding: 0;
+    }
+
+    ul.open-left > li {
+      margin: 0px 10px 0 0;
+    }
+
+    .subrecord-action-button {
+      margin: 0px 10px 0 0;
+    }
   }
 
 }

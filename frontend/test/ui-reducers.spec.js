@@ -1,8 +1,10 @@
 import {expect} from 'chai';
 import {loadSourceRecord, loadTargetRecord, setSourceRecord, setTargetRecord, 
-  setTargetRecordError, setSourceRecordError, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow} from '../js/ui-reducers';
+  setTargetRecordError, setSourceRecordError, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, setSubrecordAction} from '../js/ui-reducers';
 import { INITIAL_STATE } from '../js/root-reducer';
 import MarcRecord from 'marc-record-js';
+import { SubrecordActionTypes } from '../js/constants';
+import { List } from 'immutable';
 
 describe('ui reducers', () => {
 
@@ -373,6 +375,27 @@ describe('ui reducers', () => {
         const { sourceSubrecords } = subrecords(state);
         expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
 
+      });
+
+    });
+
+    describe('set subrecord action', function() {
+      let state;
+      beforeEach(() => {
+        state = setSourceRecord(INITIAL_STATE, testRecordObject, [ssub1, ssub2]);
+        state = setTargetRecord(state, otherTestRecordObject, [tsub1, tsub2]);
+      });
+
+      it('sets the action', () => {
+        state = setSubrecordAction(state, 0, SubrecordActionTypes.MERGE);
+        const selectedActions = state.get('subrecordActions').toJS();
+        expect(selectedActions).to.eql([SubrecordActionTypes.MERGE]);
+      });
+
+      it('sets the action to correct position', () => {
+        state = setSubrecordAction(state, 1, SubrecordActionTypes.MERGE);
+        const selectedActions = state.get('subrecordActions').toJS();
+        expect(selectedActions).to.eql([undefined, SubrecordActionTypes.MERGE]);
       });
 
     });

@@ -417,3 +417,10 @@ export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
   return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
 }
 
+export const SET_SUBRECORD_ACTION = 'SET_SUBRECORD_ACTION';
+
+export function setSubrecordAction(rowIndex, actionType) {
+  return { 'type': SET_SUBRECORD_ACTION, rowIndex, actionType };
+}
+
+

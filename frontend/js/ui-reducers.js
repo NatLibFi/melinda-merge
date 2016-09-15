@@ -126,14 +126,14 @@ function insertUndefined(index, arr) {
   if (index > arr.size) {
     return arr;
   }
-  return arr.splice(index, 0, undefined);
+  return arr.insert(index, undefined);
 }
 
 function removeUndefined(index, arr) {
   if (index > arr.size || arr.get(index) !== undefined) {
     return arr;
   }
-  return arr.splice(index, 1);
+  return arr.remove(index, 1);
 }
 
 export function changeSourceSubrecordRow(state, fromRowIndex, toRowIndex) {
@@ -157,6 +157,12 @@ function swapItems(fromRowIndex, toRowIndex, list) {
   }
 
   return list
-    .splice(fromRowIndex, 1, to)
-    .splice(toRowIndex, 1, from);
+    .set(fromRowIndex, to)
+    .set(toRowIndex, from);
+}
+
+export function setSubrecordAction(state, rowIndex, actionType) {
+  return state.updateIn(['subrecordActions'], actionList => {
+    return actionList.set(rowIndex, actionType);
+  });
 }
