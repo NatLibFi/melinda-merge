@@ -7,6 +7,7 @@ import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
+import { SubrecordActionTypes } from './constants';
 
 export const RESET_STATE = 'RESET_STATE';
 export function resetState() {
@@ -153,6 +154,7 @@ export function updateMergedRecord() {
     }
   };
 }
+
 
 
 export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';
@@ -423,4 +425,65 @@ export function setSubrecordAction(rowIndex, actionType) {
   return { 'type': SET_SUBRECORD_ACTION, rowIndex, actionType };
 }
 
+export function changeSubrecordAction(rowIndex, actionType) {
+  return function(dispatch, getState) {
+    dispatch(setSubrecordAction(rowIndex, actionType));
+    dispatch(updateMergedSubrecord(rowIndex));
+  };
+}
 
+export function updateMergedSubrecord(rowIndex) {
+
+  return function(dispatch, getState) {
+
+    const selectedActionType = getState().get('subrecordActions').get(rowIndex);
+
+    const preferredRecord = getState().getIn(['targetRecord', 'subrecords']).get(rowIndex);
+    const otherRecord = getState().getIn(['sourceRecord', 'subrecords']).get(rowIndex);
+
+    if (selectedActionType === SubrecordActionTypes.COPY) {
+      if (preferredRecord && otherRecord) {
+        throw new Error('Cannot copy both records');
+      }
+      
+      const recordToCopy = preferredRecord || otherRecord;
+      return dispatch(setMergedSubrecord(rowIndex, recordToCopy));
+
+    }
+
+    if (selectedActionType === SubrecordActionTypes.BLOCK) {
+      return dispatch(setMergedSubrecord(rowIndex, undefined));
+    }
+
+    if (selectedActionType === SubrecordActionTypes.MERGE) {
+      if (preferredRecord && otherRecord) {
+
+        const merge = createRecordMerger(mergeConfiguration);
+
+        try {
+          const mergedRecord = merge(preferredRecord, otherRecord);
+          dispatch(setMergedSubrecord(rowIndex, mergedRecord));
+        } catch(e) {
+          dispatch(setMergedSubrecordError(rowIndex, e));
+        }
+        
+
+      } else {
+        dispatch(setMergedSubrecordError(rowIndex, new Error('Cannot merge undefined records')));
+      }
+    }
+
+  };
+}
+
+export const SET_MERGED_SUBRECORD = 'SET_MERGED_SUBRECORD';
+
+export function setMergedSubrecord(rowIndex, record) {
+  return { 'type': SET_MERGED_SUBRECORD, rowIndex, record };
+}
+
+export const SET_MERGED_SUBRECORD_ERROR = 'SET_MERGED_SUBRECORD_ERROR';
+
+export function setMergedSubrecordError(rowIndex, error) {
+  return { 'type': SET_MERGED_SUBRECORD_ERROR, rowIndex, error };
+}

@@ -2,7 +2,9 @@ import {List, Map} from 'immutable';
 import _ from 'lodash';
 
 const DEFAULT_MERGED_RECORD = Map({
-  state: 'EMPTY'
+  state: 'EMPTY',
+  subrecords: List(),
+  subrecordErrors: List()
 });
 
 export function loadSourceRecord(state, recordId) {
@@ -164,5 +166,17 @@ function swapItems(fromRowIndex, toRowIndex, list) {
 export function setSubrecordAction(state, rowIndex, actionType) {
   return state.updateIn(['subrecordActions'], actionList => {
     return actionList.set(rowIndex, actionType);
+  });
+}
+
+export function setMergedSubrecord(state, rowIndex, record) {
+  return state.updateIn(['mergedRecord', 'subrecords'], subrecordList => {
+    return subrecordList.set(rowIndex, record);
+  });
+}
+
+export function setMergedSubrecordError(state, rowIndex, error) {
+  return state.updateIn(['mergedRecord', 'subrecordErrors'], errorsList => {
+    return errorsList.set(rowIndex, error);
   });
 }

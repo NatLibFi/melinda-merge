@@ -12,8 +12,10 @@ import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-red
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
 
 
-import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, setSubrecordAction} from './ui-reducers';
-import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, SET_SUBRECORD_ACTION} from './ui-actions';
+import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
+  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError} from './ui-reducers';
+import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
+  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR} from './ui-actions';
 
 
 export const INITIAL_STATE = fromJS({
@@ -24,7 +26,9 @@ export const INITIAL_STATE = fromJS({
     state: 'EMPTY'
   },
   mergedRecord: {
-    state: 'EMPTY'
+    state: 'EMPTY',
+    subrecords: [],
+    subrecordErrors: []
   },
   sessionState: 'NO_SESSION',
   subrecordActions: []
@@ -80,6 +84,10 @@ export default function reducer(state = INITIAL_STATE, action) {
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   case SET_SUBRECORD_ACTION:
     return setSubrecordAction(state, action.rowIndex, action.actionType);
+  case SET_MERGED_SUBRECORD:
+    return setMergedSubrecord(state, action.rowIndex, action.record);
+  case SET_MERGED_SUBRECORD_ERROR:
+    return setMergedSubrecordError(state, action.rowIndex, action.error);
   }
   
   return state;
