@@ -21,15 +21,16 @@
       }
     }
   }
- 
+  
 
-  .to-remove td:nth-child(1) {
+  .to-remove-source td:nth-child(1) {
     background-image: url("../../images/to-remove-start.svg");
   }
-  .to-remove td:nth-child(2) {
+  .to-remove-source td:nth-child(2) {
     background-image: url("../../images/to-remove.svg");
   }
-  .to-remove td:nth-child(3) {
+  .to-remove-source td:nth-child(3),
+  .to-remove-target td:nth-child(3) {
     background-image: url("../../images/to-remove-end.svg");
   }
 
@@ -49,6 +50,7 @@
 
   td {
     position: relative;
+    transition: background-image 0.2s ease-in-out;
   }
 
   .merge-action-button {
@@ -101,15 +103,23 @@
     position: absolute; 
     top: 50%;
     transform: translateY(-50%);
-    left: -18px; 
+    left: -18px;
+    padding-bottom: 2px;
 
     &.fixed-action-btn > ul.open-left {
-      text-align: left;
+      bottom: auto;
+      height: auto;
+      position: relative;
       right: auto;
-      left: 50px;
+      text-align: left;
+      top: initial;
+      transform: initial;
     }
     &.fixed-action-btn.horizontal {
       padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: left;
     }
 
     ul.open-left > li {

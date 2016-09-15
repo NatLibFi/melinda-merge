@@ -16,8 +16,8 @@ export class NavBar extends React.Component {
       constrain_width: false, // Does not change width of dropdown to that of the activator
       hover: false, // Activate on hover
       gutter: 0, // Spacing from edge
-      belowOrigin: true, // Displays dropdown below the button
-      alignment: 'right' // Displays dropdown with edge aligned to the left of button
+      belowOrigin: true,
+      alignment: 'right'
     });
 
   }
@@ -31,7 +31,7 @@ export class NavBar extends React.Component {
             <ul id="nav" className="right">
             
               <li><a className="waves-effect waves-light btn" href="#">Yhdistä</a></li>
-              <li><a className="dropdown-button dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">more_vert</i></a></li>
+              <li><a className="dropdown-button dropdown-button-menu" data-activates="mainmenu"><i className="material-icons">more_vert</i></a></li>
             </ul>
 
           </div>

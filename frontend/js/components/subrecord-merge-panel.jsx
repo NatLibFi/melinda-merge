@@ -11,6 +11,9 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
 import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
+import classNames from 'classnames';
+import { SubrecordActionTypes } from '../constants';
+
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -20,6 +23,7 @@ export class SubrecordMergePanel extends React.Component {
     sourceSubrecords: React.PropTypes.array.isRequired,
     targetSubrecords: React.PropTypes.array.isRequired,
     mergedSubrecords: React.PropTypes.array.isRequired,
+    selectedActions: React.PropTypes.array.isRequired,
     insertSubrecordRow: React.PropTypes.func.isRequired,
     removeSubrecordRow: React.PropTypes.func.isRequired
   }
@@ -49,18 +53,25 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   renderSubrecordList() {
-    const { sourceSubrecords, targetSubrecords, mergedSubrecords} = this.props;
+    const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions} = this.props;
 
-    const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords).map(([sourceRecord, targetRecord, mergedRecord], i) => {
+    const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions).map(([sourceRecord, targetRecord, mergedRecord, selectedAction], i) => {
      
       const key = createKey(sourceRecord, targetRecord, i);
       const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
       const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
       const isCopyActionAvailable = !isMergeActionAvailable && !isEmptyRow;
+
+      const rowClasses = classNames({
+        'to-merge': selectedAction === SubrecordActionTypes.MERGE,
+        'to-result': selectedAction === SubrecordActionTypes.COPY && sourceRecord !== undefined,
+        'to-remove-source': selectedAction === SubrecordActionTypes.BLOCK && sourceRecord !== undefined,
+        'to-remove-target': selectedAction === SubrecordActionTypes.BLOCK && targetRecord !== undefined
+      });
       
 
       return (
-        <tr key={key}>
+        <tr key={key} className={rowClasses}>
           <td>
             {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, i)}
           </td>
@@ -68,7 +79,7 @@ export class SubrecordMergePanel extends React.Component {
             {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, i)}
           </td>
           <td>
-           { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergedSubrecordPanel(mergedRecord, i, {isMergeActionAvailable, isCopyActionAvailable}) }
+           { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergedSubrecordPanel(mergedRecord, i, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
           </td>
 
         </tr>
@@ -146,7 +157,8 @@ function mapStateToProps(state) {
   return {
     sourceSubrecords: state.getIn(['sourceRecord', 'subrecords'], List()).toJS(),
     targetSubrecords: state.getIn(['targetRecord', 'subrecords'], List()).toJS(),
-    mergedSubrecords: state.getIn(['mergedRecord', 'subrecords'], List()).toJS()
+    mergedSubrecords: state.getIn(['mergedRecord', 'subrecords'], List()).toJS(),
+    selectedActions: state.getIn(['subrecordActions'], List()).toJS()
   };
 }
 

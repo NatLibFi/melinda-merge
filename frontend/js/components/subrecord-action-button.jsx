@@ -3,14 +3,13 @@ import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import { SubrecordActionTypes } from '../constants';
 import classNames from 'classnames';
-import { List } from 'immutable';
 
 export class SubrecordActionButton extends React.Component {
 
   static propTypes = {
     rowIndex: React.PropTypes.number.isRequired,
     changeSubrecordAction: React.PropTypes.func.isRequired,
-    selectedActions: React.PropTypes.instanceOf(List),
+    selectedAction: React.PropTypes.string,
     isMergeActionAvailable: React.PropTypes.bool,
     isCopyActionAvailable: React.PropTypes.bool
   } 
@@ -44,17 +43,15 @@ export class SubrecordActionButton extends React.Component {
 
   render() {
 
-    const {rowIndex, isMergeActionAvailable, isCopyActionAvailable} = this.props;
+    const {isMergeActionAvailable, isCopyActionAvailable, selectedAction} = this.props;
 
-    const selectedActionType = this.props.selectedActions.get(rowIndex);
-
-    const color = this.getColor(selectedActionType);
+    const color = this.getColor(selectedAction);
     const selectedIconClasses = classNames('btn-floating', 'btn-small', 'waves-effect', 'waves-light', 'subrecord-action-button', color);
 
     return (
         <div className="fixed-action-btn click-to-toggle horizontal subrecord-action-button-container" ref={(c) => this._button = c}>
           <a className={selectedIconClasses}>
-            <i className="large material-icons">{this.getIcon(selectedActionType)}</i>
+            <i className="large material-icons">{this.getIcon(selectedAction)}</i>
           </a>
           <ul className="open-left">
             <li><a onClick={this.selectAction(SubrecordActionTypes.BLOCK)} className="btn-floating red"><i className="material-icons">block</i></a></li>
@@ -67,14 +64,7 @@ export class SubrecordActionButton extends React.Component {
 
 }
 
-function mapStateToProps(state) {
-  return {
-    selectedActions: state.getIn(['subrecordActions'])
-  };
-}
-
-
 export const SubrecordActionButtonContainer = connect(
-  mapStateToProps,
+  null,
   uiActionCreators
 )(SubrecordActionButton);

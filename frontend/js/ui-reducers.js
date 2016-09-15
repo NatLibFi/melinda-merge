@@ -41,7 +41,10 @@ export function setMergedRecord(state, record) {
 
   return state
     .updateIn(['mergedRecord', 'state'], () => 'LOADED')
-    .updateIn(['mergedRecord', 'record'], () => record);
+    .updateIn(['mergedRecord', 'record'], () => record)
+    .updateIn(['mergedRecord', 'subrecords'], () => List())
+    .updateIn(['subrecordActions'], () => List());
+
 }
 
 export function clearMergedRecord(state) {
