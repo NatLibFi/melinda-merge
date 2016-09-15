@@ -3,13 +3,14 @@ import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import { SubrecordActionTypes } from '../constants';
 import classNames from 'classnames';
+import { List } from 'immutable';
 
 export class SubrecordActionButton extends React.Component {
 
   static propTypes = {
     rowIndex: React.PropTypes.number.isRequired,
     changeSubrecordAction: React.PropTypes.func.isRequired,
-    selectedActions: React.PropTypes.array.isRequired
+    selectedActions: React.PropTypes.instanceOf(List)
   } 
 
   componentDidUpdate() {

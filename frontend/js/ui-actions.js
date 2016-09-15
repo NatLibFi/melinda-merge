@@ -426,7 +426,7 @@ export function setSubrecordAction(rowIndex, actionType) {
 }
 
 export function changeSubrecordAction(rowIndex, actionType) {
-  return function(dispatch, getState) {
+  return function(dispatch) {
     dispatch(setSubrecordAction(rowIndex, actionType));
     dispatch(updateMergedSubrecord(rowIndex));
   };

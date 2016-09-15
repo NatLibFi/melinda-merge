@@ -5,10 +5,8 @@ import '../../styles/components/subrecord-panel';
 export class SubRecordPanel extends React.Component {
 
   static propTypes = {
-    type: React.PropTypes.string.isRequired,
     record: React.PropTypes.object.isRequired,
-    rowIndex: React.PropTypes.number.isRequired,
-    isDragging: React.PropTypes.bool.isRequired
+    isDragging: React.PropTypes.bool
   }
 
   render() {

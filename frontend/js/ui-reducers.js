@@ -111,17 +111,35 @@ export function insertSubrecordRow(state, rowIndex) {
  
   return state
     .updateIn(['sourceRecord', 'subrecords'], insertUndefinedAtRow)
-    .updateIn(['targetRecord', 'subrecords'], insertUndefinedAtRow);
+    .updateIn(['targetRecord', 'subrecords'], insertUndefinedAtRow)
+    .updateIn(['mergedRecord', 'subrecords'], insertUndefinedAtRow)
+    .updateIn(['subrecordActions'], insertUndefinedAtRow);
 
 }
 
 export function removeSubrecordRow(state, rowIndex) {
   const removeUndefinedAtRow = _.curry(removeUndefined)(rowIndex);
+
+  const {sourceSubrecords, targetSubrecords} = getSubrecordLists(state);
+  if (sourceSubrecords.get(rowIndex) !== undefined || targetSubrecords.get(rowIndex) !== undefined) {
+    return state;
+  }
  
   return state
     .updateIn(['sourceRecord', 'subrecords'], removeUndefinedAtRow)
-    .updateIn(['targetRecord', 'subrecords'], removeUndefinedAtRow);
+    .updateIn(['targetRecord', 'subrecords'], removeUndefinedAtRow)
+    .updateIn(['mergedRecord', 'subrecords'], removeUndefinedAtRow)
+    .updateIn(['subrecordActions'], removeUndefinedAtRow);
+}
 
+function getSubrecordLists(state) {
+
+  const sourceSubrecords = state.getIn(['sourceRecord', 'subrecords']);
+  const targetSubrecords = state.getIn(['targetRecord', 'subrecords']);
+  const mergedSubrecords = state.getIn(['mergedRecord', 'subrecords']);
+ 
+  return {sourceSubrecords, targetSubrecords, mergedSubrecords};
+   
 }
 
 function insertUndefined(index, arr) {
@@ -140,14 +158,26 @@ function removeUndefined(index, arr) {
 
 export function changeSourceSubrecordRow(state, fromRowIndex, toRowIndex) {
   const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
+  const resetRows = _.partial(resetListIndices, [fromRowIndex, toRowIndex]);
 
-  return state.updateIn(['sourceRecord', 'subrecords'], swapper);
+  return state
+    .updateIn(['sourceRecord', 'subrecords'], swapper)
+    .updateIn(['mergedRecord', 'subrecords'], resetRows)
+    .updateIn(['subrecordActions'], resetRows);
 }
 
 export function changeTargetSubrecordRow(state, fromRowIndex, toRowIndex) {
   const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
+  const resetRows = _.partial(resetListIndices, [fromRowIndex, toRowIndex]);
 
-  return state.updateIn(['targetRecord', 'subrecords'], swapper);
+  return state
+    .updateIn(['targetRecord', 'subrecords'], swapper)
+    .updateIn(['mergedRecord', 'subrecords'], resetRows)
+    .updateIn(['subrecordActions'], resetRows);
+}
+
+function resetListIndices(rowIndexArr, list) {
+  return rowIndexArr.reduce((acc, index) => acc.set(index, undefined), list);
 }
 
 function swapItems(fromRowIndex, toRowIndex, list) {
