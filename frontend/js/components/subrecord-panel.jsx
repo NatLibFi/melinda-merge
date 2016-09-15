@@ -17,7 +17,7 @@ export class SubRecordPanel extends React.Component {
 
     const selectedFields = recordString
       .split('\n')
-      .filter(f => f.substr(0,3) === '245' || f.substr(0,3) === '337')
+      .filter(f => f.substr(0,3) === '245' || f.substr(0,3) === '336')
       .join('\n');
 
     const classes = classNames({
