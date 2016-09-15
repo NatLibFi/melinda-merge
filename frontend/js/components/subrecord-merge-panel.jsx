@@ -35,16 +35,16 @@ export class SubrecordMergePanel extends React.Component {
     }
   }
 
-  renderMergedSubrecordPanel(mergedSubrecord, rowIndex) {
+  renderMergedSubrecordPanel(mergedSubrecord, rowIndex, opts) {
     if (mergedSubrecord) {
       return (
         <div>
-          <SubrecordActionButtonContainer rowIndex={rowIndex} />
+          <SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />
           <SubRecordPanel record={mergedSubrecord} />
         </div>
       );
     } else {
-      return (<SubrecordActionButtonContainer rowIndex={rowIndex} />);
+      return (<SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />);
     }
   }
 
@@ -55,6 +55,8 @@ export class SubrecordMergePanel extends React.Component {
      
       const key = createKey(sourceRecord, targetRecord, i);
       const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
+      const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
+      const isCopyActionAvailable = !isMergeActionAvailable && !isEmptyRow;
       
 
       return (
@@ -66,7 +68,7 @@ export class SubrecordMergePanel extends React.Component {
             {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, i)}
           </td>
           <td>
-           { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergedSubrecordPanel(mergedRecord, i) }
+           { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergedSubrecordPanel(mergedRecord, i, {isMergeActionAvailable, isCopyActionAvailable}) }
           </td>
 
         </tr>

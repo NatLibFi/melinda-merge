@@ -10,7 +10,9 @@ export class SubrecordActionButton extends React.Component {
   static propTypes = {
     rowIndex: React.PropTypes.number.isRequired,
     changeSubrecordAction: React.PropTypes.func.isRequired,
-    selectedActions: React.PropTypes.instanceOf(List)
+    selectedActions: React.PropTypes.instanceOf(List),
+    isMergeActionAvailable: React.PropTypes.bool,
+    isCopyActionAvailable: React.PropTypes.bool
   } 
 
   componentDidUpdate() {
@@ -42,7 +44,9 @@ export class SubrecordActionButton extends React.Component {
 
   render() {
 
-    const selectedActionType = this.props.selectedActions.get(this.props.rowIndex);
+    const {rowIndex, isMergeActionAvailable, isCopyActionAvailable} = this.props;
+
+    const selectedActionType = this.props.selectedActions.get(rowIndex);
 
     const color = this.getColor(selectedActionType);
     const selectedIconClasses = classNames('btn-floating', 'btn-small', 'waves-effect', 'waves-light', 'subrecord-action-button', color);
@@ -54,8 +58,8 @@ export class SubrecordActionButton extends React.Component {
           </a>
           <ul className="open-left">
             <li><a onClick={this.selectAction(SubrecordActionTypes.BLOCK)} className="btn-floating red"><i className="material-icons">block</i></a></li>
-            <li><a onClick={this.selectAction(SubrecordActionTypes.MERGE)} className="btn-floating green"><i className="material-icons">queue</i></a></li>
-            <li><a onClick={this.selectAction(SubrecordActionTypes.COPY)} className="btn-floating blue"><i className="material-icons">forward</i></a></li>
+            { !isMergeActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.MERGE)} className="btn-floating green"><i className="material-icons">queue</i></a></li>}
+            { !isCopyActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.COPY)} className="btn-floating blue"><i className="material-icons">forward</i></a></li>}
           </ul>
         </div>
       );
