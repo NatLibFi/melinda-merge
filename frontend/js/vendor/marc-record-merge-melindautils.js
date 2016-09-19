@@ -178,7 +178,7 @@
 
       });
 
-
+      /*
       var o300a = selectValue(otherRecord, '300', 'a');
       var p300a = selectValue(preferredRecord, '300', 'a');
 
@@ -203,6 +203,7 @@
           }
         }
       }
+      */
 
 
       // Do not check if the db is not configured

@@ -1,0 +1,96 @@
+
+.subrecord-merge-panel {
+
+  table-layout: fixed;
+
+  .empty-droppable {
+    height: 110px;
+    border: 2px dashed #CCC;
+    border-radius: 5px;
+
+    &.can-drop {
+      border-color: #c8e6c9;
+      &.is-over {
+        border-color: #66bb6a;
+      }
+    }
+
+    &.cannot-drop {
+      &.is-over {
+        border-color: #ef5350;
+      }
+    }
+  }
+ 
+
+  .to-remove td:nth-child(1) {
+    background-image: url("../../images/to-remove-start.svg");
+  }
+  .to-remove td:nth-child(2) {
+    background-image: url("../../images/to-remove.svg");
+  }
+  .to-remove td:nth-child(3) {
+    background-image: url("../../images/to-remove-end.svg");
+  }
+
+  .to-result td:nth-child(1) {
+    background-image: url("../../images/to-merged-start.svg");
+  }
+  .to-result td:nth-child(2) {
+    background-image: url("../../images/to-merged.svg");
+  }
+
+  .to-merge td:nth-child(1) {
+    background-image: url("../../images/line-start-green.svg");
+  }
+  .to-merge td:nth-child(2) {
+    background-image: url("../../images/line-middle-green.svg");
+  }
+
+  td {
+    position: relative;
+  }
+
+  .merge-action-button {
+    position: absolute; 
+    top: calc(50% - 22px);
+    left: -18px;
+  }
+
+  .remove-fab-emptyrow {
+    position: absolute; 
+    top:10px;
+    right: 10px;
+
+    opacity: 0.2;
+    &:hover {
+      opacity: 0.8;
+    }
+  }
+
+  .add-new-row {
+    margin-top: -8px;
+    height: 16px;
+    display: block;
+    position: absolute;
+    width: 100%;
+    border: 0 !important;
+    transition: background-color 150ms ease-in;
+    transition-delay: 0ms;
+    z-index: 1;
+    &:hover {
+      transition-delay: 300ms;
+    }
+  }
+  .add-new-row:hover {
+    cursor: pointer;
+    background-color: rgba(200,230,201,0.5);
+  }
+  .add-new-row td {
+    padding: 0;
+  }
+  td {
+    position: relative;
+  }
+
+}

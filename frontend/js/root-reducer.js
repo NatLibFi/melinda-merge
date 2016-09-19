@@ -13,6 +13,9 @@ import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from '.
 import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
 import {setMergeStatus} from './ui-reducers';
 
+import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow} from './ui-reducers';
+import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW} from './ui-actions';
+
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
     state: 'EMPTY'
@@ -35,11 +38,11 @@ export default function reducer(state = INITIAL_STATE, action) {
   case LOAD_SOURCE_RECORD:
     return loadSourceRecord(state, action.id);
   case SET_SOURCE_RECORD:
-    return setSourceRecord(state, action.record);
+    return setSourceRecord(state, action.record, action.subrecords);
   case LOAD_TARGET_RECORD:
     return loadTargetRecord(state, action.id);
   case SET_TARGET_RECORD:
-    return setTargetRecord(state, action.record);
+    return setTargetRecord(state, action.record, action.subrecords);
   case SET_SOURCE_RECORD_ERROR:
     return loadTargetRecordError(state, action.error);
   case SET_TARGET_RECORD_ERROR:
@@ -69,9 +72,17 @@ export default function reducer(state = INITIAL_STATE, action) {
   case COMMIT_MERGE_START:
     return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
   case COMMIT_MERGE_ERROR:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.message});
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
   case COMMIT_MERGE_SUCCESS:
     return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
+  case INSERT_SUBRECORD_ROW:
+    return insertSubrecordRow(state, action.rowIndex);
+  case REMOVE_SUBRECORD_ROW:
+    return removeSubrecordRow(state, action.rowIndex);
+  case CHANGE_SOURCE_SUBRECORD_ROW:
+    return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+  case CHANGE_TARGET_SUBRECORD_ROW:
+    return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   }
 
   return state;

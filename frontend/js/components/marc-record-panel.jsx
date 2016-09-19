@@ -7,10 +7,6 @@ export class MarcRecordPanel extends React.Component {
     record: React.PropTypes.string.isRequired
   }
 
-  constructor() {
-    super();
-  }
-
   render() {
     return (
       <div>{this.props.record}</div>
