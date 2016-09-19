@@ -10,14 +10,13 @@ import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RE
 import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
 
+import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
+import {setMergeStatus} from './ui-reducers';
 
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
   setSubrecordAction, setMergedSubrecord, setMergedSubrecordError} from './ui-reducers';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR} from './ui-actions';
-
-import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
-import {setMergeStatus} from './ui-reducers';
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
