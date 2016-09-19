@@ -3,14 +3,17 @@ import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
+import { SubrecordComponent } from './subrecord-component';
 import { SigninFormPanelContainer } from './signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
+import { List } from 'immutable';
 
 export class BaseComponent extends React.Component {
 
   static propTypes = {
-    sessionState: React.PropTypes.string.isRequired
+    sessionState: React.PropTypes.string.isRequired,
+    shouldRenderSubrecordComponent: React.PropTypes.bool.isRequired
   }
 
   renderValidationIndicator() {
@@ -21,12 +24,22 @@ export class BaseComponent extends React.Component {
     return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer />;
   }
 
+  renderSubrecordComponent() {
+    return (
+      <div>
+        <div className='divider' />
+        <SubrecordComponent />
+      </div>
+    );
+  }
+
   renderMainPanel() {
     return (
       <div>
         <NavBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
+        { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
       </div>
     );
   }
@@ -45,8 +58,15 @@ export class BaseComponent extends React.Component {
 }
 
 function mapStateToProps(state) {
+
+  const sourceHasSubrecords = state.getIn(['sourceRecord', 'subrecords'], List()).size > 0;
+  const targetHasSubrecords = state.getIn(['targetRecord', 'subrecords'], List()).size > 0;
+
+  const shouldRenderSubrecordComponent = sourceHasSubrecords || targetHasSubrecords;
+
   return {
     sessionState: state.get('sessionState'),
+    shouldRenderSubrecordComponent
   };
 }
 

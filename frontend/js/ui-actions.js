@@ -6,6 +6,7 @@ import _ from 'lodash';
 import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
+import { exceptCoreErrors } from './utils';
 
 export const RESET_STATE = 'RESET_STATE';
 export function resetState() {
@@ -59,10 +60,11 @@ export function loadSourceRecord(recordId) {
 
 export const SET_SOURCE_RECORD = 'SET_SOURCE_RECORD';
 
-export function setSourceRecord(record) {
+export function setSourceRecord(record, subrecords) {
   return {
     'type': SET_SOURCE_RECORD,
-    'record': record
+    'record': record,
+    'subrecords': subrecords
   };
 }
 
@@ -77,10 +79,11 @@ export function loadTargetRecord(recordId) {
 
 export const SET_TARGET_RECORD = 'SET_TARGET_RECORD';
 
-export function setTargetRecord(record) {
+export function setTargetRecord(record, subrecords) {
   return {
     'type': SET_TARGET_RECORD,
-    'record': record
+    'record': record,
+    'subrecords': subrecords
   };
 }
 
@@ -146,7 +149,6 @@ export function updateMergedRecord() {
         .catch(error => {
           dispatch(setMergedRecordError(error.message));
         }).done();
-
 
     }
   };
@@ -295,9 +297,9 @@ export const startSession = (function() {
             
           }
 
-        }).catch((error) => {
+        }).catch(exceptCoreErrors((error) => {
           dispatch(createSessionError('There has been a problem with operation: ' + error.message));
-        });
+        }));
 
     };
 
@@ -331,8 +333,13 @@ export const fetchRecord = (function() {
               return response.json().then(json => {
                 
                 if (currentSourceRecordId === recordId) {
-                  const marcRecord = new MARCRecord(json);
-                  dispatch(setSourceRecord(marcRecord));
+                  const mainRecord = json.record;
+                  const subrecords = json.subrecords;
+
+                  const marcRecord = new MARCRecord(mainRecord);
+                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+
+                  dispatch(setSourceRecord(marcRecord, marcSubRecords));
                   dispatch(updateMergedRecord());
                 }
               });
@@ -340,9 +347,9 @@ export const fetchRecord = (function() {
               dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + response.status));
             }
        
-          }).catch((error) => {
+          }).catch(exceptCoreErrors((error) => {
             dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + error.message));
-          });
+          }));
 
       }
 
@@ -358,8 +365,13 @@ export const fetchRecord = (function() {
               response.json().then(json => {
 
                 if (currentTargetRecordId === recordId) {
-                  const marcRecord = new MARCRecord(json);
-                  dispatch(setTargetRecord(marcRecord));
+                  const mainRecord = json.record;
+                  const subrecords = json.subrecords;
+
+                  const marcRecord = new MARCRecord(mainRecord);
+                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+
+                  dispatch(setTargetRecord(marcRecord, marcSubRecords));
                   dispatch(updateMergedRecord());
                 }
               });
@@ -367,15 +379,41 @@ export const fetchRecord = (function() {
               dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + response.status));
             }
        
-          }).catch((error) => {
+          }).catch(exceptCoreErrors((error) => {
             dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + error.message));
-          });
+          }));
 
       }
     };
+
   };
 })();
 
 if (__DEV__) {
   window.fetchRecord = fetchRecord;
 }
+
+
+export const INSERT_SUBRECORD_ROW = 'INSERT_SUBRECORD_ROW';
+
+export function insertSubrecordRow(rowIndex) {
+  return { 'type': INSERT_SUBRECORD_ROW, rowIndex };
+}
+
+export const REMOVE_SUBRECORD_ROW = 'REMOVE_SUBRECORD_ROW';
+
+export function removeSubrecordRow(rowIndex) {
+  return { 'type': REMOVE_SUBRECORD_ROW, rowIndex };
+}
+
+export const CHANGE_SOURCE_SUBRECORD_ROW = 'CHANGE_SOURCE_SUBRECORD_ROW';
+export const CHANGE_TARGET_SUBRECORD_ROW = 'CHANGE_TARGET_SUBRECORD_ROW';
+
+export function changeSourceSubrecordRow(fromRowIndex, toRowIndex) {
+  return { 'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+}
+
+export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
+  return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+}
+

@@ -1,0 +1,6 @@
+
+export const ItemTypes = {
+  SUBRECORD: 'SUBRECORD',
+  TARGET_SUBRECORD: 'TARGET',
+  SOURCE_SUBRECORD: 'SOURCE'
+};

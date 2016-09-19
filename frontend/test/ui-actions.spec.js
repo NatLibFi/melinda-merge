@@ -83,8 +83,11 @@ describe('ui actions', () => {
       it('should dispatch loadSourceRecord and setSourceRecord actions', () => {
 
         const result = {
-          leader: 'test-leader', 
-          fields: []
+          record: {
+            leader: 'test-leader', 
+            fields: []
+          },
+          subrecords: []
         };
     
         ActionsRewireAPI.__Rewire__('fetch', function() {
@@ -100,7 +103,7 @@ describe('ui actions', () => {
         fetchRecordThunk(dispatchSpy);
 
         expect(dispatchSpy).to.have.been.calledWith(actions.loadSourceRecord(30000));
-        expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object));
+        expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array));
         
       });
 
