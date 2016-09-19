@@ -5,7 +5,7 @@ import { createSessionToken, readSessionToken } from './session-crypt';
 import bodyParser from 'body-parser';
 import { logger } from './logger';
 import _ from 'lodash';
-import { corsOptions } from './utils';
+import { corsOptions, requireBodyParams } from './utils';
 
 export const sessionController = express();
 
@@ -52,13 +52,20 @@ sessionController.post('/validate', cors(corsOptions), requireBodyParams('sessio
 
 });
 
-function requireBodyParams(...requiredParams) {
-  return function _requireBodyParams(req, res, next) {
-    const values = requiredParams.map(key => req.body[key]);
-    if (_.every(values)) {
-      return next();  
-    }
-    logger.log('info', 'Request did not have required body parameters', requiredParams);
-    res.sendStatus(400);
-  };
+export function readSessionMiddleware(req, res, next) {
+
+  try {
+    const {username, password} = readSessionToken(req.cookies.sessionToken);
+  
+    req.session = { 
+      ...req.session,
+      username, password
+    };
+
+  } catch(e) {
+    // invalid token
+    req.session = _.extend({}, req.sessionToken);
+  }
+
+  next();
 }

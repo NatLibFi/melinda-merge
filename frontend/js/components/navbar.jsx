@@ -1,8 +1,14 @@
 import React from 'react';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
+import '../../styles/components/navbar.scss';
 
 export class NavBar extends React.Component {
+  static propTypes = {
+    commitMerge: React.PropTypes.func.isRequired,
+    mergeStatus: React.PropTypes.string,
+    statusInfo: React.PropTypes.string
+  }
 
   static propTypes = {
     removeSession: React.PropTypes.func.isRequired,
@@ -22,6 +28,14 @@ export class NavBar extends React.Component {
 
   }
 
+  disableIfMergeNotPossible() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_AVAILABLE' ? '' : 'disabled';
+  }
+
+  statusInfo() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
+  }
+
   render() {
     return (
       <div className="navbar-fixed">
@@ -29,8 +43,9 @@ export class NavBar extends React.Component {
           <div className="nav-wrapper">
             
             <ul id="nav" className="right">
+              <li><div className="status-info">{this.props.statusInfo}</div></li>
             
-              <li><a className="waves-effect waves-light btn" href="#">Yhdistä</a></li>
+              <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>
               <li><a className="dropdown-button dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">more_vert</i></a></li>
             </ul>
 
@@ -48,8 +63,10 @@ export class NavBar extends React.Component {
   }
 } 
 
-function mapStateToProps() {
+function mapStateToProps(state) {
   return {
+    mergeStatus: state.getIn(['mergeStatus', 'status']),
+    statusInfo: state.getIn(['mergeStatus', 'message'])
   };
 }
 

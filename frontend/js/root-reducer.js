@@ -7,14 +7,14 @@ import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RE
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
   CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, VALIDATE_SESSION_START, RESET_STATE, SET_LOCATION} from './ui-actions';
 
-
 import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
 
+import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
+import {setMergeStatus} from './ui-reducers';
 
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow} from './ui-reducers';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW} from './ui-actions';
-
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
@@ -69,6 +69,12 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setMergedRecordError(state, action.error);
   case SET_MERGED_RECORD:
     return setMergedRecord(state, action.record);
+  case COMMIT_MERGE_START:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
+  case COMMIT_MERGE_ERROR:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
+  case COMMIT_MERGE_SUCCESS:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
   case INSERT_SUBRECORD_ROW:
     return insertSubrecordRow(state, action.rowIndex);
   case REMOVE_SUBRECORD_ROW:
@@ -78,6 +84,6 @@ export default function reducer(state = INITIAL_STATE, action) {
   case CHANGE_TARGET_SUBRECORD_ROW:
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   }
-  
+
   return state;
 }
