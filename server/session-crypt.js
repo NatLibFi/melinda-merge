@@ -45,6 +45,7 @@ function parseToken(token) {
   };
 }
 
+
 function encrypt(text, aad, iv, key) {
   const cipher = crypto.createCipheriv(algorithm, key, iv);
   cipher.setAAD(new Buffer(aad, 'utf8'));
@@ -56,6 +57,7 @@ function encrypt(text, aad, iv, key) {
     iv: iv
   };
 }
+
 
 function decrypt(encrypted, aad, iv, tag, key) {
   const decipher = crypto.createDecipheriv(algorithm, key, iv);

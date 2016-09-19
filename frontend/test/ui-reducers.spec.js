@@ -92,6 +92,9 @@ describe('ui reducers', () => {
         sourceRecord: {
           id: '00384794',
           state: 'LOADING'
+        },
+        mergeStatus: {
+          status: 'COMMIT_MERGE_DISABLED'
         }
       }));
     });
@@ -107,6 +110,9 @@ describe('ui reducers', () => {
         targetRecord: {
           id: '00384794',
           state: 'LOADING'
+        },
+        mergeStatus: {
+          status: 'COMMIT_MERGE_DISABLED'
         }
       }));
     });

@@ -49,7 +49,6 @@ export class RecordSelectionControls extends React.Component {
 
   componentWillUnmount() {
     if (typeof this.state.unlisten == 'function') {
-    
       this.state.unlisten();
     }
   }

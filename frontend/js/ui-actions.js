@@ -9,6 +9,82 @@ import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
 import { SubrecordActionTypes } from './constants';
 
+export function commitMerge() {
+
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+
+  return function(dispatch, getState) {
+    dispatch(commitMergeStart());
+
+    const sourceRecord = getState().getIn(['sourceRecord', 'record']);
+    const targetRecord = getState().getIn(['targetRecord', 'record']);
+    const mergedRecord = getState().getIn(['mergedRecord', 'record']);
+
+    const fetchOptions = {
+      method: 'POST',
+      body: JSON.stringify({ 
+        preferredRecord: targetRecord,
+        otherRecord: sourceRecord,
+        mergedRecord
+      }),
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      credentials: 'include'
+    };
+
+    return fetch(`${APIBasePath}/commit-merge`, fetchOptions)
+      .then(response => {
+
+        if (response.status == HttpStatus.OK) {
+
+          response.json().then(res => {
+            const newMergedRecordId = res.recordId;
+            dispatch(commitMergeSuccess(newMergedRecordId));  
+          });
+
+        } else {
+          switch (response.status) {
+          case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
+          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+          }
+
+          dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+        }
+
+      }).catch((error) => {
+        dispatch(commitMergeError('There has been a problem with operation: ' + error.message));
+      });
+
+  };
+}
+
+export const COMMIT_MERGE_START = 'COMMIT_MERGE_START';
+
+export function commitMergeStart() {
+  return {
+    type: COMMIT_MERGE_START
+  };
+}
+
+export const COMMIT_MERGE_ERROR = 'COMMIT_MERGE_ERROR';
+
+export function commitMergeError(errorMessage) {
+  return {
+    type: COMMIT_MERGE_ERROR,
+    error: errorMessage
+  };
+}
+
+export const COMMIT_MERGE_SUCCESS = 'COMMIT_MERGE_SUCCESS';
+
+export function commitMergeSuccess(recordId) {
+  return {
+    type: COMMIT_MERGE_SUCCESS,
+    recordId: recordId
+  };
+}
+
 export const RESET_STATE = 'RESET_STATE';
 export function resetState() {
   return {
@@ -236,11 +312,9 @@ export function validateSession(sessionToken) {
 
         } else {
           Cookies.remove('sessionToken');
-
         }
       });
   };
-
 }
 
 export const VALIDATE_SESSION_START = 'VALIDATE_SESSION_START';
@@ -248,7 +322,6 @@ export const VALIDATE_SESSION_START = 'VALIDATE_SESSION_START';
 export function validateSessionStart() {
   return { 'type': VALIDATE_SESSION_START };
 }
-
 
 export function removeSession() {
   return function(dispatch) {
@@ -285,7 +358,6 @@ export const startSession = (function() {
 
               Cookies.set('sessionToken', sessionToken);
               dispatch(createSessionSuccess({username}));
-              
             });
 
           } else {
