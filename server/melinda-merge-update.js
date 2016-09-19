@@ -69,11 +69,14 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
         logger.log('error', error);
       } else {
         error.message += ' (rollback was successful)';
+        logger.log('info', 'Rollback was successful');
+        logger.log('info', 'Error in transaction', error);
       }
       throw error;
     });
   }).catch(error => {
     error.message += ' (rollback was successful)';
+    logger.log('info', 'Rollback was successful');
     throw error;
   });
 
@@ -82,6 +85,9 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return client.createRecord(record, {bypass_low_validation: 1}).then(res => {
       logger.log('info', `Create record ok for ${res.recordId}`, res.messages);
       return res;
+    }).catch(err => {
+      logger.log('info', 'Failed to create record', err);
+      throw err;
     });
   }
 
@@ -94,7 +100,10 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
         logger.log('info', `Undelete ok for ${recordId}`, res.messages);
         return res;
       });
-    }); 
+    }).catch(err => {
+      logger.log('info', 'Failed to undelete record', err);
+      throw err;
+    });
   }
 
   function deleteRecordFromMelinda(record) {
@@ -107,6 +116,9 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
       logger.log('info', `Delete ok for ${recordId}`, res.messages);
       return res;
+    }).catch(err => {
+      logger.log('info', 'Failed to delete record', err);
+      throw err;
     });
   }
 
@@ -119,7 +131,10 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
         logger.log('info', `Delete ok for ${recordId}`, res.messages);
         return res;
       });
-    }); 
+    }).catch(err => {
+      logger.log('info', 'Failed to delete record', err);
+      throw err;
+    });
   }
 
 }

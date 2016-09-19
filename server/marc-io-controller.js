@@ -71,7 +71,7 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
       res.send(mergedMainRecordResult);
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
-      res.sendStatus(500);
+      res.status(500).send(error);
     });
 
 });
