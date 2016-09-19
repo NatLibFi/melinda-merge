@@ -8,10 +8,13 @@ const DEFAULT_MERGED_RECORD = Map({
 });
 
 export function setMergeStatus(state, mergeStatus) {
+  const mergeAvailable = mergeStatus.status == 'COMMIT_MERGE_ERROR' ? 'COMMIT_MERGE_AVAILABLE' : 'COMMIT_MERGE_DISABLED';
+
   return state.set('mergeStatus', Map({
     status: mergeStatus.status,
     message: mergeStatus.message
-  }));
+  }))
+  .setIn(['mergeStatus', 'status'], mergeAvailable);
 }
 
 export function loadSourceRecord(state, recordId) {
