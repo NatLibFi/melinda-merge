@@ -49,6 +49,8 @@ export class SigninFormPanel extends React.Component {
     const passwordLabel = 'Salasana';
     const signinButtonLabel = 'Kirjaudu';
 
+    const {username, password} = this.state;
+
     return (
 
       <div className="card signin-panel valign">
@@ -61,12 +63,12 @@ export class SigninFormPanel extends React.Component {
          
           <form>
             <div className="col s2 offset-s1 input-field">
-              <input id="username" type="text" className="validate" onChange={this.updateUsername.bind(this)}/>
+              <input id="username" type="text" className="validate" value={username} onChange={this.updateUsername.bind(this)}/>
               <label htmlFor="username">{usernameLabel}</label>
             </div>
 
             <div className="col s2 offset-s1 input-field">
-              <input id="password" type="password" className="validate" onChange={this.updatePassword.bind(this)}/>
+              <input id="password" type="password" className="validate" value={password} onChange={this.updatePassword.bind(this)}/>
               <label htmlFor="password">{passwordLabel}</label>
             </div>
 
