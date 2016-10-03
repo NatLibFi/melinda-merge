@@ -4,25 +4,27 @@ import { DuplicateDatabaseControls } from './duplicate-database-controls';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import * as duplicateDatabaseActionCreators from '../action-creators/duplicate-database-actions';
+import _ from 'lodash';
 
 export class ToolBar extends React.Component {
 
   static propTypes = {
+    resetWorkspace: React.PropTypes.func.isRequired,
     fetchCount: React.PropTypes.func.isRequired,
-    duplicatePairCount: React.PropTypes.number.isRequired
+    fetchNextPair: React.PropTypes.func.isRequired,
+    skipPair: React.PropTypes.func.isRequired,
+    markAsNotDuplicate: React.PropTypes.func.isRequired,
+    duplicatePairCount: React.PropTypes.number.isRequired,
+    duplicateDatabaseStatus: React.PropTypes.string.isRequired
   }
 
   componentWillMount() {
     this.props.fetchCount();
   }
 
-  noop() {
-    console.log('noop');
-  }
-
   startNewPair(event) {
     event.preventDefault();
-    console.log('new pair clicked');
+    this.props.resetWorkspace();
   }
 
   renderNewPairButton() {
@@ -45,9 +47,10 @@ export class ToolBar extends React.Component {
           <ul><li className="separator"><span /></li></ul>
 
           <DuplicateDatabaseControls 
-            loadNextPair={this.noop}
-            skipPair={this.noop}
-            notDuplicate={this.noop}
+            currentStatus={this.props.duplicateDatabaseStatus}
+            loadNextPair={this.props.fetchNextPair}
+            skipPair={this.props.skipPair}
+            notDuplicate={this.props.markAsNotDuplicate}
             duplicatePairCount={this.props.duplicatePairCount}
           />
           
@@ -59,11 +62,12 @@ export class ToolBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    duplicateDatabaseStatus: state.getIn(['duplicateDatabase', 'status']),
     duplicatePairCount: state.getIn(['duplicateDatabase', 'count'])
   };
 }
 
 export const ToolBarContainer = connect(
   mapStateToProps,
-  duplicateDatabaseActionCreators
+  _.assign({}, duplicateDatabaseActionCreators, uiActionCreators)
 )(ToolBar);

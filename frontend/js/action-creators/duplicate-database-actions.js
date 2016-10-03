@@ -1,8 +1,13 @@
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
 
+import { fetchRecord } from '../ui-actions';
+
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, 
-  NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
+  NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
+
+import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS, 
+  MARK_AS_NOT_DUPLICATE_ERROR, MARK_AS_MERGED_SUCCESS, MARK_AS_MERGED_ERROR} from '../constants/action-type-constants';
 
 const APIBasePath = __DEV__ ? 'http://localhost:3001/duplicates': '/duplicates';
 
@@ -49,13 +54,11 @@ function fetchDuplicateCountError(error) {
   return { type: DUPLICATE_COUNT_ERROR, error};
 }
 
-window.fetchCount = fetchCount;
-
-
-
 export function fetchNextPair() {
 
   return function(dispatch) {
+
+    dispatch(fetchNextPairStart());
 
     const fetchOptions = {
       method: 'GET',
@@ -68,8 +71,12 @@ export function fetchNextPair() {
         if (response.status == HttpStatus.OK) {
 
           response.json().then(res => {
-            
-            dispatch(fetchNextPairSuccess(res));  
+
+            dispatch(fetchNextPairSuccess(res));
+
+            dispatch(fetchRecord(res.preferredRecordId, 'SOURCE'));
+            dispatch(fetchRecord(res.otherRecordId, 'TARGET'));
+
           });
 
         } else {
@@ -86,7 +93,9 @@ export function fetchNextPair() {
   };
 }
 
-window.fetchNextPair = fetchNextPair;
+function fetchNextPairStart() {
+  return { type: NEXT_DUPLICATE_START };
+}
 
 function fetchNextPairSuccess(pair) {
   return { type: NEXT_DUPLICATE_SUCCESS, pair};
@@ -96,57 +105,112 @@ function fetchNextPairError(error) {
   return { type: NEXT_DUPLICATE_ERROR, error};
 }
 
+export function skipPair() {
 
-/*
-export function fetchNextPair() {
-
- 
   return function(dispatch, getState) {
-    dispatch(commitMergeStart());
 
-    const sourceRecord = getState().getIn(['sourceRecord', 'record']);
-    const targetRecord = getState().getIn(['targetRecord', 'record']);
-    const mergedRecord = getState().getIn(['mergedRecord', 'record']);
+    const fetchOptions = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      credentials: 'include'
+    };
 
-  /*
+    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+
+    return fetch(`${APIBasePath}/pairs/${id}/mark-as-skipped`, fetchOptions)
+      .then(response => {
+        if (response.status == HttpStatus.OK) {
+          dispatch(skipPairSuccess());
+        } else {
+          dispatch(skipPairError());
+        }
+      }).catch((error) => dispatch(skipPairError('There has been a problem with operation: ' + error.message)));
+
+  };
+}
+export function skipPairSuccess() {
+  return { type: SKIP_PAIR_SUCCESS};
+}
+export function skipPairError(error) {
+  return { type: SKIP_PAIR_ERROR, error};
+}
+
+
+export function markAsNotDuplicate() {
+
+  return function(dispatch, getState) {
+
+    const fetchOptions = {
+      method: 'POST',
+      headers: new Headers({
+        'Content-Type': 'application/json'
+      }),
+      credentials: 'include'
+    };
+
+    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+
+    return fetch(`${APIBasePath}/pairs/${id}/mark-as-not-duplicates`, fetchOptions)
+      .then(response => {
+        if (response.status == HttpStatus.OK) {
+          dispatch(markAsNotDuplicateSuccess());
+        } else {
+          dispatch(markAsNotDuplicateError());
+        }
+      }).catch((error) => dispatch(markAsNotDuplicateError('There has been a problem with operation: ' + error.message)));
+
+  };
+
+}
+
+export function markAsNotDuplicateSuccess() {
+  return { type: MARK_AS_NOT_DUPLICATE_SUCCESS };
+}
+export function markAsNotDuplicateError(error) {
+  return { type: MARK_AS_NOT_DUPLICATE_ERROR, error};
+}
+
+
+
+export function markAsMerged() {
+
+  return function(dispatch, getState) {
+
+    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+    const preferredRecordId = getState.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
+    const otherRecordId = getState.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']);
+
     const fetchOptions = {
       method: 'POST',
       body: JSON.stringify({ 
-        preferredRecord: targetRecord,
-        otherRecord: sourceRecord,
-        mergedRecord
+        preferredRecordId: preferredRecordId,
+        otherRecordId: otherRecordId
       }),
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
       credentials: 'include'
     };
-   
 
-    return fetch(`${APIBasePath}/pairs/next`, fetchOptions)
+    return fetch(`${APIBasePath}/pairs/${id}/mark-as-not-duplicates`, fetchOptions)
       .then(response => {
-
         if (response.status == HttpStatus.OK) {
-
-          response.json().then(res => {
-            const newMergedRecordId = res.recordId;
-            dispatch(commitMergeSuccess(newMergedRecordId));  
-          });
-
+          dispatch(markAsMergedSuccess());
         } else {
-          switch (response.status) {
-          case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
-          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
-          }
-
-          dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+          dispatch(markAsMergedError());
         }
+      }).catch((error) => dispatch(markAsMergedError('There has been a problem with operation: ' + error.message)));
 
-      }).catch((error) => {
-        dispatch(commitMergeError('There has been a problem with operation: ' + error.message));
-      });
 
   };
 }
 
- */
+export function markAsMergedSuccess() {
+  return { type: MARK_AS_MERGED_SUCCESS };
+}
+export function markAsMergedError(error) {
+  return { type: MARK_AS_MERGED_ERROR, error};
+}
+

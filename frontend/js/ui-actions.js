@@ -7,6 +7,9 @@ import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
+import {hashHistory} from 'react-router';
+
+import { RESET_WORKSPACE } from './constants/action-type-constants';
 
 export function commitMerge() {
 
@@ -90,6 +93,17 @@ export function resetState() {
     type: RESET_STATE,
   };
 }
+
+
+export function resetWorkspace() {
+  
+  hashHistory.push('/');
+
+  return {
+    type: RESET_WORKSPACE,
+  };
+}
+
 
 export function locationDidChange(location) {
   return function(dispatch, getState) {

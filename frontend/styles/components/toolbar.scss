@@ -31,4 +31,12 @@
     border-left: 1px solid #ddd;
     padding: 15px 0px;
   }
+  
+  li {
+    position: relative;
+    .progress {
+      position: absolute;
+      margin: 0
+    }
+  }
 }

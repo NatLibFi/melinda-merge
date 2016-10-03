@@ -1,6 +1,7 @@
 import {fromJS} from 'immutable';
 import duplicateDatabaseReducer from './reducers/duplicate-db-reducer';
 import { combineReducers } from 'redux-immutable';
+import { DuplicateDatabaseStates } from './constants';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
   loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
@@ -18,8 +19,8 @@ import {setMergeStatus} from './ui-reducers';
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow} from './ui-reducers';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW} from './ui-actions';
 
-import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR} from './constants/action-type-constants';
-import {setDuplicateCount, setDuplicateCountError} from './reducers/duplicate-db-reducer';
+import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, RESET_WORKSPACE, NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from './constants/action-type-constants';
+import {setDuplicateCount, setDuplicateCountError, setDuplicateDatabaseControlsStatus, setCurrentDuplicatePair, setCurrentDuplicatePairError} from './reducers/duplicate-db-reducer';
 
 
 export const INITIAL_STATE = fromJS({
@@ -34,12 +35,20 @@ export const INITIAL_STATE = fromJS({
   },
   sessionState: 'NO_SESSION',
   duplicateDatabase: {
-    count: undefined
+    count: 0
   }
 });
 
 function resetState() {
   return INITIAL_STATE;
+}
+
+function resetWorkspace(state) {
+  return state
+    .set('sourceRecord', INITIAL_STATE.get('sourceRecord'))
+    .set('targetRecord', INITIAL_STATE.get('targetRecord'))
+    .set('mergedRecord', INITIAL_STATE.get('mergedRecord'))
+    .set('location', undefined);
 }
 
 export default function reducer(state = INITIAL_STATE, action) {
@@ -71,6 +80,8 @@ export default function reducer(state = INITIAL_STATE, action) {
     return validateSessionStart(state);
   case RESET_STATE:
     return resetState(state);
+  case RESET_WORKSPACE:
+    return resetWorkspace(state);
   case SET_LOCATION:
     return setLocation(state, action.location);
   case CLEAR_MERGED_RECORD:
@@ -97,6 +108,12 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setDuplicateCount(state, action.count);
   case DUPLICATE_COUNT_ERROR:
     return setDuplicateCountError(state, action.error);
+  case NEXT_DUPLICATE_START:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING);
+  case NEXT_DUPLICATE_SUCCESS:
+    return setCurrentDuplicatePair(state, action.pair);
+  case NEXT_DUPLICATE_ERROR: 
+    return setCurrentDuplicatePairError(state, action.error);
   }
 
   return state;
