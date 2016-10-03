@@ -49,8 +49,6 @@ export class ToolBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    mergeStatus: state.getIn(['mergeStatus', 'status']),
-    statusInfo: state.getIn(['mergeStatus', 'message'])
   };
 }
 
