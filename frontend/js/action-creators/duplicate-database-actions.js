@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
+import { DuplicateDatabaseStates } from '../constants';
 
 import { fetchRecord } from '../ui-actions';
 
@@ -56,7 +57,7 @@ function fetchDuplicateCountError(error) {
 
 export function fetchNextPair() {
 
-  return function(dispatch) {
+  return function(dispatch, getState) {
 
     dispatch(fetchNextPairStart());
 

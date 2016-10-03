@@ -1,5 +1,6 @@
 import React from 'react';
 import { DuplicateDatabaseStates } from '../constants';
+import classNames from 'classnames';
 
 export class DuplicateDatabaseControls extends React.Component {
 
@@ -13,17 +14,23 @@ export class DuplicateDatabaseControls extends React.Component {
 
   loadNextDuplicatePair(event) {
     event.preventDefault();
-    this.props.loadNextPair();
+    if (this.props.currentStatus === DuplicateDatabaseStates.READY) {
+      this.props.loadNextPair();
+    }
   }
 
   skipCurrentDuplicatePair(event) {
     event.preventDefault();
-    this.props.skipPair(event);
+    if (this.props.currentStatus === DuplicateDatabaseStates.READY) {
+      this.props.skipPair(event);
+    }
   }
 
   markAsNonDuplicate(event) {
     event.preventDefault();
-    this.props.notDuplicate(event);
+    if (this.props.currentStatus === DuplicateDatabaseStates.READY) {
+      this.props.notDuplicate(event);
+    }
   }
 
   renderDuplicateCountBadge() {
@@ -37,22 +44,32 @@ export class DuplicateDatabaseControls extends React.Component {
     return this.props.currentStatus === action ? <div className="progress"><div className="indeterminate" /></div> : null;
   }
 
+  isEnabled() {
+    return this.props.currentStatus === DuplicateDatabaseStates.READY;
+  }
+
   render() {
+
+    const liClasses = classNames({
+      disabled: !this.isEnabled()
+    });
+
+    const classes = classNames('material-icons', 'tooltip');
 
     return (
       <div className="group">
         <ul id="nav">
           
-          <li>
-            <a href="#" onClick={(e) => this.loadNextDuplicatePair(e)}><i className="material-icons tooltip" title="Seuraava pari">navigate_next</i></a>
+          <li className={liClasses}>
+            <a href="#" onClick={(e) => this.loadNextDuplicatePair(e)}><i className={classes} title="Seuraava pari">navigate_next</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING)}
           </li>
-          <li>
-            <a href="#" onClick={(e) => this.skipCurrentDuplicatePair(e)}><i className="material-icons tooltip" title="Ohita">skip_next</i></a>
+          <li className={liClasses}>
+            <a href="#" onClick={(e) => this.skipCurrentDuplicatePair(e)}><i className={classes} title="Ohita">skip_next</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.SKIP_PAIR_ONGOING)}
           </li>
-          <li>
-            <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className="material-icons tooltip" title="Ei tupla">layers_clear</i></a>
+          <li className={liClasses}>
+            <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className={classes} title="Ei tupla">layers_clear</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING)}
           </li>
           

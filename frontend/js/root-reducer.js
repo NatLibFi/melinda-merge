@@ -35,7 +35,8 @@ export const INITIAL_STATE = fromJS({
   },
   sessionState: 'NO_SESSION',
   duplicateDatabase: {
-    count: 0
+    count: 0,
+    status: DuplicateDatabaseStates.READY
   }
 });
 
