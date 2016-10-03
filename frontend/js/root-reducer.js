@@ -1,6 +1,4 @@
 import {fromJS} from 'immutable';
-import duplicateDatabaseReducer from './reducers/duplicate-db-reducer';
-import { combineReducers } from 'redux-immutable';
 import { DuplicateDatabaseStates } from './constants';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
