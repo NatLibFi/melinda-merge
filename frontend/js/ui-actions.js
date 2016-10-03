@@ -8,7 +8,7 @@ import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
 import {hashHistory} from 'react-router';
-
+import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 
 export function commitMerge() {
@@ -42,7 +42,8 @@ export function commitMerge() {
 
           response.json().then(res => {
             const newMergedRecordId = res.recordId;
-            dispatch(commitMergeSuccess(newMergedRecordId));  
+            dispatch(commitMergeSuccess(newMergedRecordId));
+            dispatch(markAsMerged());
           });
 
         } else {

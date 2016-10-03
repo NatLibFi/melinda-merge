@@ -1,14 +1,14 @@
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
-import { DuplicateDatabaseStates } from '../constants';
 
-import { fetchRecord } from '../ui-actions';
+import { fetchRecord, resetWorkspace } from '../ui-actions';
 
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, 
   NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
 
 import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS, 
-  MARK_AS_NOT_DUPLICATE_ERROR, MARK_AS_MERGED_SUCCESS, MARK_AS_MERGED_ERROR} from '../constants/action-type-constants';
+  MARK_AS_NOT_DUPLICATE_ERROR, MARK_AS_MERGED_SUCCESS, MARK_AS_MERGED_ERROR,
+  MARK_AS_MERGED_START, MARK_AS_NOT_DUPLICATE_START, SKIP_PAIR_START} from '../constants/action-type-constants';
 
 const APIBasePath = __DEV__ ? 'http://localhost:3001/duplicates': '/duplicates';
 
@@ -30,7 +30,7 @@ export function fetchCount() {
             if (isNaN(res)) {
               return dispatch(fetchDuplicateCountError('Duplicate count was not a number'));
             }
-            dispatch(fetchDuplicateCountSuccess(parseInt(res)));  
+            dispatch(fetchDuplicateCountSuccess(parseInt(res)));
           });
 
         } else {
@@ -57,7 +57,7 @@ function fetchDuplicateCountError(error) {
 
 export function fetchNextPair() {
 
-  return function(dispatch, getState) {
+  return function(dispatch) {
 
     dispatch(fetchNextPairStart());
 
@@ -77,6 +77,7 @@ export function fetchNextPair() {
 
             dispatch(fetchRecord(res.preferredRecordId, 'SOURCE'));
             dispatch(fetchRecord(res.otherRecordId, 'TARGET'));
+            dispatch(fetchCount());
 
           });
 
@@ -109,21 +110,27 @@ function fetchNextPairError(error) {
 export function skipPair() {
 
   return function(dispatch, getState) {
+    
+    const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+    if (id === undefined) {
+      return;
+    }
+
+    dispatch(skipPairStart());
 
     const fetchOptions = {
-      method: 'POST',
+      method: 'PUT',
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
       credentials: 'include'
     };
 
-    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
-
     return fetch(`${APIBasePath}/pairs/${id}/mark-as-skipped`, fetchOptions)
       .then(response => {
         if (response.status == HttpStatus.OK) {
           dispatch(skipPairSuccess());
+          dispatch(resetWorkspace());
         } else {
           dispatch(skipPairError());
         }
@@ -131,6 +138,10 @@ export function skipPair() {
 
   };
 }
+export function skipPairStart() {
+  return { type: SKIP_PAIR_START};
+}
+
 export function skipPairSuccess() {
   return { type: SKIP_PAIR_SUCCESS};
 }
@@ -142,16 +153,20 @@ export function skipPairError(error) {
 export function markAsNotDuplicate() {
 
   return function(dispatch, getState) {
+    const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+    if (id === undefined) {
+      return;
+    }
+
+    dispatch(markAsNotDuplicateStart());
 
     const fetchOptions = {
-      method: 'POST',
+      method: 'PUT',
       headers: new Headers({
         'Content-Type': 'application/json'
       }),
       credentials: 'include'
     };
-
-    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
 
     return fetch(`${APIBasePath}/pairs/${id}/mark-as-not-duplicates`, fetchOptions)
       .then(response => {
@@ -166,9 +181,14 @@ export function markAsNotDuplicate() {
 
 }
 
+export function markAsNotDuplicateStart() {
+  return { type: MARK_AS_NOT_DUPLICATE_START };
+}
+
 export function markAsNotDuplicateSuccess() {
   return { type: MARK_AS_NOT_DUPLICATE_SUCCESS };
 }
+
 export function markAsNotDuplicateError(error) {
   return { type: MARK_AS_NOT_DUPLICATE_ERROR, error};
 }
@@ -179,12 +199,18 @@ export function markAsMerged() {
 
   return function(dispatch, getState) {
 
-    const id = getState.getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
-    const preferredRecordId = getState.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
-    const otherRecordId = getState.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']);
+    dispatch(markAsMergedStart());
+
+    const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
+    const preferredRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
+    const otherRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']);
+
+    if (id === undefined) {
+      return;
+    }
 
     const fetchOptions = {
-      method: 'POST',
+      method: 'PUT',
       body: JSON.stringify({ 
         preferredRecordId: preferredRecordId,
         otherRecordId: otherRecordId
@@ -207,7 +233,9 @@ export function markAsMerged() {
 
   };
 }
-
+export function markAsMergedStart() {
+  return { type: MARK_AS_MERGED_START };
+}
 export function markAsMergedSuccess() {
   return { type: MARK_AS_MERGED_SUCCESS };
 }

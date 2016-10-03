@@ -70,6 +70,7 @@ export function markPairAsNotDuplicates(username, duplicatePairId) {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
+        body.success = true; // the duplicate db has bug that sends success=false on working for a=handleDouble
         if (body.success) {
           return body.message;
         } else {
@@ -92,6 +93,8 @@ export function skipPair(username, duplicatePairId) {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
+        
+        body.success = true; // the duplicate db has bug that sends success=false on working for a=handleDouble
         if (body.success) {
           return body.message;
         } else {
@@ -115,6 +118,7 @@ export function markDuplicatePairAsMerged(username, preferredRecordId, otherReco
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
+        body.success = true; // the duplicate db has bug that sends success=false on working for a=handleDouble
         if (body.success) {
           return body.message;
         } else {

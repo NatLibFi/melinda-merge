@@ -22,6 +22,9 @@ import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW,
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, RESET_WORKSPACE, NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from './constants/action-type-constants';
 import {setDuplicateCount, setDuplicateCountError, setDuplicateDatabaseControlsStatus, setCurrentDuplicatePair, setCurrentDuplicatePairError} from './reducers/duplicate-db-reducer';
 
+import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS, 
+  MARK_AS_NOT_DUPLICATE_ERROR, MARK_AS_MERGED_SUCCESS, MARK_AS_MERGED_ERROR,
+  MARK_AS_MERGED_START, MARK_AS_NOT_DUPLICATE_START, SKIP_PAIR_START} from './constants/action-type-constants';
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
@@ -49,7 +52,8 @@ function resetWorkspace(state) {
     .set('sourceRecord', INITIAL_STATE.get('sourceRecord'))
     .set('targetRecord', INITIAL_STATE.get('targetRecord'))
     .set('mergedRecord', INITIAL_STATE.get('mergedRecord'))
-    .set('location', undefined);
+    .set('location', undefined)
+    .setIn(['duplicateDatabase', 'currentPair'], undefined);
 }
 
 export default function reducer(state = INITIAL_STATE, action) {
@@ -105,6 +109,7 @@ export default function reducer(state = INITIAL_STATE, action) {
     return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   case CHANGE_TARGET_SUBRECORD_ROW:
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+  
   case DUPLICATE_COUNT_SUCCESS:
     return setDuplicateCount(state, action.count);
   case DUPLICATE_COUNT_ERROR:
@@ -115,6 +120,27 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setCurrentDuplicatePair(state, action.pair);
   case NEXT_DUPLICATE_ERROR: 
     return setCurrentDuplicatePairError(state, action.error);
+  
+  case MARK_AS_MERGED_START:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_MERGED_ONGOING);
+  case MARK_AS_MERGED_SUCCESS:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+  case MARK_AS_MERGED_ERROR:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+
+  case MARK_AS_NOT_DUPLICATE_START:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING);
+  case MARK_AS_NOT_DUPLICATE_SUCCESS:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+  case MARK_AS_NOT_DUPLICATE_ERROR:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+
+  case SKIP_PAIR_START:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.SKIP_PAIR_ONGOING);
+  case SKIP_PAIR_SUCCESS:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+  case SKIP_PAIR_ERROR:
+    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
   }
 
   return state;
