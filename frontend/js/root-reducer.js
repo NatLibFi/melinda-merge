@@ -1,4 +1,6 @@
 import {fromJS} from 'immutable';
+import duplicateDatabaseReducer from './reducers/duplicate-db-reducer';
+import { combineReducers } from 'redux-immutable';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
   loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
@@ -16,6 +18,10 @@ import {setMergeStatus} from './ui-reducers';
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow} from './ui-reducers';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW} from './ui-actions';
 
+import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR} from './constants/action-type-constants';
+import {setDuplicateCount, setDuplicateCountError} from './reducers/duplicate-db-reducer';
+
+
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
     state: 'EMPTY'
@@ -26,7 +32,10 @@ export const INITIAL_STATE = fromJS({
   mergedRecord: {
     state: 'EMPTY'
   },
-  sessionState: 'NO_SESSION'
+  sessionState: 'NO_SESSION',
+  duplicateDatabase: {
+    count: undefined
+  }
 });
 
 function resetState() {
@@ -34,6 +43,7 @@ function resetState() {
 }
 
 export default function reducer(state = INITIAL_STATE, action) {
+
   switch (action.type) {
   case LOAD_SOURCE_RECORD:
     return loadSourceRecord(state, action.id);
@@ -83,6 +93,10 @@ export default function reducer(state = INITIAL_STATE, action) {
     return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   case CHANGE_TARGET_SUBRECORD_ROW:
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+  case DUPLICATE_COUNT_SUCCESS:
+    return setDuplicateCount(state, action.count);
+  case DUPLICATE_COUNT_ERROR:
+    return setDuplicateCountError(state, action.error);
   }
 
   return state;

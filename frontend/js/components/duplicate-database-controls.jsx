@@ -6,7 +6,7 @@ export class DuplicateDatabaseControls extends React.Component {
     loadNextPair: React.PropTypes.func.isRequired,
     skipPair: React.PropTypes.func.isRequired,
     notDuplicate: React.PropTypes.func.isRequired,
-    pairsInDublicateDatabase: React.PropTypes.number.isRequired
+    duplicatePairCount: React.PropTypes.number.isRequired
   }
 
   loadNextDuplicatePair(event) {
@@ -24,6 +24,12 @@ export class DuplicateDatabaseControls extends React.Component {
     this.props.notDuplicate(event);
   }
 
+  renderDuplicateCountBadge() {
+    const count = this.props.duplicatePairCount;
+
+    return count > 0 ? (<span className="badge tooltip" title="Tuplaehdotukset">{count}</span>) : null;
+  }
+
   render() {
 
     return (
@@ -35,8 +41,9 @@ export class DuplicateDatabaseControls extends React.Component {
           <li><a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className="material-icons tooltip" title="Ei tupla">layers_clear</i></a></li>
           
         </ul>
-        <span className="group-label">Tuplatietokanta <span className="badge tooltip" title="Tuplaehdotukset">{this.props.pairsInDublicateDatabase}</span></span>
+        <span className="group-label">Tuplatietokanta {this.renderDuplicateCountBadge()}</span>
       </div>
     );
   }
 }
+

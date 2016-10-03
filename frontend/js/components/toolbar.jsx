@@ -3,8 +3,18 @@ import '../../styles/components/toolbar.scss';
 import { DuplicateDatabaseControls } from './duplicate-database-controls';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
+import * as duplicateDatabaseActionCreators from '../action-creators/duplicate-database-actions';
 
 export class ToolBar extends React.Component {
+
+  static propTypes = {
+    fetchCount: React.PropTypes.func.isRequired,
+    duplicatePairCount: React.PropTypes.number.isRequired
+  }
+
+  componentWillMount() {
+    this.props.fetchCount();
+  }
 
   noop() {
     console.log('noop');
@@ -38,7 +48,7 @@ export class ToolBar extends React.Component {
             loadNextPair={this.noop}
             skipPair={this.noop}
             notDuplicate={this.noop}
-            pairsInDublicateDatabase="33422"
+            duplicatePairCount={this.props.duplicatePairCount}
           />
           
         </div>
@@ -49,10 +59,11 @@ export class ToolBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    duplicatePairCount: state.getIn(['duplicateDatabase', 'count'])
   };
 }
 
 export const ToolBarContainer = connect(
   mapStateToProps,
-  uiActionCreators
+  duplicateDatabaseActionCreators
 )(ToolBar);
