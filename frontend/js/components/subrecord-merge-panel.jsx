@@ -1,9 +1,6 @@
 import React from 'react';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
-import { DraggableSubRecordPanel } from './draggable-subrecord-panel';
-import { SubRecordPanel } from './subrecord-panel';
-import { DropTargetEmptySubRecordPanel } from './droppable-subrecord-empty-panel';
 import _ from 'lodash';
 import { List } from 'immutable';
 import { DragDropContext } from 'react-dnd';
@@ -11,9 +8,7 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
 import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
-import classNames from 'classnames';
-import { SubrecordActionTypes } from '../constants';
-
+import { SubrecordMergePanelRow } from './subrecord-merge-panel-row';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -28,63 +23,22 @@ export class SubrecordMergePanel extends React.Component {
     removeSubrecordRow: React.PropTypes.func.isRequired
   }
 
-  renderSubrecordPanel(record, type, rowIndex) {
-
-    if (record) {
-      return (
-        <DraggableSubRecordPanel record={record} type={type} rowIndex={rowIndex} />
-      );
-    } else {
-      return <DropTargetEmptySubRecordPanel type={type} rowIndex={rowIndex}/>;
-    }
-  }
-
-  renderMergedSubrecordPanel(mergedSubrecord, rowIndex, opts) {
-    if (mergedSubrecord) {
-      return (
-        <div>
-          <SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />
-          <SubRecordPanel record={mergedSubrecord} />
-        </div>
-      );
-    } else {
-      return (<SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />);
-    }
-  }
-
   renderSubrecordList() {
     const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions} = this.props;
 
     const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions).map(([sourceRecord, targetRecord, mergedRecord, selectedAction], i) => {
-     
+
       const key = createKey(sourceRecord, targetRecord, i);
-      const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
-      const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
-      const isCopyActionAvailable = !isMergeActionAvailable && !isEmptyRow;
 
-      const rowClasses = classNames({
-        'to-merge': selectedAction === SubrecordActionTypes.MERGE,
-        'to-result': selectedAction === SubrecordActionTypes.COPY && sourceRecord !== undefined,
-        'to-remove-source': selectedAction === SubrecordActionTypes.BLOCK && sourceRecord !== undefined,
-        'to-remove-target': selectedAction === SubrecordActionTypes.BLOCK && targetRecord !== undefined
-      });
-      
-
-      return (
-        <tr key={key} className={rowClasses}>
-          <td>
-            {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, i)}
-          </td>
-          <td>
-            {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, i)}
-          </td>
-          <td>
-           { isEmptyRow ? this.renderRemoveRowButton(i) : this.renderMergedSubrecordPanel(mergedRecord, i, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
-          </td>
-
-        </tr>
-
-      );
+      return (<SubrecordMergePanelRow
+        key={key}
+        i={i}
+        selectedAction={selectedAction}
+        sourceRecord={sourceRecord}
+        targetRecord={targetRecord}
+        mergedRecord={mergedRecord}
+        onRemoveRow={this.onRemoveRow}
+      />);
     });
 
     return items.reduce((acc, item, i) => {
@@ -122,11 +76,8 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   onRemoveRow(rowIndex) {
-    return function() {
-      this.props.removeSubrecordRow(rowIndex);
-    }.bind(this);
+    this.props.removeSubrecordRow(rowIndex);
   }
-
 
   render() {
     return (
