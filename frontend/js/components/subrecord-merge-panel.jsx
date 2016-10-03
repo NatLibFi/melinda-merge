@@ -21,7 +21,8 @@ export class SubrecordMergePanel extends React.Component {
     mergedSubrecords: React.PropTypes.array.isRequired,
     selectedActions: React.PropTypes.array.isRequired,
     insertSubrecordRow: React.PropTypes.func.isRequired,
-    removeSubrecordRow: React.PropTypes.func.isRequired
+    removeSubrecordRow: React.PropTypes.func.isRequired,
+    changeSubrecordRow: React.PropTypes.func.isRequired
   }
 
   renderSubrecordList() {
@@ -73,7 +74,7 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   onMoveRow(fromIndex, toIndex) {
-    console.log(`Move row from index ${fromIndex} to under ${toIndex}`);
+    this.props.changeSubrecordRow(fromIndex, toIndex);
   }
 
   render() {

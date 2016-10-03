@@ -191,6 +191,16 @@ export function changeTargetSubrecordRow(state, fromRowIndex, toRowIndex) {
     .updateIn(['subrecordActions'], resetRows);
 }
 
+export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
+  const rowMover = _.partial(moveRow, fromRowIndex, toRowIndex);
+
+  return state
+    .updateIn(['sourceRecord', 'subrecords'], rowMover)
+    .updateIn(['targetRecord', 'subrecords'], rowMover)
+    .updateIn(['mergedRecord', 'subrecords'], rowMover)
+    .updateIn(['subrecordActions'], rowMover);
+}
+
 function resetListIndices(rowIndexArr, list) {
   return rowIndexArr.reduce((acc, index) => acc.set(index, undefined), list);
 }
@@ -206,6 +216,17 @@ function swapItems(fromRowIndex, toRowIndex, list) {
   return list
     .set(fromRowIndex, to)
     .set(toRowIndex, from);
+}
+
+function moveRow(fromRowIndex, toRowIndex, list) {
+  
+  const delRowIndex = fromRowIndex < toRowIndex ? fromRowIndex : fromRowIndex + 1;
+
+  const data = list.get(fromRowIndex);
+
+  return list
+    .insert(toRowIndex, data)
+    .delete(delRowIndex);
 }
 
 export function setSubrecordAction(state, rowIndex, actionType) {

@@ -504,6 +504,12 @@ export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
   return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
 }
 
+export const CHANGE_SUBRECORD_ROW = 'CHANGE_SUBRECORD_ROW';
+export function changeSubrecordRow(fromRowIndex, toRowIndex) {
+  return { 'type': CHANGE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+}
+
+
 export const SET_SUBRECORD_ACTION = 'SET_SUBRECORD_ACTION';
 
 export function setSubrecordAction(rowIndex, actionType) {
