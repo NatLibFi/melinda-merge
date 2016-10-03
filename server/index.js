@@ -4,6 +4,7 @@ import { logger, expressWinston } from './logger';
 import { marcIOController } from './marc-io-controller';
 import { readEnvironmentVariable } from './utils';
 import { sessionController } from './session-controller';
+import { duplicateDatabaseController } from './duplicate-db-controller';
 import cookieParser from 'cookie-parser';
 
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
@@ -17,6 +18,7 @@ app.use(cookieParser());
 
 app.use('/api', marcIOController);
 app.use('/session', sessionController);
+app.use('/duplicates', duplicateDatabaseController);
 
 app.use(express.static('public'));
 
