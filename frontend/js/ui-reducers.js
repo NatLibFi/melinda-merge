@@ -64,19 +64,15 @@ export function setMergedRecordError(state, errorMessage) {
 }
 
 export function setTargetRecordError(state, error) {
-  const targetRecord = state.get('targetRecord');
-  return state.set('targetRecord', targetRecord.merge(targetRecord, Map({
-    'state': 'ERROR',
-    'errorMessage': error
-  })));
+  return state
+    .setIn(['targetRecord', 'state'], 'ERROR')
+    .setIn(['targetRecord', 'errorMessage'], error);
 }
 
 export function setSourceRecordError(state, error) {
-  const sourceRecord = state.get('sourceRecord');
-  return state.set('sourceRecord', sourceRecord.merge(sourceRecord, Map({
-    'state': 'ERROR',
-    'errorMessage': error
-  })));
+  return state
+    .setIn(['sourceRecord', 'state'], 'ERROR')
+    .setIn(['sourceRecord', 'errorMessage'], error);
 }
 
 export function setTargetRecordId(state, recordId) {

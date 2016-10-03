@@ -4,7 +4,7 @@ import { combineReducers } from 'redux-immutable';
 import { DuplicateDatabaseStates } from './constants';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
-  loadTargetRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
+  setSourceRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
   createSessionStart, createSessionError, createSessionSuccess, validateSessionStart, setLocation} from './ui-reducers';
 import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RECORD, 
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
@@ -64,7 +64,7 @@ export default function reducer(state = INITIAL_STATE, action) {
   case SET_TARGET_RECORD:
     return setTargetRecord(state, action.record, action.subrecords);
   case SET_SOURCE_RECORD_ERROR:
-    return loadTargetRecordError(state, action.error);
+    return setSourceRecordError(state, action.error);
   case SET_TARGET_RECORD_ERROR:
     return setTargetRecordError(state, action.error);
   case SET_SOURCE_RECORD_ID:
