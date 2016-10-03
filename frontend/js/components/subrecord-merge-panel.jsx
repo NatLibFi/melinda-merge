@@ -8,7 +8,8 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
 import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
-import { SubrecordMergePanelRow } from './subrecord-merge-panel-row';
+import { DragSubrecordMergePanelRow } from './subrecord-merge-panel-row';
+import { DropSubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -30,14 +31,14 @@ export class SubrecordMergePanel extends React.Component {
 
       const key = createKey(sourceRecord, targetRecord, i);
 
-      return (<SubrecordMergePanelRow
+      return (<DragSubrecordMergePanelRow
         key={key}
-        i={i}
+        rowIndex={i}
         selectedAction={selectedAction}
         sourceRecord={sourceRecord}
         targetRecord={targetRecord}
         mergedRecord={mergedRecord}
-        onRemoveRow={this.onRemoveRow}
+        onRemoveRow={this.onRemoveRow.bind(this)}
       />);
     });
 
@@ -57,16 +58,8 @@ export class SubrecordMergePanel extends React.Component {
       </div>);
   }
 
-  renderRemoveRowButton(rowIndex) {
-    return (
-      <button onClick={this.onRemoveRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
-        <i className="material-icons">clear</i>
-      </button>
-    );
-  }
-
   renderAddNewRowElement(key) {
-    return <tr key={key} className="add-new-row" onClick={this.onAddRow(key)} />;
+    return <DropSubrecordMergePanelNewRow rowIndex={key} onMoveRow={this.onMoveRow.bind(this)} key={key} onClick={this.onAddRow(key)} />;
   }
 
   onAddRow(rowIndex) {
@@ -77,6 +70,10 @@ export class SubrecordMergePanel extends React.Component {
 
   onRemoveRow(rowIndex) {
     this.props.removeSubrecordRow(rowIndex);
+  }
+
+  onMoveRow(fromIndex, toIndex) {
+    console.log(`Move row from index ${fromIndex} to under ${toIndex}`);
   }
 
   render() {
@@ -90,7 +87,6 @@ export class SubrecordMergePanel extends React.Component {
 
     );
   }
-
 }
 
 function createKey(sourceRecord, targetRecord, i) {
