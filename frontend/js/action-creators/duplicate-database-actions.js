@@ -146,10 +146,10 @@ export function skipPairStart() {
 export function skipPairSuccess() {
   return { type: SKIP_PAIR_SUCCESS};
 }
+
 export function skipPairError(error) {
   return { type: SKIP_PAIR_ERROR, error};
 }
-
 
 export function markAsNotDuplicate() {
 

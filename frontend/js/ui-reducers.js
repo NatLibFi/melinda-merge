@@ -13,19 +13,41 @@ export function setMergeStatus(state, mergeStatus) {
 }
 
 export function loadSourceRecord(state, recordId) {
-  return state.set('sourceRecord', Map({
+  const intermediateState = state.set('sourceRecord', Map({
     id: recordId,
     state: 'LOADING'
   })).set('mergedRecord', DEFAULT_MERGED_RECORD)
   .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
+
+  return normalizeCurrentPair(intermediateState);
 }
 
 export function loadTargetRecord(state, recordId) {
-  return state.set('targetRecord', Map({
+  const intermediateState = state.set('targetRecord', Map({
     id: recordId,
     state: 'LOADING'
   })).set('mergedRecord', DEFAULT_MERGED_RECORD)
   .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
+
+  return normalizeCurrentPair(intermediateState);
+
+}
+
+function normalizeCurrentPair(state) {
+  const sourceRecordId = state.getIn(['sourceRecord', 'id']);
+  const targetRecordId = state.getIn(['targetRecord', 'id']);
+
+  const allowedValues = [
+    state.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']),
+    state.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']),
+    undefined
+  ];
+
+  if (_.includes(allowedValues, sourceRecordId) && _.includes(allowedValues, targetRecordId)) {
+    return state;
+  } else {
+    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
+  }
 }
 
 export function setSourceRecord(state, record, subrecords) {
