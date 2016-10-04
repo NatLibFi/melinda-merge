@@ -22,7 +22,7 @@ const defaultConfig = {
 export const marcIOController = express();
 
 marcIOController.use(cookieParser());
-marcIOController.use(bodyParser.json());
+marcIOController.use(bodyParser.json({limit: '5mb'}));
 marcIOController.use(readSessionMiddleware);
 marcIOController.set('etag', false);
 
