@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {loadSourceRecord, loadTargetRecord, setSourceRecord, setTargetRecord, setTargetRecordError, setSourceRecordError} from '../js/ui-reducers';
+import {setSourceRecord} from '../js/ui-reducers';
 import * as actions from '../js/ui-actions';
 
 import { INITIAL_STATE } from '../js/root-reducer';
@@ -127,40 +127,56 @@ describe('ui reducers', () => {
   describe('setTargetRecord', () => {
 
     it('sets the target record', () => {
-      let nextState = setTargetRecord(INITIAL_STATE, testRecordObject, []);
-      
-      expect(nextState.toJS()).to.eql(INITIAL_STATE.setIn(['targetRecord'], {
+
+      let nextState = reducer(INITIAL_STATE, actions.setTargetRecord(testRecordObject, []));
+
+      expect(nextState.get('targetRecord').toJS()).to.eql({
         state: 'LOADED',
         record: testRecordObject
-      }).toJS());
+      });
+    
+      expect(nextState.get('mergeStatus').toJS()).to.eql({
+        status: 'COMMIT_MERGE_DISABLED'
+      });
+
     });
   });
 
   describe('setTargetRecordError', () => {
 
     it('sets the record state to ERROR and errorMessage', () => {
-      let nextState = setTargetRecordError(INITIAL_STATE, 'error-message');
-      
-      expect(nextState.toJS()).to.eql(INITIAL_STATE.setIn(['targetRecord'], {
+
+      let nextState = reducer(INITIAL_STATE, actions.setTargetRecordError('error-message'));
+
+      expect(nextState.get('targetRecord').toJS()).to.eql({
         state: 'ERROR',
         errorMessage: 'error-message'
-      }).toJS());
+      });
+
     });
   });
 
   describe('setSourceRecordError', () => {
 
     it('sets the record state to ERROR and errorMessage', () => {
-      let nextState = setSourceRecordError(INITIAL_STATE, 'error-message');
-      
-      expect(nextState.toJS()).to.eql(INITIAL_STATE.setIn(['sourceRecord'], {
+
+      let nextState = reducer(INITIAL_STATE, actions.setSourceRecordError('error-message'));
+
+      expect(nextState.get('sourceRecord').toJS()).to.eql({
         state: 'ERROR',
         errorMessage: 'error-message'
-      }).toJS());
+      });
+
     });
   });
 
   describe('merged record', () => {
+    let state;
+    beforeEach(() => {
+      state = reducer(state, actions.setSourceRecord(testRecordObject));
+      state = reducer(state, actions.setTargetRecord(otherTestRecordObject));
+
+    });
 
     it('has state=EMPTY initially', () => {
       expect(INITIAL_STATE.toJS().mergedRecord).to.eql({
@@ -170,9 +186,7 @@ describe('ui reducers', () => {
 
     it('is has state=EMPTY if target record is not ready', () => {
 
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
-      nextState = setTargetRecord(nextState, otherTestRecordObject);
-      const finalState = loadTargetRecord(nextState, '00384794');
+      const finalState = reducer(state, actions.loadTargetRecord('00384794'));
       
       expect(finalState.toJS().mergedRecord).to.eql({
         'state': 'EMPTY'
@@ -181,9 +195,7 @@ describe('ui reducers', () => {
 
     it('is has state=EMPTY if source record is not ready', () => {
 
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
-      nextState = setTargetRecord(nextState, otherTestRecordObject);
-      const finalState = loadSourceRecord(nextState, '00384794');
+      const finalState = reducer(state, actions.loadSourceRecord('00384794'));
 
       expect(finalState.toJS().mergedRecord).to.eql({
         'state': 'EMPTY'

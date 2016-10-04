@@ -1,6 +1,7 @@
 import { Map, fromJS } from 'immutable';
 import { DuplicateDatabaseStates } from './constants';
 import _ from 'lodash';
+import { combineReducers } from 'redux-immutable';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
   setSourceRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId} from './ui-reducers';
@@ -19,6 +20,14 @@ import {setMergeStatus} from './ui-reducers';
 
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
   setSubrecordAction, setMergedSubrecord, setMergedSubrecordError, changeSubrecordRow} from './reducers/subrecord-reducer';
+
+import subrecords from './reducers/subrecord-reducer';
+import session from './reducers/session-reducer';
+import duplicateDatabase from './reducers/duplicate-db-reducer';
+import location from './reducers/location-reducer';
+import { sourceRecord, targetRecord, mergedRecord, mergeStatus } from './ui-reducers';
+
+
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from './ui-actions';
 
@@ -39,7 +48,6 @@ export const INITIAL_STATE = fromJS({
   mergedRecord: {
     state: 'EMPTY',
   },
-  sessionState: 'NO_SESSION',
   duplicateDatabase: {
     count: 0,
     status: DuplicateDatabaseStates.READY
@@ -73,12 +81,34 @@ function resetWorkspace(state) {
     .setIn(['duplicateDatabase', 'currentPair'], undefined);
 }
 
-export default function reducer(state = INITIAL_STATE, action) {
+export default function reducer(state = Map(), action) {
 
-  let rawState = rootReducer(state, action);
+  let rawState = combinedRootReducer(state, action);
 
   return normalizeMergedRecord(normalizeMergeStatus(normalizeCurrentPair(rawState)));
 }
+
+console.log({
+  location,
+  session,
+  duplicateDatabase,
+  sourceRecord,
+  targetRecord,
+  mergedRecord,
+  mergeStatus,
+  subrecords
+});
+
+export const combinedRootReducer = combineReducers({
+  location,
+  session,
+  duplicateDatabase,
+  sourceRecord,
+  targetRecord,
+  mergedRecord,
+  mergeStatus,
+  subrecords
+});
 
 function rootReducer(state, action) {
 

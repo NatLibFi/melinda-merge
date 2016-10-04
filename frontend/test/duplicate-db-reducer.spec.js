@@ -21,7 +21,7 @@ describe('Duplicate database reducers', () => {
     beforeEach(() => {
       state = INITIAL_STATE;
       state = setCurrentDuplicatePair(state, currentPair);
-      duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
+      duplicateDatabase = state.toJS();
     });
 
     it('sets the current duplicate pair', () => {
