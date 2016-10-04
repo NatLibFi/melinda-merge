@@ -131,6 +131,7 @@ export function skipPair() {
         if (response.status == HttpStatus.OK) {
           dispatch(skipPairSuccess());
           dispatch(resetWorkspace());
+          dispatch(fetchNextPair());
         } else {
           dispatch(skipPairError());
         }
@@ -172,6 +173,8 @@ export function markAsNotDuplicate() {
       .then(response => {
         if (response.status == HttpStatus.OK) {
           dispatch(markAsNotDuplicateSuccess());
+          dispatch(resetWorkspace());
+          dispatch(fetchNextPair());
         } else {
           dispatch(markAsNotDuplicateError());
         }
