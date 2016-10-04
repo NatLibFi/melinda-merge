@@ -8,7 +8,10 @@ import subrecords from './reducers/subrecord-reducer';
 import session from './reducers/session-reducer';
 import duplicateDatabase from './reducers/duplicate-db-reducer';
 import location from './reducers/location-reducer';
-import { sourceRecord, targetRecord, mergedRecord, mergeStatus } from './ui-reducers';
+import sourceRecord from './reducers/source-record-reducer';
+import targetRecord from './reducers/target-record-reducer';
+import mergedRecord from './reducers/merged-record-reducer';
+import mergeStatus from './reducers/merge-status-reducer';
 
 export const DEFAULT_MERGED_RECORD = Map({
   state: 'EMPTY',
