@@ -1,7 +1,6 @@
 import {expect} from 'chai';
 import * as actions from '../js/action-creators/duplicate-database-actions';
 import * as recordActions from '../js/ui-actions';
-import { setCurrentDuplicatePair } from '../js/reducers/duplicate-db-reducer';
 import { INITIAL_STATE } from '../js/root-reducer';
 import reducer from '../js/root-reducer';
 
@@ -15,13 +14,13 @@ describe('Duplicate database reducers', () => {
     systemMessage: 'message from the creator of this candidate pair',
   };
 
-  describe('setCurrentDuplicatePair', () => {
+  describe('fetchNextPairSuccess', () => {
     let state;
     let duplicateDatabase;
     beforeEach(() => {
-      state = INITIAL_STATE;
-      state = setCurrentDuplicatePair(state, currentPair);
-      duplicateDatabase = state.toJS();
+      state = undefined;
+      state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+      duplicateDatabase = state.toJS().duplicateDatabase;
     });
 
     it('sets the current duplicate pair', () => {
@@ -34,7 +33,7 @@ describe('Duplicate database reducers', () => {
 
     describe('and then loading a new source record which is not either of currentpair', () => {
       beforeEach(() => {
-        state = INITIAL_STATE;
+        state = undefined;
         state = reducer(state, actions.fetchNextPairSuccess(currentPair));
         state = reducer(state, recordActions.loadSourceRecord('00384791'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();

@@ -117,7 +117,7 @@ describe('ui reducers', () => {
 
   
     it('initialized subrecords to empty correctly', () => {
-      let nextState = setSourceRecord(INITIAL_STATE, testRecordObject);
+      let nextState = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject));
       const sourceSubrecords = nextState.getIn(['subrecords', 'sourceRecord']).toJS();
       expect(sourceSubrecords).to.eql([]);
 
@@ -179,7 +179,7 @@ describe('ui reducers', () => {
     });
 
     it('has state=EMPTY initially', () => {
-      expect(INITIAL_STATE.toJS().mergedRecord).to.eql({
+      expect(state.toJS().mergedRecord).to.eql({
         'state': 'EMPTY'
       });
     });
