@@ -67,7 +67,6 @@ export class NavBar extends React.Component {
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
-          <li><a href="#">Ohjeet</a></li>        
           <li className="divider" />
           <li><a href="#" onClick={this.props.removeSession}>Kirjaudu ulos</a></li>
         </ul>
