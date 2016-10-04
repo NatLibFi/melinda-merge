@@ -4,6 +4,8 @@ import MelindaClient from 'melinda-api-client';
 import _ from 'lodash';
 import { stdin } from 'process';
 import MarcRecord from 'marc-record-js';
+import fs from 'fs';
+import path from 'path';
 
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const username = readEnvironmentVariable('ALEPH_USER');
@@ -23,9 +25,10 @@ if (!isNaN(parseInt(argv._[0])) && argv._.length < 2) {
 
 const client = new MelindaClient(clientConfig);
 
-const [command, recordId] = argv._;
+const [command, arg] = argv._;
 
 if (command === 'get') {
+  const recordId = arg;
 
   client.loadRecord(recordId).then(record => {
     console.log(record.toString());
@@ -40,6 +43,34 @@ if (command === 'create') {
   readRecordFromStdin()
     .then(record => client.createRecord(record))
     .then(printResponse)
+    .catch(printError);
+
+}
+
+if (command === 'create-family') {
+  const recordDirectory = path.resolve(arg);
+
+  readRecordsFromDir(recordDirectory)
+    .then(records => {
+
+      return client.createRecord(records.record).then(res => {
+        console.log(`Parent saved: ${res.recordId}`);
+
+        return Promise.all(records.subrecords.map(record => {
+          updateParent(record, res.recordId);
+
+          return client.createRecord(record);
+        }));
+
+
+      });
+    })
+    .then(subrecords => {
+      subrecords.forEach(res => {
+        console.log(`Subrecord saved: ${res.recordId}`);
+      });
+      
+    })
     .catch(printError);
 
 }
@@ -69,6 +100,23 @@ if (command === 'set') {
     .then(printResponse)
     .catch(printError);
 
+}
+
+function updateParent(record, id) {
+
+  record.fields = record.fields.map(field => {
+    if (field.tag === '773') {
+      field.subfields = field.subfields.map(sub => {
+        if (sub.code === 'w') {
+          return _.assign({}, sub, {value: `(FI-MELINDA)${id}`});
+        }
+        return sub;
+      });
+    }
+    return field;
+  });
+
+  return record;
 }
 
 function getRecordId(record) {
@@ -111,6 +159,30 @@ function readRecordFromStdin() {
       }
     });
   });
+}
+
+function readRecordsFromDir(dir) {
+  return new Promise((resolve, reject) => {
+
+    const files = fs.readdirSync(dir);
+    const subrecordNames = files.filter(n => n.startsWith('sub')).map(n => path.join(dir, n));
+
+    resolve({
+      record: bufferToRecord(fs.readFileSync(path.join(dir, 'main.rec'))),
+      subrecords: subrecordNames.map((file) => fs.readFileSync(file)).map(bufferToRecord)
+    });
+
+  });
+}
+
+function bufferToRecord(buffer) {
+  return strToRecord(buffer.toString('utf8'));
+}
+
+function strToRecord(str) {
+  const filteredInputChinks = str.split('\n').filter(_.identity).join('\n');
+  const record = MarcRecord.fromString(filteredInputChinks);
+  return record;
 }
 
 function printResponse(response) {

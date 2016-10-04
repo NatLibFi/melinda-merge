@@ -22,7 +22,7 @@ const defaultConfig = {
 export const marcIOController = express();
 
 marcIOController.use(cookieParser());
-marcIOController.use(bodyParser.json());
+marcIOController.use(bodyParser.json({limit: '5mb'}));
 marcIOController.use(readSessionMiddleware);
 marcIOController.set('etag', false);
 
@@ -54,7 +54,7 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
   const {username, password} = req.session;
 
   const [otherRecord, preferredRecord, mergedRecord] = 
-        [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord].map(transformToMarcRecord);
+        [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord].map(transformToMarcRecordFamily);
 
   const clientConfig = { 
     ...defaultConfig,
@@ -67,10 +67,11 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
   commitMerge(client, otherRecord, preferredRecord, mergedRecord)
     .then((response) => {
       logger.log('info', 'Commit merge successful', response);
-      res.send(response);
+      const mergedMainRecordResult = _.get(response, '[0]');
+      res.send(mergedMainRecordResult);
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
-      res.sendStatus(500);
+      res.status(500).send(error);
     });
 
 });
@@ -86,6 +87,13 @@ function requireSession(req, res, next) {
     res.sendStatus(HttpStatus.UNAUTHORIZED);    
   }
 
+}
+
+function transformToMarcRecordFamily(json) {
+  return {
+    record: transformToMarcRecord(json.record),
+    subrecords: json.subrecords.map(transformToMarcRecord)
+  };
 }
 
 function transformToMarcRecord(json) {

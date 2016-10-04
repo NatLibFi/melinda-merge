@@ -11,45 +11,59 @@ import MarcRecord from 'marc-record-js';
 describe('melinda merge update', function() {
   describe('commitMerge', function() {
 
-    it('requires that preferred and other records have id', function(done) {
+    it('requires that preferred main record has id', function(done) {
 
       const clientStub = sinon.stub();
-      const [preferred, other, merged] = [createRecord(), createRecord(), createRecord()];
+      const [preferred, other, merged] = [createRecordFamily(), createRecordFamily(), createRecordFamily()];
 
       commitMerge(clientStub, preferred, other, merged)
         .then(expectFulfillmentToNotBeCalled(done))
-        .catch(err => {
-          try {
-            expect(err.message).to.equal('Could not find id from preferred record');
-            done();
-          } catch(e) {
-            done(e);
-          }
-        });
+        .catch(expectErrorMessage('Id not found for preferred record.', done));
 
+    });
+
+    it('requires that other main record has id', function(done) {
+
+      const clientStub = sinon.stub();
+      const [preferred, other, merged] = [createRandomRecordFamily(), createRecordFamily(), createRecordFamily()];
+
+      commitMerge(clientStub, preferred, other, merged)
+        .then(expectFulfillmentToNotBeCalled(done))
+        .catch(expectErrorMessage('Id not found for other record.', done));
+
+    });
+
+    it('requires that preferred subrecords have ids', function(done) {
+
+      const clientStub = sinon.stub();
+      const [preferred, other, merged] = [createRandomRecordFamily(), createRandomRecordFamily(), createRecordFamily()];
+
+      preferred.subrecords[1].fields = preferred.subrecords[1].fields.filter(f => f.tag !== '001');
+
+      commitMerge(clientStub, preferred, other, merged)
+        .then(expectFulfillmentToNotBeCalled(done))
+        .catch(expectErrorMessage('Id not found for 2. subrecord from preferred record.', done));
+        
     });
 
     it('returns metadata of successful operation', function(done) {
       const expectedRecordId = 15;
 
       const clientStub = createClientStub();
-      clientStub.updateRecord.resolves('OK');
+      clientStub.updateRecord.resolves('UPDATE-OK');
       clientStub.createRecord.resolves(createSuccessResponse(expectedRecordId));
 
-      const [preferred, other, merged] = [createRecord(), createRecord(), createRecord()];
-      preferred.appendControlField(['001', '1']);
-      other.appendControlField(['001', '2']);
-
+      const [preferred, other, merged] = [createRandomRecordFamily(), createRandomRecordFamily(), createRecordFamily()];
+  
       commitMerge(clientStub, preferred, other, merged)
         .then(res => {
           expect(res).not.to.be.undefined;
-          expect(res.recordId).to.equal(expectedRecordId);
+          expect(res[0].recordId).to.equal(expectedRecordId);
           done();
         })
         .catch(done);
 
     });
-
   });
 });
 
@@ -64,10 +78,43 @@ function expectFulfillmentToNotBeCalled(done) {
   return () => done(new Error('Fulfillment handler was called unexpectedly.'));
 }
 
+function expectErrorMessage(msg, done) {
+  return function(err) {
+    try {
+      expect(err.message).to.equal(msg);
+      done();
+    } catch(e) {
+      done(e);
+    }
+  };
+}
+
+
+function createRecordFamily() {
+  return {
+    record: createRecord(),
+    subrecords: []
+  };
+}
+
 function createRecord() {
   return new MarcRecord();
 }
 
+function createRandomRecordFamily() {
+  return {
+    record: createRandomRecord(),
+    subrecords: [createRandomRecord(), createRandomRecord(), createRandomRecord()]
+  }; 
+}
+
+function createRandomRecord() {
+  const record = new MarcRecord();
+  
+  record.appendControlField(['001', Math.floor(Math.random()*1000000)]);
+  
+  return record;
+}
 
 function createSuccessResponse(recordId) {
   return { 

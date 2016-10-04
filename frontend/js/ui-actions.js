@@ -7,6 +7,7 @@ import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
+import { SubrecordActionTypes } from './constants';
 
 export function commitMerge() {
 
@@ -19,12 +20,25 @@ export function commitMerge() {
     const targetRecord = getState().getIn(['targetRecord', 'record']);
     const mergedRecord = getState().getIn(['mergedRecord', 'record']);
 
+    const sourceSubrecordList = getState().getIn(['sourceRecord', 'subrecords']).filter(_.identity);
+    const targetSubrecordList = getState().getIn(['targetRecord', 'subrecords']).filter(_.identity);
+    const mergedSubrecordList = getState().getIn(['mergedRecord', 'subrecords']).filter(_.identity);
+
     const fetchOptions = {
       method: 'POST',
       body: JSON.stringify({ 
-        preferredRecord: targetRecord,
-        otherRecord: sourceRecord,
-        mergedRecord
+        otherRecord: {
+          record: sourceRecord,
+          subrecords: sourceSubrecordList,
+        },
+        preferredRecord: {
+          record: targetRecord,
+          subrecords: targetSubrecordList,
+        },
+        mergedRecord: {
+          record: mergedRecord,
+          subrecords: mergedSubrecordList
+        }
       }),
       headers: new Headers({
         'Content-Type': 'application/json'
@@ -229,6 +243,7 @@ export function updateMergedRecord() {
     }
   };
 }
+
 
 
 export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';
@@ -489,3 +504,71 @@ export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
   return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
 }
 
+export const SET_SUBRECORD_ACTION = 'SET_SUBRECORD_ACTION';
+
+export function setSubrecordAction(rowIndex, actionType) {
+  return { 'type': SET_SUBRECORD_ACTION, rowIndex, actionType };
+}
+
+export function changeSubrecordAction(rowIndex, actionType) {
+  return function(dispatch) {
+    dispatch(setSubrecordAction(rowIndex, actionType));
+    dispatch(updateMergedSubrecord(rowIndex));
+  };
+}
+
+export function updateMergedSubrecord(rowIndex) {
+
+  return function(dispatch, getState) {
+
+    const selectedActionType = getState().get('subrecordActions').get(rowIndex);
+
+    const preferredRecord = getState().getIn(['targetRecord', 'subrecords']).get(rowIndex);
+    const otherRecord = getState().getIn(['sourceRecord', 'subrecords']).get(rowIndex);
+
+    if (selectedActionType === SubrecordActionTypes.COPY) {
+      if (preferredRecord && otherRecord) {
+        throw new Error('Cannot copy both records');
+      }
+      
+      const recordToCopy = preferredRecord || otherRecord;
+      return dispatch(setMergedSubrecord(rowIndex, recordToCopy));
+
+    }
+
+    if (selectedActionType === SubrecordActionTypes.BLOCK) {
+      return dispatch(setMergedSubrecord(rowIndex, undefined));
+    }
+
+    if (selectedActionType === SubrecordActionTypes.MERGE) {
+      if (preferredRecord && otherRecord) {
+
+        const merge = createRecordMerger(mergeConfiguration);
+
+        try {
+          const mergedRecord = merge(preferredRecord, otherRecord);
+          dispatch(setMergedSubrecord(rowIndex, mergedRecord));
+        } catch(e) {
+          dispatch(setMergedSubrecordError(rowIndex, e));
+        }
+        
+
+      } else {
+        dispatch(setMergedSubrecordError(rowIndex, new Error('Cannot merge undefined records')));
+      }
+    }
+
+  };
+}
+
+export const SET_MERGED_SUBRECORD = 'SET_MERGED_SUBRECORD';
+
+export function setMergedSubrecord(rowIndex, record) {
+  return { 'type': SET_MERGED_SUBRECORD, rowIndex, record };
+}
+
+export const SET_MERGED_SUBRECORD_ERROR = 'SET_MERGED_SUBRECORD_ERROR';
+
+export function setMergedSubrecordError(rowIndex, error) {
+  return { 'type': SET_MERGED_SUBRECORD_ERROR, rowIndex, error };
+}

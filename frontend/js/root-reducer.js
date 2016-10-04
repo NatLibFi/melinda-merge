@@ -13,8 +13,10 @@ import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from '.
 import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui-actions';
 import {setMergeStatus} from './ui-reducers';
 
-import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow} from './ui-reducers';
-import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW} from './ui-actions';
+import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
+  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError} from './ui-reducers';
+import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
+  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR} from './ui-actions';
 
 export const INITIAL_STATE = fromJS({
   sourceRecord: {
@@ -24,9 +26,12 @@ export const INITIAL_STATE = fromJS({
     state: 'EMPTY'
   },
   mergedRecord: {
-    state: 'EMPTY'
+    state: 'EMPTY',
+    subrecords: [],
+    subrecordErrors: []
   },
-  sessionState: 'NO_SESSION'
+  sessionState: 'NO_SESSION',
+  subrecordActions: []
 });
 
 function resetState() {
@@ -69,12 +74,6 @@ export default function reducer(state = INITIAL_STATE, action) {
     return setMergedRecordError(state, action.error);
   case SET_MERGED_RECORD:
     return setMergedRecord(state, action.record);
-  case COMMIT_MERGE_START:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
-  case COMMIT_MERGE_ERROR:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
-  case COMMIT_MERGE_SUCCESS:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
   case INSERT_SUBRECORD_ROW:
     return insertSubrecordRow(state, action.rowIndex);
   case REMOVE_SUBRECORD_ROW:
@@ -83,6 +82,18 @@ export default function reducer(state = INITIAL_STATE, action) {
     return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   case CHANGE_TARGET_SUBRECORD_ROW:
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+  case SET_SUBRECORD_ACTION:
+    return setSubrecordAction(state, action.rowIndex, action.actionType);
+  case SET_MERGED_SUBRECORD:
+    return setMergedSubrecord(state, action.rowIndex, action.record);
+  case SET_MERGED_SUBRECORD_ERROR:
+    return setMergedSubrecordError(state, action.rowIndex, action.error);
+  case COMMIT_MERGE_START:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
+  case COMMIT_MERGE_ERROR:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
+  case COMMIT_MERGE_SUCCESS:
+    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
   }
 
   return state;
