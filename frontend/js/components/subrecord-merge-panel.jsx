@@ -29,7 +29,7 @@ export class SubrecordMergePanel extends React.Component {
     const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions} = this.props;
 
     const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions).map(([sourceRecord, targetRecord, mergedRecord, selectedAction], i) => {
-
+      
       const key = createKey(sourceRecord, targetRecord, i);
 
       return (<DragDropSubrecordMergePanelRow
@@ -104,10 +104,10 @@ function createKey(sourceRecord, targetRecord, i) {
 
 function mapStateToProps(state) {
   return {
-    sourceSubrecords: state.getIn(['sourceRecord', 'subrecords'], List()).toJS(),
-    targetSubrecords: state.getIn(['targetRecord', 'subrecords'], List()).toJS(),
-    mergedSubrecords: state.getIn(['mergedRecord', 'subrecords'], List()).toJS(),
-    selectedActions: state.getIn(['subrecordActions'], List()).toJS()
+    sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()).toJS(),
+    targetSubrecords: state.getIn(['subrecords', 'targetRecord'], List()).toJS(),
+    mergedSubrecords: state.getIn(['subrecords', 'mergedRecord'], List()).toJS(),
+    selectedActions: state.getIn(['subrecords', 'actions'], List()).toJS()
   };
 }
 

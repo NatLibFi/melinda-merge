@@ -1,12 +1,15 @@
 import { Map, fromJS } from 'immutable';
 import { DuplicateDatabaseStates } from './constants';
+import _ from 'lodash';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
-  setSourceRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId,
-  createSessionStart, createSessionError, createSessionSuccess, validateSessionStart, setLocation} from './ui-reducers';
+  setSourceRecordError, setTargetRecordError, setTargetRecordId, setSourceRecordId} from './ui-reducers';
 import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_TARGET_RECORD, LOAD_TARGET_RECORD, 
   SET_SOURCE_RECORD_ERROR, SET_TARGET_RECORD_ERROR, SET_SOURCE_RECORD_ID, SET_TARGET_RECORD_ID,
   CREATE_SESSION_START, CREATE_SESSION_ERROR, CREATE_SESSION_SUCCESS, VALIDATE_SESSION_START, RESET_STATE, SET_LOCATION} from './ui-actions';
+
+import {createSessionStart, createSessionError, createSessionSuccess, validateSessionStart} from './reducers/session-reducer';
+import {setLocation} from './reducers/location-reducer';
 
 import {setMergedRecord, clearMergedRecord, setMergedRecordError} from './ui-reducers';
 import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD} from './ui-actions';
@@ -15,7 +18,7 @@ import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui
 import {setMergeStatus} from './ui-reducers';
 
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
-  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError, changeSubrecordRow} from './ui-reducers';
+  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError, changeSubrecordRow} from './reducers/subrecord-reducer';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from './ui-actions';
 
@@ -35,16 +38,25 @@ export const INITIAL_STATE = fromJS({
   },
   mergedRecord: {
     state: 'EMPTY',
-    subrecords: [],
-    subrecordErrors: []
   },
   sessionState: 'NO_SESSION',
   duplicateDatabase: {
     count: 0,
     status: DuplicateDatabaseStates.READY
   },
-  subrecordActions: []
+  subrecords: {
+    sourceRecord: [],
+    targetRecord: [],
+    mergedRecord: [],
+    mergedRecordErrors: [],
+    actions: []
+  }
 });
+
+export const DEFAULT_MERGED_RECORD = Map({
+  state: 'EMPTY',
+});
+
 
 function resetState() {
   return INITIAL_STATE;
@@ -55,12 +67,20 @@ function resetWorkspace(state) {
     .set('sourceRecord', INITIAL_STATE.get('sourceRecord'))
     .set('targetRecord', INITIAL_STATE.get('targetRecord'))
     .set('mergedRecord', INITIAL_STATE.get('mergedRecord'))
+    .set('subrecords', INITIAL_STATE.get('subrecords'))
     .set('location', undefined)
     .set('mergeStatus', Map())
     .setIn(['duplicateDatabase', 'currentPair'], undefined);
 }
 
 export default function reducer(state = INITIAL_STATE, action) {
+
+  let rawState = rootReducer(state, action);
+
+  return normalizeMergedRecord(normalizeMergeStatus(normalizeCurrentPair(rawState)));
+}
+
+function rootReducer(state, action) {
 
   switch (action.type) {
   case LOAD_SOURCE_RECORD:
@@ -158,4 +178,42 @@ export default function reducer(state = INITIAL_STATE, action) {
   }
 
   return state;
+}
+
+
+function normalizeMergeStatus(state) {
+  const mergedRecordState = state.getIn(['mergedRecord', 'state']);
+  if (mergedRecordState === 'LOADED') {
+    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_AVAILABLE');
+  } else {
+    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
+  }
+}
+
+function normalizeCurrentPair(state) {
+  const sourceRecordId = state.getIn(['sourceRecord', 'id']);
+  const targetRecordId = state.getIn(['targetRecord', 'id']);
+
+  const allowedValues = [
+    state.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']),
+    state.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']),
+    undefined
+  ];
+
+  if (_.includes(allowedValues, sourceRecordId) && _.includes(allowedValues, targetRecordId)) {
+    return state;
+  } else {
+    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
+  }
+}
+
+function normalizeMergedRecord(state) {
+  const sourceRecordStatus = state.getIn(['sourceRecord', 'state']);
+  const targetRecordStatus = state.getIn(['targetRecord', 'state']);
+
+  if (sourceRecordStatus == 'LOADING' || targetRecordStatus == 'LOADING') {
+    return state.set('mergedRecord', DEFAULT_MERGED_RECORD);
+  }
+  return state;
+
 }

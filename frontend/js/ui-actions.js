@@ -557,10 +557,10 @@ export function updateMergedSubrecord(rowIndex) {
 
   return function(dispatch, getState) {
 
-    const selectedActionType = getState().get('subrecordActions').get(rowIndex);
+    const selectedActionType = getState().getIn(['subrecords', 'actions']).get(rowIndex);
 
-    const preferredRecord = getState().getIn(['targetRecord', 'subrecords']).get(rowIndex);
-    const otherRecord = getState().getIn(['sourceRecord', 'subrecords']).get(rowIndex);
+    const preferredRecord = getState().getIn(['subrecords', 'targetRecord']).get(rowIndex);
+    const otherRecord = getState().getIn(['subrecords', 'sourceRecord']).get(rowIndex);
 
     if (selectedActionType === SubrecordActionTypes.COPY) {
       if (preferredRecord && otherRecord) {

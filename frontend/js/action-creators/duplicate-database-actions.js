@@ -99,7 +99,7 @@ function fetchNextPairStart() {
   return { type: NEXT_DUPLICATE_START };
 }
 
-function fetchNextPairSuccess(pair) {
+export function fetchNextPairSuccess(pair) {
   return { type: NEXT_DUPLICATE_SUCCESS, pair};
 }
 
