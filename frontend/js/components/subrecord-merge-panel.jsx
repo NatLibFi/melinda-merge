@@ -8,8 +8,8 @@ import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
 import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
-import { DragSubrecordMergePanelRow } from './subrecord-merge-panel-row';
-import { DropSubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
+import { DragDropSubrecordMergePanelRow } from './subrecord-merge-panel-row';
+import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
@@ -32,7 +32,8 @@ export class SubrecordMergePanel extends React.Component {
 
       const key = createKey(sourceRecord, targetRecord, i);
 
-      return (<DragSubrecordMergePanelRow
+      return (<DragDropSubrecordMergePanelRow
+        onMoveRow={this.onMoveRow.bind(this)}
         key={key}
         rowIndex={i}
         selectedAction={selectedAction}
@@ -60,7 +61,7 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   renderAddNewRowElement(key) {
-    return <DropSubrecordMergePanelNewRow rowIndex={key} onMoveRow={this.onMoveRow.bind(this)} key={key} onClick={this.onAddRow(key)} />;
+    return <SubrecordMergePanelNewRow key={key} onClick={this.onAddRow(key)} />;
   }
 
   onAddRow(rowIndex) {

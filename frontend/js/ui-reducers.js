@@ -192,13 +192,13 @@ export function changeTargetSubrecordRow(state, fromRowIndex, toRowIndex) {
 }
 
 export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
-  const rowMover = _.partial(moveRow, fromRowIndex, toRowIndex);
+  const changeRow = _.partial(moveRow, fromRowIndex, toRowIndex);
 
   return state
-    .updateIn(['sourceRecord', 'subrecords'], rowMover)
-    .updateIn(['targetRecord', 'subrecords'], rowMover)
-    .updateIn(['mergedRecord', 'subrecords'], rowMover)
-    .updateIn(['subrecordActions'], rowMover);
+    .updateIn(['sourceRecord', 'subrecords'], changeRow)
+    .updateIn(['targetRecord', 'subrecords'], changeRow)
+    .updateIn(['mergedRecord', 'subrecords'], changeRow)
+    .updateIn(['subrecordActions'], changeRow);
 }
 
 function resetListIndices(rowIndexArr, list) {
@@ -220,13 +220,16 @@ function swapItems(fromRowIndex, toRowIndex, list) {
 
 function moveRow(fromRowIndex, toRowIndex, list) {
   
-  const delRowIndex = fromRowIndex < toRowIndex ? fromRowIndex : fromRowIndex + 1;
+  const rowToMove = list.get(fromRowIndex);
 
-  const data = list.get(fromRowIndex);
+  const listWithoutRow = list.delete(fromRowIndex);
 
-  return list
-    .insert(toRowIndex, data)
-    .delete(delRowIndex);
+  const requiredListSize = Math.max(listWithoutRow.size, toRowIndex);
+
+  return listWithoutRow
+    .setSize(requiredListSize)
+    .insert(toRowIndex, rowToMove);
+    
 }
 
 export function setSubrecordAction(state, rowIndex, actionType) {

@@ -1,11 +1,10 @@
 
 .subrecord-merge-panel {
+  
+  tr {
 
-  .add-new-row {
- 
     &.is-over {
-      border: 2px dashed #66bb6a;
-      border-radius: 5px;
+      outline: 2px dashed #66bb6a;
     }
   }
 
