@@ -6,6 +6,7 @@ import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS,
   MARK_AS_MERGED_START, MARK_AS_NOT_DUPLICATE_START, SKIP_PAIR_START} from '../constants/action-type-constants';
 
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
+import {RESET_WORKSPACE} from '../constants/action-type-constants';
 
 /*
 import {List, Map} from 'immutable';
@@ -27,7 +28,8 @@ currentPair: {
 */
 
 const INITIAL_STATE = fromJS({
-  count: undefined
+  count: 0,
+  status: DuplicateDatabaseStates.READY
 });
 
 export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) {
@@ -64,6 +66,9 @@ export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) 
     return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
   case SKIP_PAIR_ERROR:
     return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+
+  case RESET_WORKSPACE:
+    return state.setIn(['currentPair'], undefined);
   }
 
   return state;    

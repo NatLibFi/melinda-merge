@@ -3,6 +3,7 @@ import _ from 'lodash';
 
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from '../ui-actions';
+import {RESET_WORKSPACE} from '../constants/action-type-constants';
 
 import {SET_SOURCE_RECORD, SET_TARGET_RECORD } from '../ui-actions';
 
@@ -38,6 +39,8 @@ export default function subrecords(state = INITIAL_STATE, action) {
     return setSourceSubrecords(state, action.record, action.subrecords);
   case SET_TARGET_RECORD:
     return setTargetSubrecords(state, action.record, action.subrecords);
+  case RESET_WORKSPACE:
+    return INITIAL_STATE;
 
   }
   return state;

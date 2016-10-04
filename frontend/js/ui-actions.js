@@ -23,9 +23,9 @@ export function commitMerge() {
     const targetRecord = getState().getIn(['targetRecord', 'record']);
     const mergedRecord = getState().getIn(['mergedRecord', 'record']);
 
-    const sourceSubrecordList = getState().getIn(['sourceRecord', 'subrecords']).filter(_.identity);
-    const targetSubrecordList = getState().getIn(['targetRecord', 'subrecords']).filter(_.identity);
-    const mergedSubrecordList = getState().getIn(['mergedRecord', 'subrecords']).filter(_.identity);
+    const sourceSubrecordList = getState().getIn(['subrecords', 'sourceRecord']).filter(_.identity);
+    const targetSubrecordList = getState().getIn(['subrecords', 'targetRecord']).filter(_.identity);
+    const mergedSubrecordList = getState().getIn(['subrecords', 'mergedRecord']).filter(_.identity);
 
     const fetchOptions = {
       method: 'POST',

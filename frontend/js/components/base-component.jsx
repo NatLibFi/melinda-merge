@@ -67,7 +67,7 @@ function mapStateToProps(state) {
   const shouldRenderSubrecordComponent = sourceHasSubrecords || targetHasSubrecords;
 
   return {
-    sessionState: state.get('sessionState'),
+    sessionState: state.getIn(['session', 'state']),
     shouldRenderSubrecordComponent
   };
 }

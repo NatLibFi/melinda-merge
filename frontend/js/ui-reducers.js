@@ -1,7 +1,9 @@
-import { List, Map } from 'immutable';
+import { Map } from 'immutable';
 import { DEFAULT_MERGED_RECORD } from './root-reducer';
 
 import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_SOURCE_RECORD_ERROR, SET_SOURCE_RECORD_ID } from './ui-actions';
+import {RESET_WORKSPACE} from './constants/action-type-constants';
+
 
 const INITIAL_STATE = Map({
   state: 'EMPTY'
@@ -17,6 +19,9 @@ export function sourceRecord(state = INITIAL_STATE, action) {
     return setSourceRecordError(state, action.error);
   case SET_SOURCE_RECORD_ID:
     return setSourceRecordId(state, action.recordId);
+  case RESET_WORKSPACE:
+    return INITIAL_STATE;
+
   }
   return state;
 }
@@ -33,6 +38,8 @@ export function targetRecord(state = INITIAL_STATE, action) {
     return setTargetRecordError(state, action.error);
   case SET_TARGET_RECORD_ID:
     return setTargetRecordId(state, action.recordId);
+  case RESET_WORKSPACE:
+    return INITIAL_STATE;
   }
   return state;
 }
@@ -47,7 +54,8 @@ export function mergedRecord(state = INITIAL_STATE, action) {
     return setMergedRecordError(state, action.error);
   case SET_MERGED_RECORD:
     return setMergedRecord(state, action.record);
-
+  case RESET_WORKSPACE:
+    return INITIAL_STATE;
   }
   return state;
 }
@@ -62,9 +70,12 @@ export function mergeStatus(state = Map({}), action) {
     return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
   case COMMIT_MERGE_SUCCESS:
     return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
+  case RESET_WORKSPACE:
+    return Map({});
   }
   return state;
 }
+
 export function setMergeStatus(state, mergeStatus) {
   const mergeAvailable = mergeStatus.status == 'COMMIT_MERGE_ERROR' ? 'COMMIT_MERGE_AVAILABLE' : 'COMMIT_MERGE_DISABLED';
 
@@ -98,7 +109,7 @@ export function setSourceRecord(state, record) {
 }
 
 export function setTargetRecord(state, record) {
-  
+
   return state
     .set('state', 'LOADED')
     .set('record', record);
