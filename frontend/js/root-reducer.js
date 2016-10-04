@@ -1,4 +1,4 @@
-import {fromJS} from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { DuplicateDatabaseStates } from './constants';
 
 import {loadSourceRecord, setSourceRecord, loadTargetRecord, setTargetRecord, 
@@ -51,6 +51,7 @@ function resetWorkspace(state) {
     .set('targetRecord', INITIAL_STATE.get('targetRecord'))
     .set('mergedRecord', INITIAL_STATE.get('mergedRecord'))
     .set('location', undefined)
+    .set('mergeStatus', Map())
     .setIn(['duplicateDatabase', 'currentPair'], undefined);
 }
 
