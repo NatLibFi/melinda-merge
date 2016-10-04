@@ -1,5 +1,4 @@
 import {expect} from 'chai';
-import {setSourceRecord} from '../js/ui-reducers';
 import * as actions from '../js/ui-actions';
 
 import { INITIAL_STATE } from '../js/root-reducer';

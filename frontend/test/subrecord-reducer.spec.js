@@ -1,6 +1,4 @@
 import {expect} from 'chai';
-import {setSourceRecord, setTargetRecord} from '../js/ui-reducers';
-import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, setMergedSubrecord, setSubrecordAction, changeSubrecordRow} from '../js/reducers/subrecord-reducer';
 import MarcRecord from 'marc-record-js';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from '../js/constants';

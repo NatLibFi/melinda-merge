@@ -125,7 +125,7 @@ export function setMergedRecord(state, record) {
    // .updateIn(['subrecords', 'actions'], () => List()); // TODO move to subrecord reducer
 }
 
-export function clearMergedRecord(state) {
+export function clearMergedRecord() {
   return DEFAULT_MERGED_RECORD;
 }
 
