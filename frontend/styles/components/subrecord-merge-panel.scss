@@ -22,7 +22,6 @@
     }
   }
   
-
   .to-remove-source td:nth-child(1) {
     background-image: url("../../images/to-remove-start.svg");
   }
@@ -76,7 +75,7 @@
     display: block;
     position: absolute;
     width: 100%;
-    border: 0 !important;
+    border: 0;
     transition: background-color 150ms ease-in;
     transition-delay: 0ms;
     z-index: 1;

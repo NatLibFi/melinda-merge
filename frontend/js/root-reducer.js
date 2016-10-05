@@ -15,9 +15,9 @@ import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS} from './ui
 import {setMergeStatus} from './ui-reducers';
 
 import {insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeTargetSubrecordRow, 
-  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError} from './ui-reducers';
+  setSubrecordAction, setMergedSubrecord, setMergedSubrecordError, changeSubrecordRow} from './ui-reducers';
 import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
-  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR} from './ui-actions';
+  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from './ui-actions';
 
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, RESET_WORKSPACE, NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from './constants/action-type-constants';
 import {setDuplicateCount, setDuplicateCountError, setDuplicateDatabaseControlsStatus, setCurrentDuplicatePair, setCurrentDuplicatePairError} from './reducers/duplicate-db-reducer';
@@ -107,6 +107,8 @@ export default function reducer(state = INITIAL_STATE, action) {
     return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
   case CHANGE_TARGET_SUBRECORD_ROW:
     return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+  case CHANGE_SUBRECORD_ROW: 
+    return changeSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
 
   case DUPLICATE_COUNT_SUCCESS:
     return setDuplicateCount(state, action.count);
