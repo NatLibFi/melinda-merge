@@ -11,7 +11,7 @@ import location from './reducers/location-reducer';
 import sourceRecord from './reducers/source-record-reducer';
 import targetRecord from './reducers/target-record-reducer';
 import mergedRecord from './reducers/merged-record-reducer';
-import mergeStatus from './reducers/merge-status-reducer';
+import mergeStatus from  './reducers/merge-status-reducer';
 
 export const DEFAULT_MERGED_RECORD = Map({
   state: 'EMPTY',

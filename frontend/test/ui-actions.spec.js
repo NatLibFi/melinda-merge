@@ -4,6 +4,7 @@ import sinonChai from 'sinon-chai';
 import * as actions from '../js/ui-actions';
 import { __RewireAPI__ as ActionsRewireAPI } from '../js/ui-actions';
 import Immutable from 'immutable';
+require('sinon-as-promised');
 
 chai.use(sinonChai);
 const expect = chai.expect;
@@ -54,33 +55,21 @@ describe('ui actions', () => {
     });
 
     describe('thunk', () => {
+      let fetchStub;
+      beforeEach(() => {
+        fetchStub = sinon.stub();
+        ActionsRewireAPI.__Rewire__('fetch', fetchStub);
+      });
+      afterEach(() => {
+        ActionsRewireAPI.__ResetDependency__('fetch');
+      });
 
       it('throws if type paremeter is not set', () => {
         const fetchRecordThunk = fetchRecord(30000);
         expect(fetchRecordThunk).to.throw(Error);
       });
 
-      function createResponsePromise(status, result) {
-        return fn => {
-
-          const response = {
-            status: status,
-            json: () => {
-              return {
-                then: (fn) => fn(result)
-              };
-            }
-          };
-
-          fn(response);
-          return {
-            catch: sinon.stub()
-          };
-       
-        };
-      }
-
-      it('should dispatch loadSourceRecord and setSourceRecord actions', () => {
+      it('should dispatch loadSourceRecord and setSourceRecord actions', (done) => {
 
         const result = {
           record: {
@@ -89,24 +78,23 @@ describe('ui actions', () => {
           },
           subrecords: []
         };
-    
-        ActionsRewireAPI.__Rewire__('fetch', function() {
-          return {
-            then: createResponsePromise(200, result)
-          };
-        });
 
+        fetchStub.resolves({
+          status: 200,
+          json: sinon.stub().resolves(result)
+        });
+    
         const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
 
         const dispatchSpy = sinon.spy();
 
-        fetchRecordThunk(dispatchSpy);
-
-        expect(dispatchSpy).to.have.been.calledWith(actions.loadSourceRecord(30000));
-        expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array));
+        fetchRecordThunk(dispatchSpy).then(() => {
+          expect(dispatchSpy).to.have.been.calledWith(actions.loadSourceRecord(sinon.match.number));
+          expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array));
+          done();
+        }).catch(done);
         
       });
-
 
       it('should dispatch setSourceRecordError on 404', () => {
 
@@ -115,42 +103,34 @@ describe('ui actions', () => {
           fields: []
         };
     
-        ActionsRewireAPI.__Rewire__('fetch', function() {
-          return {
-            then: createResponsePromise(404, result)
-          };
+        fetchStub.resolves({
+          status: 404,
+          json: sinon.stub().resolves(result)
         });
 
         const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
 
         const dispatchSpy = sinon.spy();
 
-        fetchRecordThunk(dispatchSpy);
+        fetchRecordThunk(dispatchSpy).then(() => {
+          expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecordError(sinon.match.string));
+        });
 
-        expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecordError(sinon.match.string));
-        
       });
-
 
       it('should dispatch setSourceRecordError on network error', () => {
 
-        ActionsRewireAPI.__Rewire__('fetch', function() {
-          return {
-            then: () => {
-              return {
-                catch: fn => fn('fetch promise was rejected')  
-              };
-            }
-          };
+        fetchStub.rejects({
+          message: 'error'
         });
 
         const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
 
         const dispatchSpy = sinon.spy();
 
-        fetchRecordThunk(dispatchSpy);
-
-        expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecordError(sinon.match.string));
+        fetchRecordThunk(dispatchSpy).then(() => {
+          expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecordError(sinon.match.string));
+        });
         
       });
     });
