@@ -1,22 +1,38 @@
 
-export function executeTransaction(sequence) {
+export function executeTransaction(sequence, additionalRollbackActions) {
+
+  var additionalRollbacksToRun = additionalRollbackActions || [];
 
   var rollbacks = [];
 
   return new Promise((resolve, reject) => {
 
-    var chain = Promise.resolve();
-    sequence.forEach(function (transactionStepDefinition) {
-      chain = chain.then(step(transactionStepDefinition));
+    var chain;
+    const results = [];
+    sequence.forEach(function(transactionStepDefinition, i) {
+      
+      if (i === 0) {
+        chain = step(transactionStepDefinition)();
+      } else {
+        chain = chain.then((result) => {
+          results.push(result);
+          return step(transactionStepDefinition)();
+        });
+      }
     });
 
     chain.then(function(lastResult) {
-      resolve(lastResult);
+      results.push(lastResult);
+      resolve(results);
     }).catch(function(error) {
-      if (error.rollbacks) {
+
+      var rollbacksToRun = error.rollbacks || [];
+      rollbacksToRun = rollbacksToRun.concat(additionalRollbacksToRun);
+
+      if (rollbacksToRun.length > 0) {
         // do a rollback
       
-        executeRollbacks(error.rollbacks)
+        executeRollbacks(rollbacksToRun)
           .then(() => reject(error)) // error, but rollback was success
           .catch(error => {
             const rollbackError = new RollbackError(error.message);
@@ -41,7 +57,7 @@ export function executeTransaction(sequence) {
       });
 
       p.then(function(result) {
-        rollbacks.unshift(fn.rollback);
+        rollbacks.unshift(fn.rollback.bind(null, result));
         return result;
       });
     
@@ -56,7 +72,7 @@ function executeRollbacks(rollbackSequence) {
     const inital = Promise.resolve();
 
     rollbackSequence.reduce(function (acc, rollbackFn) {
-      return acc.then(rollbackFn).catch(e => reject(e));
+      return acc.then(() => rollbackFn()).catch(e => reject(e));
     }, inital).then(resolve);
   });
 }

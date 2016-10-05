@@ -54,9 +54,9 @@ describe('MARC IO controller', () => {
         .post('/commit-merge')
         .set('Cookie', `sessionToken=${sessionToken}`)
         .send({
-          'otherRecord': createFakeRecord(), 
-          'preferredRecord': createFakeRecord(), 
-          'mergedRecord': createFakeRecord()
+          'otherRecord': createFakeRecordFamily(), 
+          'preferredRecord': createFakeRecordFamily(), 
+          'mergedRecord': createFakeRecordFamily()
         })
         .expect(HttpStatus.OK, done);
         
@@ -70,9 +70,9 @@ describe('MARC IO controller', () => {
         .post('/commit-merge')
         .set('Cookie', `sessionToken=${sessionToken}`)
         .send({
-          'otherRecord': createFakeRecord(), 
-          'preferredRecord': createFakeRecord(), 
-          'mergedRecord': createFakeRecord()
+          'otherRecord': createFakeRecordFamily(), 
+          'preferredRecord': createFakeRecordFamily(), 
+          'mergedRecord': createFakeRecordFamily()
         })
         .expect(HttpStatus.INTERNAL_SERVER_ERROR, done);
         
@@ -84,5 +84,12 @@ describe('MARC IO controller', () => {
 function createFakeRecord() {
   return {
     fields: []
+  };
+}
+
+function createFakeRecordFamily() {
+  return {
+    record: createFakeRecord(),
+    subrecords: []
   };
 }

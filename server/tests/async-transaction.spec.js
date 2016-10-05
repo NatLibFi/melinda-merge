@@ -2,9 +2,14 @@
 'use strict';
 
 var chai = require('chai');
+var sinon = require('sinon');
+var sinonChai = require('sinon-chai');
+chai.use(sinonChai);
 var expect = chai.expect;
 var assert = chai.assert;
+
 var {executeTransaction, RollbackError} = require('../async-transaction');
+
 
 describe('transcation', function() {
 
@@ -16,10 +21,16 @@ describe('transcation', function() {
       {action: successFn('merge'), rollback: undefined},
     ];
 
-    executeTransaction(sequence).then(function() {
-      assert(true, 'Success callback should be called when everyting is ok');
-      done();
-    }).catch(function(error) {
+    executeTransaction(sequence).then(function(res) {
+      try {
+        assert(true, 'Success callback should be called when everyting is ok');
+        expect(res).to.eql(['del1', 'del2', 'merge']);
+
+        done();
+      } catch(e) {
+        done(e);
+      }
+    }, function(error) {
       if (error.name == 'AssertionError') {
         done(error);
       }
@@ -44,6 +55,54 @@ describe('transcation', function() {
         
         expect(error.message).to.equal('merge');
         done();
+      });
+  });
+
+  it('should run additional rollbacks', function(done) {
+
+    const additionalRollback = sinon.spy(successFn('extrarollbackaction'));
+
+    var sequence = [
+      {action: successFn('del1'), rollback: successFn('undel1')},
+      {action: successFn('del2'), rollback: successFn('undel2')},
+      {action: failingFn('merge'), rollback: undefined},
+    ];
+
+    executeTransaction(sequence, [additionalRollback])
+      .then(onFulfilledMustNotBeCalled(done))
+      .catch(catchHandler(function(error) {
+        expect(additionalRollback).to.have.been.calledOnce;
+        expect(error.message).to.equal('merge');
+        done();
+      }, done));
+  });
+
+  it('should give action response to rollback function as parameter', function(done) {
+
+    const rollback1 = sinon.spy(successFn('undel1'));
+    const rollback2 = sinon.spy(successFn('undel2'));
+
+    var sequence = [
+      {action: successFn('del1'), rollback: rollback1},
+      {action: successFn('del2'), rollback: rollback2},
+      {action: failingFn('merge'), rollback: undefined},
+    ];
+
+    executeTransaction(sequence)
+      .then(onFulfilledMustNotBeCalled(done))
+      .catch(function(error) {
+        if (error.name == 'AssertionError') {
+          done(error);
+        }
+
+        try {
+          expect(rollback1.getCall(0).args).to.eql(['del1']);
+          expect(rollback2.getCall(0).args).to.eql(['del2']);          
+          expect(error.message).to.equal('merge');
+          done();
+        } catch(e) {
+          done(e);
+        }
       });
   });
 
@@ -79,22 +138,27 @@ describe('transcation', function() {
 
     executeTransaction(sequence)
       .then(onFulfilledMustNotBeCalled(done))
-      .catch(function(error) {
-        if (error.name == 'AssertionError') {
-          done(error);
-        }
-
-        try {
-
-          expect(error).to.be.instanceof(RollbackError);
-          expect(error.message).to.equal('undel1');  
-          done();
-        } catch(e) {
-          done(e);
-        }
-      });
+      .catch(catchHandler(function(error) {
+        expect(error).to.be.instanceof(RollbackError);
+        expect(error.message).to.equal('undel1');  
+        done();
+      }, done));
   });
 });
+
+function catchHandler(fn, done) {
+  return function(error) {
+    if (error.name == 'AssertionError') {
+      done(error);
+    }
+    try {
+      fn(error);
+    } catch(error) {
+      done(error);
+    }
+  };
+}
+
 
 describe('RollbackError', function() {
   it('should be accessible', function() {

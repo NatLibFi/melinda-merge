@@ -5,10 +5,8 @@ import '../../styles/components/subrecord-panel';
 export class SubRecordPanel extends React.Component {
 
   static propTypes = {
-    type: React.PropTypes.string.isRequired,
     record: React.PropTypes.object.isRequired,
-    rowIndex: React.PropTypes.number.isRequired,
-    isDragging: React.PropTypes.bool.isRequired
+    isDragging: React.PropTypes.bool
   }
 
   render() {
@@ -19,7 +17,7 @@ export class SubRecordPanel extends React.Component {
 
     const selectedFields = recordString
       .split('\n')
-      .filter(f => f.substr(0,3) === '245' || f.substr(0,3) === '337')
+      .filter(f => f.substr(0,3) === '245' || f.substr(0,3) === '336')
       .join('\n');
 
     const classes = classNames({

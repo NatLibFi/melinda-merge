@@ -2,7 +2,8 @@
 export const ItemTypes = {
   SUBRECORD: 'SUBRECORD',
   TARGET_SUBRECORD: 'TARGET',
-  SOURCE_SUBRECORD: 'SOURCE'
+  SOURCE_SUBRECORD: 'SOURCE',
+  MERGED_SUBRECORD: 'MERGED'
 };
 
 export const DuplicateDatabaseStates = {
@@ -11,4 +12,10 @@ export const DuplicateDatabaseStates = {
   MARK_AS_NON_DUPLICATE_ONGOING: 'MARK_AS_NON_DUPLICATE_ONGOING',
   MARK_AS_MERGED_ONGOING: 'MARK_AS_MERGED_ONGOING',
   READY: 'READY'
+};
+
+export const SubrecordActionTypes = {
+  BLOCK: 'BLOCK',
+  MERGE: 'MERGE',
+  COPY: 'COPY'
 };
