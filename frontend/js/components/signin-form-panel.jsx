@@ -13,7 +13,10 @@ export class SigninFormPanel extends React.Component {
   constructor() {
     super();
 
-    this.state = {};
+    this.state = {
+      username: '',
+      password: ''
+    };
   }
 
   updateUsername(event) {
@@ -95,8 +98,8 @@ export class SigninFormPanel extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    sessionState: state.get('sessionState'),
-    createSessionErrorMessage: state.get('createSessionErrorMessage')
+    sessionState: state.getIn(['session' ,'state']),
+    createSessionErrorMessage: state.getIn(['session', 'error'])
   };
 }
 

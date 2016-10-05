@@ -11,6 +11,7 @@ import {hashHistory} from 'react-router';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { SubrecordActionTypes } from './constants';
+import { FetchNotOkError } from './errors';
 
 export function commitMerge() {
 
@@ -23,9 +24,9 @@ export function commitMerge() {
     const targetRecord = getState().getIn(['targetRecord', 'record']);
     const mergedRecord = getState().getIn(['mergedRecord', 'record']);
 
-    const sourceSubrecordList = getState().getIn(['sourceRecord', 'subrecords']).filter(_.identity);
-    const targetSubrecordList = getState().getIn(['targetRecord', 'subrecords']).filter(_.identity);
-    const mergedSubrecordList = getState().getIn(['mergedRecord', 'subrecords']).filter(_.identity);
+    const sourceSubrecordList = getState().getIn(['subrecords', 'sourceRecord']).filter(_.identity);
+    const targetSubrecordList = getState().getIn(['subrecords', 'targetRecord']).filter(_.identity);
+    const mergedSubrecordList = getState().getIn(['subrecords', 'mergedRecord']).filter(_.identity);
 
     const fetchOptions = {
       method: 'POST',
@@ -408,14 +409,12 @@ export const startSession = (function() {
   };
 })();
 
-
-
-
 export const fetchRecord = (function() {
-  let currentSourceRecordId;
-  let currentTargetRecordId;
 
   const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+
+  const fetchSourceRecord = recordFetch(APIBasePath, loadSourceRecord, setSourceRecord, setSourceRecordError);
+  const fetchTargetRecord = recordFetch(APIBasePath, loadTargetRecord, setTargetRecord, setTargetRecordError);
 
   return function(recordId, type) {
 
@@ -425,91 +424,70 @@ export const fetchRecord = (function() {
         throw new Error('fetchRecord type parameter must be either SOURCE or TARGET');
       }
 
-
       if (type === 'SOURCE') {
-        const loadRecordAction = loadSourceRecord;
-        const setRecordAction = setSourceRecord;
-        const setRecordErrorAction = setSourceRecordError;
-
-        dispatch(loadRecordAction(recordId));
-        currentSourceRecordId = recordId;
-
-        return fetch(`${APIBasePath}/${recordId}`)
-          .then(response => {
-
-            if (response.status == HttpStatus.OK) {
-
-              return response.json().then(json => {
-                
-                if (currentSourceRecordId === recordId) {
-                  const mainRecord = json.record;
-                  const subrecords = json.subrecords;
-
-                  const marcRecord = new MARCRecord(mainRecord);
-                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
-
-                  dispatch(setRecordAction(marcRecord, marcSubRecords));
-                  dispatch(updateMergedRecord());
-                }
-              });
-            } else {
-              switch (response.status) {
-              case HttpStatus.NOT_FOUND: return dispatch(setRecordErrorAction('Tietuetta ei löytynyt'));
-              }
-
-              dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + response.status));
-            }
-       
-          }).catch(exceptCoreErrors((error) => {
-            dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + error.message));
-          }));
-
+        return fetchSourceRecord(recordId, dispatch);
       }
 
       if (type === 'TARGET') {
-        dispatch(loadTargetRecord(recordId));
-        currentTargetRecordId = recordId;
-
-        return fetch(`${APIBasePath}/${recordId}`)
-          .then(response => {
-
-            if (response.status == HttpStatus.OK) {
-
-              response.json().then(json => {
-
-                if (currentTargetRecordId === recordId) {
-                  const mainRecord = json.record;
-                  const subrecords = json.subrecords;
-
-                  const marcRecord = new MARCRecord(mainRecord);
-                  const marcSubRecords = subrecords.map(record => new MARCRecord(record));
-
-                  dispatch(setTargetRecord(marcRecord, marcSubRecords));
-                  dispatch(updateMergedRecord());
-                }
-              });
-            } else {
-              switch (response.status) {
-              case HttpStatus.NOT_FOUND: return dispatch(setTargetRecordError('Tietuetta ei löytynyt'));
-              }
-
-              dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + response.status));
-            }
-       
-          }).catch(exceptCoreErrors((error) => {
-            dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + error.message));
-          }));
-
+        return fetchTargetRecord(recordId, dispatch);
       }
     };
 
   };
+ 
 })();
 
 if (__DEV__) {
   window.fetchRecord = fetchRecord;
 }
 
+function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordErrorAction) {
+  let currentRecordId;
+  return function(recordId, dispatch) {
+    currentRecordId = recordId;
+    
+    dispatch(loadRecordAction(recordId));
+
+    return fetch(`${APIBasePath}/${recordId}`)
+      .then(validateResponseStatus)
+      .then(response => response.json())
+      .then(json => {
+
+
+        if (currentRecordId === recordId) {
+          const mainRecord = json.record;
+          const subrecords = json.subrecords;
+
+          const marcRecord = new MARCRecord(mainRecord);
+          const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+
+
+          dispatch(setRecordAction(marcRecord, marcSubRecords));
+          dispatch(updateMergedRecord());
+        }
+ 
+      }).catch(exceptCoreErrors((error) => {
+
+        if (error instanceof FetchNotOkError) {
+          switch (error.response.status) {
+          case HttpStatus.NOT_FOUND: return dispatch(setRecordErrorAction('Tietuetta ei löytynyt'));
+          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(setRecordErrorAction('Tietueen lataamisessa tapahtui virhe.'));
+          }
+        }
+                
+        dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + error.message));
+      }));
+  };
+
+  
+}
+
+function validateResponseStatus(response) {
+  if (response.status !== HttpStatus.OK) {
+    throw new FetchNotOkError(response);
+  }
+  return response;
+}
 
 export const INSERT_SUBRECORD_ROW = 'INSERT_SUBRECORD_ROW';
 
@@ -557,10 +535,10 @@ export function updateMergedSubrecord(rowIndex) {
 
   return function(dispatch, getState) {
 
-    const selectedActionType = getState().get('subrecordActions').get(rowIndex);
+    const selectedActionType = getState().getIn(['subrecords', 'actions']).get(rowIndex);
 
-    const preferredRecord = getState().getIn(['targetRecord', 'subrecords']).get(rowIndex);
-    const otherRecord = getState().getIn(['sourceRecord', 'subrecords']).get(rowIndex);
+    const preferredRecord = getState().getIn(['subrecords', 'targetRecord']).get(rowIndex);
+    const otherRecord = getState().getIn(['subrecords', 'sourceRecord']).get(rowIndex);
 
     if (selectedActionType === SubrecordActionTypes.COPY) {
       if (preferredRecord && otherRecord) {

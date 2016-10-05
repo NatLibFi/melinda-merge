@@ -99,7 +99,7 @@ function fetchNextPairStart() {
   return { type: NEXT_DUPLICATE_START };
 }
 
-function fetchNextPairSuccess(pair) {
+export function fetchNextPairSuccess(pair) {
   return { type: NEXT_DUPLICATE_SUCCESS, pair};
 }
 
@@ -224,7 +224,7 @@ export function markAsMerged() {
       credentials: 'include'
     };
 
-    return fetch(`${APIBasePath}/pairs/${id}/mark-as-not-duplicates`, fetchOptions)
+    return fetch(`${APIBasePath}/pairs/${id}/mark-as-merged`, fetchOptions)
       .then(response => {
         if (response.status == HttpStatus.OK) {
           dispatch(markAsMergedSuccess());

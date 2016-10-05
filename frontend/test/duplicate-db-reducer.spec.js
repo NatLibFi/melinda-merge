@@ -1,7 +1,8 @@
 import {expect} from 'chai';
-import {loadSourceRecord, loadTargetRecord} from '../js/ui-reducers';
-import { setCurrentDuplicatePair } from '../js/reducers/duplicate-db-reducer';
+import * as actions from '../js/action-creators/duplicate-database-actions';
+import * as recordActions from '../js/ui-actions';
 import { INITIAL_STATE } from '../js/root-reducer';
+import reducer from '../js/root-reducer';
 
 describe('Duplicate database reducers', () => {
 
@@ -13,13 +14,13 @@ describe('Duplicate database reducers', () => {
     systemMessage: 'message from the creator of this candidate pair',
   };
 
-  describe('setCurrentDuplicatePair', () => {
+  describe('fetchNextPairSuccess', () => {
     let state;
     let duplicateDatabase;
     beforeEach(() => {
-      state = INITIAL_STATE;
-      state = setCurrentDuplicatePair(state, currentPair);
-      duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
+      state = undefined;
+      state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+      duplicateDatabase = state.toJS().duplicateDatabase;
     });
 
     it('sets the current duplicate pair', () => {
@@ -32,9 +33,9 @@ describe('Duplicate database reducers', () => {
 
     describe('and then loading a new source record which is not either of currentpair', () => {
       beforeEach(() => {
-        state = INITIAL_STATE;
-        state = setCurrentDuplicatePair(state, currentPair);
-        state = loadSourceRecord(state, '00384791');
+        state = undefined;
+        state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+        state = reducer(state, recordActions.loadSourceRecord('00384791'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -50,8 +51,8 @@ describe('Duplicate database reducers', () => {
     describe('and then loading a new target record which is not either of currentpair', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
-        state = setCurrentDuplicatePair(state, currentPair);
-        state = loadTargetRecord(state, '00384791');
+        state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+        state = reducer(state, recordActions.loadTargetRecord('00384791'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -67,8 +68,8 @@ describe('Duplicate database reducers', () => {
     describe('and then loading a new source record that is either of the currentpair', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
-        state = setCurrentDuplicatePair(state, currentPair);
-        state = loadSourceRecord(state, '00384794');
+        state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+        state = reducer(state, recordActions.loadSourceRecord('00384794'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -84,8 +85,8 @@ describe('Duplicate database reducers', () => {
     describe('and then loading a new target record that is either of the currentpair', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
-        state = setCurrentDuplicatePair(state, currentPair);
-        state = loadTargetRecord(state, '00384794');
+        state = reducer(state, actions.fetchNextPairSuccess(currentPair));
+        state = reducer(state, recordActions.loadTargetRecord('00384794'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 

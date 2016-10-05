@@ -79,9 +79,9 @@ function mapStateToProps(state) {
   return {
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     statusInfo: state.getIn(['mergeStatus', 'message']),
-    sourceSubrecords: state.getIn(['sourceRecord', 'subrecords'], List()),
-    targetSubrecords: state.getIn(['targetRecord', 'subrecords'], List()),
-    selectedActions: state.getIn(['subrecordActions'], List())
+    sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()),
+    targetSubrecords: state.getIn(['subrecords', 'targetRecord'], List()),
+    selectedActions: state.getIn(['subrecords', 'actions'], List())
   };
 }
 

@@ -61,13 +61,13 @@ export class BaseComponent extends React.Component {
 
 function mapStateToProps(state) {
 
-  const sourceHasSubrecords = state.getIn(['sourceRecord', 'subrecords'], List()).size > 0;
-  const targetHasSubrecords = state.getIn(['targetRecord', 'subrecords'], List()).size > 0;
+  const sourceHasSubrecords = state.getIn(['subrecords', 'sourceRecord'], List()).size > 0;
+  const targetHasSubrecords = state.getIn(['subrecords', 'targetRecord'], List()).size > 0;
 
   const shouldRenderSubrecordComponent = sourceHasSubrecords || targetHasSubrecords;
 
   return {
-    sessionState: state.get('sessionState'),
+    sessionState: state.getIn(['session', 'state']),
     shouldRenderSubrecordComponent
   };
 }
