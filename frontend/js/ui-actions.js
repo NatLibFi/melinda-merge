@@ -53,22 +53,23 @@ export function commitMerge() {
     return fetch(`${APIBasePath}/commit-merge`, fetchOptions)
       .then(response => {
 
-        if (response.status == HttpStatus.OK) {
+        response.json().then(res => {
+          if (response.status == HttpStatus.OK) {
 
-          response.json().then(res => {
             const newMergedRecordId = res.recordId;
-            dispatch(commitMergeSuccess(newMergedRecordId));
+            dispatch(commitMergeSuccess(newMergedRecordId, res));
             dispatch(markAsMerged());
-          });
+         
 
-        } else {
-          switch (response.status) {
-          case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
-          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
+          } else {
+            switch (response.status) {
+            case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
+            case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
+            }
+
+            dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
           }
-
-          dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.'));
-        }
+        });
 
       }).catch((error) => {
         dispatch(commitMergeError('There has been a problem with operation: ' + error.message));
@@ -87,19 +88,29 @@ export function commitMergeStart() {
 
 export const COMMIT_MERGE_ERROR = 'COMMIT_MERGE_ERROR';
 
-export function commitMergeError(errorMessage) {
+export function commitMergeError(errorMessage, response) {
   return {
     type: COMMIT_MERGE_ERROR,
-    error: errorMessage
+    error: errorMessage,
+    response
   };
 }
 
 export const COMMIT_MERGE_SUCCESS = 'COMMIT_MERGE_SUCCESS';
 
-export function commitMergeSuccess(recordId) {
+export function commitMergeSuccess(recordId, response) {
   return {
     type: COMMIT_MERGE_SUCCESS,
-    recordId: recordId
+    recordId: recordId,
+    response: response
+  };
+}
+
+export const CLOSE_MERGE_DIALOG = 'CLOSE_MERGE_DIALOG';
+
+export function closeMergeDialog() {
+  return {
+    type: CLOSE_MERGE_DIALOG
   };
 }
 

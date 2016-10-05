@@ -20,3 +20,9 @@ export const SubrecordActionTypes = {
   MERGE: 'MERGE',
   COPY: 'COPY'
 };
+
+export const CommitMergeStates = {
+  COMMIT_MERGE_ONGOING: 'COMMIT_MERGE_ONGOING',
+  COMMIT_MERGE_ERROR: 'COMMIT_MERGE_ERROR',
+  COMMIT_MERGE_COMPLETE: 'COMMIT_MERGE_COMPLETE'
+};

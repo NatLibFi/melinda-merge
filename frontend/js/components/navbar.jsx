@@ -1,18 +1,16 @@
 import React from 'react';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
-import '../../styles/components/navbar.scss';
-import _ from 'lodash';
 import { List } from 'immutable';
+import { mergeButtonEnabled } from '../selectors/merge-status-selector';
+import '../../styles/components/navbar.scss';
 
 export class NavBar extends React.Component {
   static propTypes = {
     commitMerge: React.PropTypes.func.isRequired,
     mergeStatus: React.PropTypes.string,
     statusInfo: React.PropTypes.string,
-    sourceSubrecords: React.PropTypes.array.isRequired,
-    targetSubrecords: React.PropTypes.array.isRequired,
-    selectedActions: React.PropTypes.array.isRequired,
+    mergeButtonEnabled: React.PropTypes.bool.isRequired
   }
 
   static propTypes = {
@@ -34,17 +32,7 @@ export class NavBar extends React.Component {
   }
 
   disableIfMergeNotPossible() {
-    
-    const { sourceSubrecords, targetSubrecords, selectedActions} = this.props;
-    const undefinedActions = _.findIndex(_.zip(sourceSubrecords.toJS(), targetSubrecords.toJS(), selectedActions.toJS()), ([source, target, action]) => {
-      return action === undefined && (source !== undefined || target !== undefined);
-    });
-
-    if (undefinedActions !== -1) {
-      return 'disabled';
-    }
-
-    return this.props.mergeStatus === 'COMMIT_MERGE_AVAILABLE' ? '' : 'disabled';
+    return this.props.mergeButtonEnabled ? '' : 'disabled';
   }
 
   statusInfo() {
@@ -77,6 +65,7 @@ export class NavBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    mergeButtonEnabled: mergeButtonEnabled(state),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     statusInfo: state.getIn(['mergeStatus', 'message']),
     sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()),

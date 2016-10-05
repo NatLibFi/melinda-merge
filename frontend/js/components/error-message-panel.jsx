@@ -1,4 +1,5 @@
 import React from 'react';
+import '../../styles/components/error-message-panel.scss';
 
 export class ErrorMessagePanel extends React.Component {
 
@@ -9,7 +10,7 @@ export class ErrorMessagePanel extends React.Component {
   render() {
     return (
 
-      <div className="card-panel red darken-1">
+      <div className="card-panel red lighten-4 error-message-panel">
         <p>{this.props.message}</p>
       </div>
 

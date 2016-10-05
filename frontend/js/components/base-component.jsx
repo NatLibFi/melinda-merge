@@ -9,12 +9,18 @@ import { SigninFormPanelContainer } from './signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import { List } from 'immutable';
+import { MergeDialog } from './merge-dialog';
 
 export class BaseComponent extends React.Component {
 
   static propTypes = {
     sessionState: React.PropTypes.string.isRequired,
-    shouldRenderSubrecordComponent: React.PropTypes.bool.isRequired
+    shouldRenderSubrecordComponent: React.PropTypes.bool.isRequired,
+    mergeDialog: React.PropTypes.object.isRequired,
+    closeMergeDialog: React.PropTypes.func.isRequired,
+    mergeResponseMessage: React.PropTypes.string,
+    mergeStatus: React.PropTypes.string.isRequired,
+    mergeResponse: React.PropTypes.object,
   }
 
   renderValidationIndicator() {
@@ -34,10 +40,28 @@ export class BaseComponent extends React.Component {
     );
   }
 
+  closeDialog() {
+    this.props.closeMergeDialog();
+  }
+
+  renderMergeDialog() {
+    return (
+      <MergeDialog 
+        status={this.props.mergeStatus} 
+        message={this.props.mergeResponseMessage} 
+        closable={this.props.mergeDialog.closable}
+        response={this.props.mergeResponse}
+        onClose={this.closeDialog.bind(this)}
+      />
+    );
+  }
+
   renderMainPanel() {
+  
     return (
       <div>
         <NavBarContainer />
+        { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
@@ -68,6 +92,11 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
+    mergeStatus: state.getIn(['mergeStatus', 'status']),
+    mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
+    mergeResponse: state.getIn(['mergeStatus', 'response']),
+    mergeDialog: state.getIn(['mergeStatus', 'dialog']).toJS(),
+
     shouldRenderSubrecordComponent
   };
 }
