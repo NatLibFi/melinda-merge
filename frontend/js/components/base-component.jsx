@@ -1,6 +1,7 @@
 import React from 'react';
 import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
+import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
 import { SubrecordComponent } from './subrecord-component';
@@ -37,6 +38,7 @@ export class BaseComponent extends React.Component {
     return (
       <div>
         <NavBarContainer />
+        <ToolBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
         { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}

@@ -18,19 +18,41 @@ export function setMergeStatus(state, mergeStatus) {
 }
 
 export function loadSourceRecord(state, recordId) {
-  return state.set('sourceRecord', Map({
+  const intermediateState = state.set('sourceRecord', Map({
     id: recordId,
     state: 'LOADING'
   })).set('mergedRecord', DEFAULT_MERGED_RECORD)
   .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
+
+  return normalizeCurrentPair(intermediateState);
 }
 
 export function loadTargetRecord(state, recordId) {
-  return state.set('targetRecord', Map({
+  const intermediateState = state.set('targetRecord', Map({
     id: recordId,
     state: 'LOADING'
   })).set('mergedRecord', DEFAULT_MERGED_RECORD)
   .setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
+
+  return normalizeCurrentPair(intermediateState);
+
+}
+
+function normalizeCurrentPair(state) {
+  const sourceRecordId = state.getIn(['sourceRecord', 'id']);
+  const targetRecordId = state.getIn(['targetRecord', 'id']);
+
+  const allowedValues = [
+    state.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']),
+    state.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']),
+    undefined
+  ];
+
+  if (_.includes(allowedValues, sourceRecordId) && _.includes(allowedValues, targetRecordId)) {
+    return state;
+  } else {
+    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
+  }
 }
 
 export function setSourceRecord(state, record, subrecords) {
@@ -71,19 +93,15 @@ export function setMergedRecordError(state, errorMessage) {
 }
 
 export function setTargetRecordError(state, error) {
-  const targetRecord = state.get('targetRecord');
-  return state.set('targetRecord', targetRecord.merge(targetRecord, Map({
-    'state': 'ERROR',
-    'errorMessage': error
-  })));
+  return state
+    .setIn(['targetRecord', 'state'], 'ERROR')
+    .setIn(['targetRecord', 'errorMessage'], error);
 }
 
 export function setSourceRecordError(state, error) {
-  const sourceRecord = state.get('sourceRecord');
-  return state.set('sourceRecord', sourceRecord.merge(sourceRecord, Map({
-    'state': 'ERROR',
-    'errorMessage': error
-  })));
+  return state
+    .setIn(['sourceRecord', 'state'], 'ERROR')
+    .setIn(['sourceRecord', 'errorMessage'], error);
 }
 
 export function setTargetRecordId(state, recordId) {

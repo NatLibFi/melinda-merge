@@ -7,6 +7,9 @@ import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
+import {hashHistory} from 'react-router';
+import { markAsMerged } from './action-creators/duplicate-database-actions';
+import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { SubrecordActionTypes } from './constants';
 
 export function commitMerge() {
@@ -53,7 +56,8 @@ export function commitMerge() {
 
           response.json().then(res => {
             const newMergedRecordId = res.recordId;
-            dispatch(commitMergeSuccess(newMergedRecordId));  
+            dispatch(commitMergeSuccess(newMergedRecordId));
+            dispatch(markAsMerged());
           });
 
         } else {
@@ -104,6 +108,17 @@ export function resetState() {
     type: RESET_STATE,
   };
 }
+
+
+export function resetWorkspace() {
+  
+  hashHistory.push('/');
+
+  return {
+    type: RESET_WORKSPACE,
+  };
+}
+
 
 export function locationDidChange(location) {
   return function(dispatch, getState) {
@@ -394,6 +409,8 @@ export const startSession = (function() {
 })();
 
 
+
+
 export const fetchRecord = (function() {
   let currentSourceRecordId;
   let currentTargetRecordId;
@@ -408,8 +425,13 @@ export const fetchRecord = (function() {
         throw new Error('fetchRecord type parameter must be either SOURCE or TARGET');
       }
 
+
       if (type === 'SOURCE') {
-        dispatch(loadSourceRecord(recordId));
+        const loadRecordAction = loadSourceRecord;
+        const setRecordAction = setSourceRecord;
+        const setRecordErrorAction = setSourceRecordError;
+
+        dispatch(loadRecordAction(recordId));
         currentSourceRecordId = recordId;
 
         return fetch(`${APIBasePath}/${recordId}`)
@@ -426,16 +448,20 @@ export const fetchRecord = (function() {
                   const marcRecord = new MARCRecord(mainRecord);
                   const marcSubRecords = subrecords.map(record => new MARCRecord(record));
 
-                  dispatch(setSourceRecord(marcRecord, marcSubRecords));
+                  dispatch(setRecordAction(marcRecord, marcSubRecords));
                   dispatch(updateMergedRecord());
                 }
               });
             } else {
-              dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + response.status));
+              switch (response.status) {
+              case HttpStatus.NOT_FOUND: return dispatch(setRecordErrorAction('Tietuetta ei löytynyt'));
+              }
+
+              dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + response.status));
             }
        
           }).catch(exceptCoreErrors((error) => {
-            dispatch(setSourceRecordError('There has been a problem with fetch operation: ' + error.message));
+            dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + error.message));
           }));
 
       }
@@ -463,6 +489,10 @@ export const fetchRecord = (function() {
                 }
               });
             } else {
+              switch (response.status) {
+              case HttpStatus.NOT_FOUND: return dispatch(setTargetRecordError('Tietuetta ei löytynyt'));
+              }
+
               dispatch(setTargetRecordError('There has been a problem with fetch operation: ' + response.status));
             }
        

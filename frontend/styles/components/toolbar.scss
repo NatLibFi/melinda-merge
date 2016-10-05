@@ -1,0 +1,50 @@
+
+.toolbar {
+  background-color: #ededed;
+  height: 88px;
+  box-shadow: none;
+  border-bottom: 1px solid #ddd;
+
+  ul a {
+    color: black;
+    padding: 0 20px;
+  }
+
+  .group {
+    line-height: 1.4em;
+    float: left;
+    text-align: center;
+
+    .group-label {
+      color: black;
+      .badge {
+        position: static;
+        font-weight: 300;
+        font-size: 0.8rem;
+        color: #fff;
+        background-color: #26a69a;
+        border-radius: 2px;
+      }
+    }
+  }
+  .separator span {
+    border-left: 1px solid #ddd;
+    padding: 15px 0px;
+  }
+
+  li {
+    position: relative;
+    .progress {
+      position: absolute;
+      margin: 0;
+      bottom: 0;
+    }
+    
+    &.disabled a {
+      color: #9F9F9F !important;
+      cursor: default !important;
+    }
+  }
+
+ 
+}
