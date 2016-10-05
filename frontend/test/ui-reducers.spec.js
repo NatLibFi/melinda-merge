@@ -94,15 +94,15 @@ describe('ui reducers', () => {
       const state = INITIAL_STATE;
       let nextState = loadSourceRecord(state, '00384794');
 
-      expect(nextState).to.equal(state.mergeDeep({
-        sourceRecord: {
-          id: '00384794',
-          state: 'LOADING'
-        },
-        mergeStatus: {
-          status: 'COMMIT_MERGE_DISABLED'
-        }
-      }));
+      expect(nextState.get('sourceRecord').toJS()).to.eql({
+        id: '00384794',
+        state: 'LOADING'
+      });
+    
+      expect(nextState.get('mergeStatus').toJS()).to.eql({
+        status: 'COMMIT_MERGE_DISABLED'
+      });
+    
     });
   });
 
@@ -112,15 +112,15 @@ describe('ui reducers', () => {
       const state = INITIAL_STATE;
       let nextState = loadTargetRecord(state, '00384794');
 
-      expect(nextState).to.equal(state.mergeDeep({
-        targetRecord: {
-          id: '00384794',
-          state: 'LOADING'
-        },
-        mergeStatus: {
-          status: 'COMMIT_MERGE_DISABLED'
-        }
-      }));
+      expect(nextState.get('targetRecord').toJS()).to.eql({
+        id: '00384794',
+        state: 'LOADING'
+      });
+    
+      expect(nextState.get('mergeStatus').toJS()).to.eql({
+        status: 'COMMIT_MERGE_DISABLED'
+      });
+      
     });
   });
 

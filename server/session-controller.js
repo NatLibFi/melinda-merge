@@ -6,6 +6,7 @@ import bodyParser from 'body-parser';
 import { logger } from './logger';
 import _ from 'lodash';
 import { corsOptions, requireBodyParams } from './utils';
+import HttpStatus from 'http-status-codes';
 
 export const sessionController = express();
 
@@ -68,4 +69,17 @@ export function readSessionMiddleware(req, res, next) {
   }
 
   next();
+}
+
+export function requireSession(req, res, next) {
+
+  const username = _.get(req, 'session.username');
+  const password = _.get(req, 'session.password');
+
+  if (username && password) {
+    return next();
+  } else {
+    res.sendStatus(HttpStatus.UNAUTHORIZED);    
+  }
+
 }

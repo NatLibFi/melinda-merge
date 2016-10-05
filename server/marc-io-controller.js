@@ -22,7 +22,7 @@ const defaultConfig = {
 export const marcIOController = express();
 
 marcIOController.use(cookieParser());
-marcIOController.use(bodyParser.json());
+marcIOController.use(bodyParser.json({limit: '5mb'}));
 marcIOController.use(readSessionMiddleware);
 marcIOController.set('etag', false);
 
@@ -38,6 +38,11 @@ marcIOController.get('/:id', cors(corsOptions), (req, res) => {
     logger.log('debug', `Record ${req.params.id} with subrecords loaded`);
     const record = _.head(records);
     const subrecords = _.tail(records);
+
+    if (record.fields.length === 0) {
+      logger.log('debug', `Record ${req.params.id} appears to be empty record.`);
+      return res.sendStatus(404);
+    }
     res.send({
       record, 
       subrecords
