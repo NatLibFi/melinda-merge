@@ -55,7 +55,7 @@ export class MergeDialog extends React.Component {
     if (this.props.response) {
       return this.renderResponseMessages(this.props.response);
     } else if (this.props.status === CommitMergeStates.COMMIT_MERGE_ONGOING) {
-      return this.renderSpinner();
+      return <div>{this.renderSpinner()}</div>;
     } else {
       return <p>{this.props.message}</p>;
     }
