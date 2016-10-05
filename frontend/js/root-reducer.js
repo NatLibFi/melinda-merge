@@ -38,20 +38,6 @@ export const combinedRootReducer = combineReducers({
   subrecords
 });
 
-function normalizeMergeStatus(state) {
-  const mergedRecordState = state.getIn(['mergedRecord', 'state']);
-  const mergeStatus = state.getIn(['mergeStatus', 'status']) || 'COMMIT_MERGE_AVAILABLE';
-
-  const mergeAvailable = !_.includes(['COMMIT_MERGE_ONGOING'], mergeStatus);
-
-
-  if (mergedRecordState === 'LOADED' && mergeAvailable) {
-    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_AVAILABLE');
-  } else {
-    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
-  }
-}
-
 function normalizeCurrentPair(state) {
   const sourceRecordId = state.getIn(['sourceRecord', 'id']);
   const targetRecordId = state.getIn(['targetRecord', 'id']);
