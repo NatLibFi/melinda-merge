@@ -5,7 +5,7 @@ import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW,
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from '../ui-actions';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 
-import {SET_SOURCE_RECORD, SET_TARGET_RECORD } from '../ui-actions';
+import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-actions';
 
 const INITIAL_STATE = fromJS({
   sourceRecord: [],
@@ -39,6 +39,8 @@ export default function subrecords(state = INITIAL_STATE, action) {
     return setSourceSubrecords(state, action.record, action.subrecords);
   case SET_TARGET_RECORD:
     return setTargetSubrecords(state, action.record, action.subrecords);
+  case SET_MERGED_RECORD:
+    return resetMergedSubrecordsActions(state, action.record);
   case RESET_WORKSPACE:
     return INITIAL_STATE;
 
@@ -46,13 +48,16 @@ export default function subrecords(state = INITIAL_STATE, action) {
   return state;
 }
 
-
 export function setSourceSubrecords(state, record, subrecords) {
   return state.setIn(['sourceRecord'], List(subrecords));
 }
 export function setTargetSubrecords(state, record, subrecords) {
-  
   return state.setIn(['targetRecord'], List(subrecords));
+}
+export function resetMergedSubrecordsActions(state) {
+  return state
+    .setIn(['mergedRecord'], List())
+    .setIn(['actions'], List());
 }
 
 export function insertSubrecordRow(state, rowIndex) {
