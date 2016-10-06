@@ -29,8 +29,8 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
-    const triggers = response.triggers.map(this.renderSingleMessage);
-    const warnings = response.warnings.map(this.renderSingleMessage);
+    const triggers = response.triggers.filter(usefulMessage).map(this.renderSingleMessage);
+    const warnings = response.warnings.filter(usefulMessage).map(this.renderSingleMessage);
     const errors = response.errors.map(this.renderSingleMessage);
     const messages = response.messages.map(this.renderSingleMessage);
 
@@ -42,6 +42,10 @@ export class MergeDialog extends React.Component {
         {triggers.length ? <div className="light-blue lighten-5">{triggers}</div> : null}
       </div>
     );
+
+    function usefulMessage(message) {
+      return message.code !== '0121' && message.code !== '0101';
+    }
   }
 
   renderSingleMessage(item, i) {
