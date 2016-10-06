@@ -202,8 +202,6 @@ export function markAsMerged() {
 
   return function(dispatch, getState) {
 
-    dispatch(markAsMergedStart());
-
     const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
     const preferredRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
     const otherRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']);
@@ -211,6 +209,8 @@ export function markAsMerged() {
     if (id === undefined) {
       return;
     }
+
+    dispatch(markAsMergedStart());
 
     const fetchOptions = {
       method: 'PUT',

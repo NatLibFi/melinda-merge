@@ -1,4 +1,4 @@
-import {fromJS} from 'immutable';
+import { Map, fromJS } from 'immutable';
 import { DuplicateDatabaseStates } from '../constants';
 
 import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS, 
@@ -8,24 +8,8 @@ import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS,
 import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 
-/*
-import {List, Map} from 'immutable';
+import {SET_SOURCE_RECORD, SET_TARGET_RECORD} from '../ui-actions';
 import _ from 'lodash';
-*/
-/*
-count:
-
-currentPair: {
-  id:
-  src:
-  tgt:
-  message:
-  createdAt
-}
-
- */
-/*
-*/
 
 const INITIAL_STATE = fromJS({
   count: 0,
@@ -67,8 +51,14 @@ export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) 
   case SKIP_PAIR_ERROR:
     return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
 
+  case SET_SOURCE_RECORD:
+  case SET_TARGET_RECORD:
+    return normalizeCurrentPair(state, action.recordId);
+
   case RESET_WORKSPACE:
-    return state.setIn(['currentPair'], undefined);
+    return state
+      .set('currentPair', undefined)
+      .set('status', DuplicateDatabaseStates.READY);
   }
 
   return state;    
@@ -81,10 +71,11 @@ export function setDuplicateCount(state, duplicateCount) {
 export function setDuplicateCountError(state, error) {
   return state.setIn(['countError'], error);
 }
+
 export function setCurrentDuplicatePair(state, pair) {
   return state
-    .setIn(['currentPair'], fromJS(pair))
-    .setIn(['status'], 'READY');
+    .set('currentPair', fromJS(pair))
+    .set('status', DuplicateDatabaseStates.READY);
 }
 
 export function setDuplicateDatabaseControlsStatus(state, status) {
@@ -94,4 +85,19 @@ export function setDuplicateDatabaseControlsStatus(state, status) {
 
 export function setCurrentDuplicatePairError(state, error) {
   return state.setIn(['currentPairError'], error);
+}
+
+function normalizeCurrentPair(state, recordId) {
+
+  const allowedValues = [
+    state.getIn(['currentPair', 'preferredRecordId']),
+    state.getIn(['currentPair', 'otherRecordId']),
+    undefined
+  ];
+
+  if (_.includes(allowedValues, recordId)) {
+    return state;
+  } else {
+    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
+  }
 }
