@@ -12,7 +12,7 @@ import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { SubrecordActionTypes } from './constants';
 import { FetchNotOkError } from './errors';
-import uuid from 'uuid';
+import uuid from 'node-uuid';
 
 export function commitMerge() {
 
