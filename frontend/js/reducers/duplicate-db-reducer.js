@@ -89,6 +89,8 @@ export function setCurrentDuplicatePairError(state, error) {
 
 function normalizeCurrentPair(state, recordId) {
 
+
+
   const allowedValues = [
     state.getIn(['currentPair', 'preferredRecordId']),
     state.getIn(['currentPair', 'otherRecordId']),
@@ -98,6 +100,6 @@ function normalizeCurrentPair(state, recordId) {
   if (_.includes(allowedValues, recordId)) {
     return state;
   } else {
-    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
+    return state.set('currentPair', Map());
   }
 }

@@ -90,7 +90,7 @@ describe('ui actions', () => {
 
         fetchRecordThunk(dispatchSpy).then(() => {
           expect(dispatchSpy).to.have.been.calledWith(actions.loadSourceRecord(sinon.match.number));
-          expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array));
+          expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array, sinon.match.number));
           done();
         }).catch(done);
         

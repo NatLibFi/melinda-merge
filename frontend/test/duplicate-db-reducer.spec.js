@@ -35,7 +35,7 @@ describe('Duplicate database reducers', () => {
       beforeEach(() => {
         state = undefined;
         state = reducer(state, actions.fetchNextPairSuccess(currentPair));
-        state = reducer(state, recordActions.loadSourceRecord('00384791'));
+        state = reducer(state, recordActions.setSourceRecord({}, [], '00384791'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -52,7 +52,7 @@ describe('Duplicate database reducers', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
         state = reducer(state, actions.fetchNextPairSuccess(currentPair));
-        state = reducer(state, recordActions.loadTargetRecord('00384791'));
+        state = reducer(state, recordActions.setTargetRecord({}, [], '00384791'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -69,7 +69,7 @@ describe('Duplicate database reducers', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
         state = reducer(state, actions.fetchNextPairSuccess(currentPair));
-        state = reducer(state, recordActions.loadSourceRecord('00384794'));
+        state = reducer(state, recordActions.setSourceRecord({}, [], '00384794'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
@@ -86,7 +86,7 @@ describe('Duplicate database reducers', () => {
       beforeEach(() => {
         state = INITIAL_STATE;
         state = reducer(state, actions.fetchNextPairSuccess(currentPair));
-        state = reducer(state, recordActions.loadTargetRecord('00384794'));
+        state = reducer(state, recordActions.setTargetRecord({}, [], '00384794'));
         duplicateDatabase = state.getIn(['duplicateDatabase']).toJS();
       });
 
