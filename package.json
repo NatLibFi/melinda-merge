@@ -76,6 +76,7 @@
     "json-loader": "^0.5.4",
     "mocha": "^3.0.2",
     "node-sass": "^3.8.0",
+    "node-uuid": "^1.4.7",
     "nodemon": "^1.10.2",
     "postcss-loader": "^0.10.1",
     "q": "^1.4.1",
