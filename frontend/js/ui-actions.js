@@ -12,6 +12,7 @@ import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { SubrecordActionTypes } from './constants';
 import { FetchNotOkError } from './errors';
+import uuid from 'uuid';
 
 export function commitMerge() {
 
@@ -459,8 +460,18 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
           const subrecords = json.subrecords;
 
           const marcRecord = new MARCRecord(mainRecord);
-          const marcSubRecords = subrecords.map(record => new MARCRecord(record));
+          const marcSubRecords = subrecords
+            .map(record => new MARCRecord(record));
+         
+          marcSubRecords.forEach(record => {
+            record.fields.forEach(field => {
+              field.uuid = uuid.v4();
+            });
+          });
 
+          marcRecord.fields.forEach(field => {
+            field.uuid = uuid.v4();
+          });
 
           dispatch(setRecordAction(marcRecord, marcSubRecords));
           dispatch(updateMergedRecord());
@@ -586,3 +597,28 @@ export const SET_MERGED_SUBRECORD_ERROR = 'SET_MERGED_SUBRECORD_ERROR';
 export function setMergedSubrecordError(rowIndex, error) {
   return { 'type': SET_MERGED_SUBRECORD_ERROR, rowIndex, error };
 }
+
+export const ADD_SOURCE_RECORD_FIELD = 'ADD_SOURCE_RECORD_FIELD';
+export const REMOVE_SOURCE_RECORD_FIELD = 'REMOVE_SOURCE_RECORD_FIELD';
+
+export function addSourceRecordField(field) {
+  return { 'type': ADD_SOURCE_RECORD_FIELD, field};
+}
+export function removeSourceRecordField(field) {
+  return { 'type': REMOVE_SOURCE_RECORD_FIELD, field};
+}
+
+export function toggleSourceRecordFieldSelection(fieldInSourceRecord) {
+  return function(dispatch, getState) {
+    const mergedRecord = getState().getIn(['mergedRecord', 'record']);
+    const field = mergedRecord.fields.find(fieldInMergedRecord => fieldInMergedRecord.uuid === fieldInSourceRecord.uuid);
+
+    if (field === undefined) {
+      dispatch(addSourceRecordField(fieldInSourceRecord));
+    } else {
+      dispatch(removeSourceRecordField(fieldInSourceRecord));
+    }
+
+  };
+}
+
