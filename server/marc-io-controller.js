@@ -9,6 +9,7 @@ import HttpStatus from 'http-status-codes';
 import { commitMerge } from './melinda-merge-update';
 import { readSessionMiddleware } from './session-controller';
 import _ from 'lodash';
+import { createArchive } from './archive-service';
 
 const MelindaClient = require('melinda-api-client');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
@@ -77,6 +78,11 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
     .then((response) => {
       logger.log('info', 'Commit merge successful', response);
       const mergedMainRecordResult = _.get(response, '[0]');
+
+      createArchive(username, otherRecord, preferredRecord, mergedRecord, mergedMainRecordResult.recordId).then((res) => {
+        logger.log('info', `Created archive file of the merge action: ${res.filename} (${res.size} bytes)`);
+      });
+
       res.send(mergedMainRecordResult);
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
