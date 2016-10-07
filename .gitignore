@@ -42,3 +42,6 @@ jspm_packages
 
 build
 tmp
+
+# default dir for merge-action-archive
+merge-action-archive

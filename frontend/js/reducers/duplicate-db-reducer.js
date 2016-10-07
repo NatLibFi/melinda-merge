@@ -13,7 +13,8 @@ import _ from 'lodash';
 
 const INITIAL_STATE = fromJS({
   count: 0,
-  status: DuplicateDatabaseStates.READY
+  status: DuplicateDatabaseStates.READY,
+  currentPair: Map()
 });
 
 export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) {
@@ -57,7 +58,7 @@ export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) 
 
   case RESET_WORKSPACE:
     return state
-      .set('currentPair', undefined)
+      .set('currentPair', Map())
       .set('status', DuplicateDatabaseStates.READY);
   }
 
