@@ -15,7 +15,8 @@ export class ToolBar extends React.Component {
     skipPair: React.PropTypes.func.isRequired,
     markAsNotDuplicate: React.PropTypes.func.isRequired,
     duplicatePairCount: React.PropTypes.number.isRequired,
-    duplicateDatabaseStatus: React.PropTypes.string.isRequired
+    duplicateDatabaseStatus: React.PropTypes.string.isRequired,
+    recordsAreFromDuplicateDatabase: React.PropTypes.bool.isRequired
   }
 
   componentWillMount() {
@@ -52,6 +53,7 @@ export class ToolBar extends React.Component {
             skipPair={this.props.skipPair}
             notDuplicate={this.props.markAsNotDuplicate}
             duplicatePairCount={this.props.duplicatePairCount}
+            recordsAreFromDuplicateDatabase={this.props.recordsAreFromDuplicateDatabase}
           />
           
         </div>
@@ -62,6 +64,7 @@ export class ToolBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
+    recordsAreFromDuplicateDatabase: state.getIn(['duplicateDatabase', 'currentPair']) !== undefined,
     duplicateDatabaseStatus: state.getIn(['duplicateDatabase', 'status']),
     duplicatePairCount: state.getIn(['duplicateDatabase', 'count'])
   };
