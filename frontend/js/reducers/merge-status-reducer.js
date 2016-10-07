@@ -1,26 +1,48 @@
 import { Map } from 'immutable'; 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
-import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS } from '../ui-actions';
+import { CommitMergeStates } from '../constants';
+import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS, CLOSE_MERGE_DIALOG } from '../ui-actions';
 
-export default function mergeStatus(state = Map({}), action) {
+const INITIAL_STATE = Map({
+  dialog: Map({
+    visible: false,
+    closable: false
+  })
+});
+
+export default function mergeStatus(state = INITIAL_STATE, action) {
   switch (action.type) {
   case COMMIT_MERGE_START:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_ONGOING', message: 'Yhdistetään tietueita'});
+    state = setMergeStatus(state, CommitMergeStates.COMMIT_MERGE_ONGOING, 'Yhdistetään tietueita');
+    state = showDialog(state, true);
+    return enableCloseDialog(state, false);
   case COMMIT_MERGE_ERROR:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_ERROR', message: action.error});
+    state = setMergeStatus(state, CommitMergeStates.COMMIT_MERGE_ERROR, action.error, action.response);
+    return enableCloseDialog(state, true);
   case COMMIT_MERGE_SUCCESS:
-    return setMergeStatus(state, {status: 'COMMIT_MERGE_COMPLETE', message: `Tietueet yhdistetty tietueeksi ${action.recordId}`});
+    state = setMergeStatus(state, CommitMergeStates.COMMIT_MERGE_COMPLETE, `Tietueet yhdistetty tietueeksi ${action.recordId}`, action.response);
+    return enableCloseDialog(state, true);
+  case CLOSE_MERGE_DIALOG:
+    return showDialog(state, false);
   case RESET_WORKSPACE:
-    return Map({});
+    return INITIAL_STATE;
   }
   return state;
 }
 
-export function setMergeStatus(state, mergeStatus) {
-  const mergeAvailable = mergeStatus.status == 'COMMIT_MERGE_ERROR' ? 'COMMIT_MERGE_AVAILABLE' : 'COMMIT_MERGE_DISABLED';
+export function setMergeStatus(state, status, message, response) {
+  return state
+    .set('status', status)
+    .set('message', message)
+    .set('response', response);
+}
 
-  return Map({
-    status: mergeAvailable,
-    message: mergeStatus.message
-  });
+export function showDialog(state, visible) {
+  return state
+    .setIn(['dialog', 'visible'], visible);
+}
+
+export function enableCloseDialog(state, closable) {
+  return state
+    .setIn(['dialog', 'closable'], closable);
 }

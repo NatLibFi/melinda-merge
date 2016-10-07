@@ -22,8 +22,8 @@ export default function reducer(state = Map(), action) {
   }
 
   let rawState = combinedRootReducer(state, action);
+  return normalizeMergedRecord(rawState);
 
-  return normalizeMergedRecord(normalizeMergeStatus(rawState));
 }
 
 export const combinedRootReducer = combineReducers({
@@ -36,15 +36,6 @@ export const combinedRootReducer = combineReducers({
   mergeStatus,
   subrecords
 });
-
-function normalizeMergeStatus(state) {
-  const mergedRecordState = state.getIn(['mergedRecord', 'state']);
-  if (mergedRecordState === 'LOADED') {
-    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_AVAILABLE');
-  } else {
-    return state.setIn(['mergeStatus', 'status'], 'COMMIT_MERGE_DISABLED');
-  }
-}
 
 function normalizeMergedRecord(state) {
   const sourceRecordStatus = state.getIn(['sourceRecord', 'state']);

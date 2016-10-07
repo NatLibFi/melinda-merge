@@ -12,12 +12,16 @@ import _ from 'lodash';
 
 const MelindaClient = require('melinda-api-client');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
+const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
+const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
 
 const defaultConfig = {
-  endpoint: `${alephUrl}/API`,
+  endpoint: `${alephUrl}/API${apiPath}`,
   user: '',
   password: ''
 };
+
+logger.log('info', `marc-io-controller endpoint: ${defaultConfig.endpoint}`);
 
 export const marcIOController = express();
 

@@ -29,7 +29,6 @@ describe('ui reducers', () => {
       { tag: '005', value: 'FIELD-005' },
       { tag: '008', value: 'TARGET' },
       { tag: '009', value: 'TARGET' },
-    
     ]
   });
 
@@ -53,11 +52,6 @@ describe('ui reducers', () => {
         id: '00384794',
         state: 'LOADING'
       });
-    
-      expect(nextState.get('mergeStatus').toJS()).to.eql({
-        status: 'COMMIT_MERGE_DISABLED'
-      });
-    
     });
   });
 
@@ -71,11 +65,6 @@ describe('ui reducers', () => {
         id: '00384794',
         state: 'LOADING'
       });
-    
-      expect(nextState.get('mergeStatus').toJS()).to.eql({
-        status: 'COMMIT_MERGE_DISABLED'
-      });
-      
     });
   });
 
@@ -84,16 +73,10 @@ describe('ui reducers', () => {
     it('sets the source record', () => {
       let nextState = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject, []));
 
-
       expect(nextState.get('sourceRecord').toJS()).to.eql({
         state: 'LOADED',
         record: testRecordObject
       });
-    
-      expect(nextState.get('mergeStatus').toJS()).to.eql({
-        status: 'COMMIT_MERGE_DISABLED'
-      });
-
     });
 
     it('sets the source record and subrecords', () => {
@@ -103,10 +86,6 @@ describe('ui reducers', () => {
       expect(nextState.get('sourceRecord').toJS()).to.eql({
         state: 'LOADED',
         record: testRecordObject
-      });
-    
-      expect(nextState.get('mergeStatus').toJS()).to.eql({
-        status: 'COMMIT_MERGE_DISABLED'
       });
 
       const sourceSubrecords = nextState.getIn(['subrecords', 'sourceRecord']).toJS();
@@ -119,7 +98,6 @@ describe('ui reducers', () => {
       let nextState = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject));
       const sourceSubrecords = nextState.getIn(['subrecords', 'sourceRecord']).toJS();
       expect(sourceSubrecords).to.eql([]);
-
     });
   });
 
@@ -133,11 +111,6 @@ describe('ui reducers', () => {
         state: 'LOADED',
         record: testRecordObject
       });
-    
-      expect(nextState.get('mergeStatus').toJS()).to.eql({
-        status: 'COMMIT_MERGE_DISABLED'
-      });
-
     });
   });
 
@@ -151,7 +124,6 @@ describe('ui reducers', () => {
         state: 'ERROR',
         errorMessage: 'error-message'
       });
-
     });
   });
 
@@ -165,7 +137,6 @@ describe('ui reducers', () => {
         state: 'ERROR',
         errorMessage: 'error-message'
       });
-
     });
   });
 
