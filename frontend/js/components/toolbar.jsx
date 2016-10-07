@@ -64,7 +64,7 @@ export class ToolBar extends React.Component {
 
 function mapStateToProps(state) {
   return {
-    recordsAreFromDuplicateDatabase: state.getIn(['duplicateDatabase', 'currentPair']) !== undefined,
+    recordsAreFromDuplicateDatabase: state.getIn(['duplicateDatabase', 'currentPair']).size !== 0,
     duplicateDatabaseStatus: state.getIn(['duplicateDatabase', 'status']),
     duplicatePairCount: state.getIn(['duplicateDatabase', 'count'])
   };
