@@ -75,10 +75,12 @@ export class MarcRecordPanel extends React.Component {
   renderFields(record) {
 
     const fields = record.fields.slice();
-    fields.unshift({
-      tag: 'LDR',
-      value: record.leader
-    });
+    if (record.leader) {
+      fields.unshift({
+        tag: 'LDR',
+        value: record.leader
+      });
+    }
 
     const fieldNodes = fields.map((field) => {
       
@@ -98,7 +100,6 @@ export class MarcRecordPanel extends React.Component {
   }
 
   render() {
-    window.record = this.props.record;
     return (
       <div>{this.renderFields(this.props.record)}</div>
     );
