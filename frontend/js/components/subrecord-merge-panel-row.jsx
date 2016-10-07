@@ -41,7 +41,7 @@ export class SubrecordMergePanelRow extends React.Component {
       return (
         <div>
           <SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />
-          <SubRecordPanel record={mergedSubrecord} />
+          <SubRecordPanel record={mergedSubrecord} type="MERGED" />
         </div>
       );
     } else {

@@ -1,8 +1,61 @@
-.card-panel {
-  &.marc-record {
-    font-family: 'Roboto Mono'; 
-    white-space: pre; 
-    overflow-x: auto;
-  }
-}
+.marc-record {
+  font-family: 'Roboto Mono'; 
+  white-space: pre; 
+  overflow-x: auto;
 
+  &.marc-record-source {
+    .fieldList {
+      .is-selected {
+        &.from-other {
+          background-color: #b2dfdb;
+        }
+      }
+    }
+  }
+
+  &.marc-record-source:not(.marc-record-subrecord) {
+    .fieldList {
+      .marc-field-datafield {
+        &:hover {
+          outline: 1px dashed #CCC;
+          cursor: pointer;
+        } 
+      }
+    }
+  }
+
+  &.marc-record-merged {
+    .fieldList {
+      .is-selected {
+        &.from-preferred {
+          background-color: #e3f2fd;
+        }
+        &.from-other {
+          background-color: #b2dfdb;
+
+          &:hover {
+            outline: 1px dashed #CCC;
+            cursor: pointer;
+          } 
+        }
+      }
+    }
+  }
+
+  .fieldList {
+    .code {
+      color: #e57373;
+      margin-right: 2px;
+    }
+    .marker {
+      color: #e57373;
+      margin-left: 2px;
+    }
+    .tag,
+    .ind1,
+    .ind2 {
+      color: #448aff;
+    } 
+  }
+  
+}

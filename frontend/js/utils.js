@@ -9,3 +9,7 @@ export function exceptCoreErrors(fn) {
     }
   };
 }
+
+export function isControlField(field) {
+  return field.subfields === undefined;
+}
