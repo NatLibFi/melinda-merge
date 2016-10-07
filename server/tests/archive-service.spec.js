@@ -13,7 +13,7 @@ const expect = chai.expect;
 
 chai.use(sinonChai);
 
-describe.only('Archive service', () => {
+describe('Archive service', () => {
 
   const username = 'test-user';
   
