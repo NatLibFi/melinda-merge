@@ -1,5 +1,4 @@
 import { Map } from 'immutable';
-import _ from 'lodash';
 import { combineReducers } from 'redux-immutable';
 
 import { RESET_STATE } from './ui-actions';
@@ -23,8 +22,8 @@ export default function reducer(state = Map(), action) {
   }
 
   let rawState = combinedRootReducer(state, action);
+  return normalizeMergedRecord(rawState);
 
-  return normalizeMergedRecord(normalizeCurrentPair(rawState));
 }
 
 export const combinedRootReducer = combineReducers({
@@ -37,23 +36,6 @@ export const combinedRootReducer = combineReducers({
   mergeStatus,
   subrecords
 });
-
-function normalizeCurrentPair(state) {
-  const sourceRecordId = state.getIn(['sourceRecord', 'id']);
-  const targetRecordId = state.getIn(['targetRecord', 'id']);
-
-  const allowedValues = [
-    state.getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']),
-    state.getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']),
-    undefined
-  ];
-
-  if (_.includes(allowedValues, sourceRecordId) && _.includes(allowedValues, targetRecordId)) {
-    return state;
-  } else {
-    return state.setIn(['duplicateDatabase', 'currentPair'], Map());
-  }
-}
 
 function normalizeMergedRecord(state) {
   const sourceRecordStatus = state.getIn(['sourceRecord', 'state']);

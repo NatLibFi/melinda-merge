@@ -177,11 +177,12 @@ export function loadSourceRecord(recordId) {
 
 export const SET_SOURCE_RECORD = 'SET_SOURCE_RECORD';
 
-export function setSourceRecord(record, subrecords) {
+export function setSourceRecord(record, subrecords, recordId) {
   return {
     'type': SET_SOURCE_RECORD,
     'record': record,
-    'subrecords': subrecords
+    'subrecords': subrecords,
+    recordId
   };
 }
 
@@ -196,11 +197,12 @@ export function loadTargetRecord(recordId) {
 
 export const SET_TARGET_RECORD = 'SET_TARGET_RECORD';
 
-export function setTargetRecord(record, subrecords) {
+export function setTargetRecord(record, subrecords, recordId) {
   return {
     'type': SET_TARGET_RECORD,
     'record': record,
-    'subrecords': subrecords
+    'subrecords': subrecords,
+    recordId
   };
 }
 
@@ -473,7 +475,7 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
           const marcSubRecords = subrecords.map(record => new MARCRecord(record));
 
 
-          dispatch(setRecordAction(marcRecord, marcSubRecords));
+          dispatch(setRecordAction(marcRecord, marcSubRecords, recordId));
           dispatch(updateMergedRecord());
         }
  

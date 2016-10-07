@@ -9,7 +9,8 @@ export class DuplicateDatabaseControls extends React.Component {
     skipPair: React.PropTypes.func.isRequired,
     notDuplicate: React.PropTypes.func.isRequired,
     duplicatePairCount: React.PropTypes.number.isRequired,
-    currentStatus: React.PropTypes.string.isRequired
+    currentStatus: React.PropTypes.string.isRequired,
+    recordsAreFromDuplicateDatabase: React.PropTypes.bool.isRequired
   }
 
   loadNextDuplicatePair(event) {
@@ -50,9 +51,18 @@ export class DuplicateDatabaseControls extends React.Component {
 
   render() {
 
-    const liClasses = classNames({
+    const nextClasses = classNames({
       disabled: !this.isEnabled()
     });
+
+    const skipClasses = classNames({
+      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
+    });
+    
+    const notDuplicateClasses = classNames({
+      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
+    });
+    
 
     const classes = classNames('material-icons', 'tooltip');
 
@@ -60,15 +70,15 @@ export class DuplicateDatabaseControls extends React.Component {
       <div className="group">
         <ul id="nav">
           
-          <li className={liClasses}>
+          <li className={nextClasses}>
             <a href="#" onClick={(e) => this.loadNextDuplicatePair(e)}><i className={classes} title="Seuraava pari">navigate_next</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING)}
           </li>
-          <li className={liClasses}>
+          <li className={skipClasses}>
             <a href="#" onClick={(e) => this.skipCurrentDuplicatePair(e)}><i className={classes} title="Ohita">skip_next</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.SKIP_PAIR_ONGOING)}
           </li>
-          <li className={liClasses}>
+          <li className={notDuplicateClasses}>
             <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className={classes} title="Ei tupla">layers_clear</i></a>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING)}
           </li>
