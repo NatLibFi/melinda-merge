@@ -3,7 +3,7 @@ import { MarcRecordPanel } from './marc-record-panel';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import '../../styles/components/record-merge-panel.scss';
-import { Preloader } from './preloader';
+import { Preloader } from 'commons/components/preloader';
 import { ErrorMessagePanel } from './error-message-panel';
 import { isControlField } from '../utils';
 
@@ -25,16 +25,16 @@ export class RecordMergePanel extends React.Component {
 
   getRecord(type) {
     switch(type) {
-    case 'SOURCE': return this.props.sourceRecord;
-    case 'TARGET': return this.props.targetRecord;
-    case 'MERGED': return this.props.mergedRecord;
+      case 'SOURCE': return this.props.sourceRecord;
+      case 'TARGET': return this.props.targetRecord;
+      case 'MERGED': return this.props.mergedRecord;
     }
   }
   getErrorMessage(type) {
     switch(type) {
-    case 'SOURCE': return this.props.sourceRecordError;
-    case 'TARGET': return this.props.targetRecordError;
-    case 'MERGED': return this.props.mergedRecordError;
+      case 'SOURCE': return this.props.sourceRecordError;
+      case 'TARGET': return this.props.targetRecordError;
+      case 'MERGED': return this.props.mergedRecordError;
     }
   }
 

@@ -1,9 +1,10 @@
 'use strict';
 import express from 'express';
-import { logger, expressWinston } from './logger';
+import path from 'path';
+import { logger, expressWinston } from 'server/logger';
+import { readEnvironmentVariable } from 'server/utils';
+import { sessionController } from 'server/session-controller';
 import { marcIOController } from './marc-io-controller';
-import { readEnvironmentVariable } from './utils';
-import { sessionController } from './session-controller';
 import { duplicateDatabaseController } from './duplicate-db-controller';
 import cookieParser from 'cookie-parser';
 
@@ -20,7 +21,8 @@ app.use('/api', marcIOController);
 app.use('/session', sessionController);
 app.use('/duplicates', duplicateDatabaseController);
 
-app.use(express.static('public'));
+app.use(express.static(path.resolve(__dirname, 'public')));
+
 
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 

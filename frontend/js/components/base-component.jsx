@@ -5,7 +5,7 @@ import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
 import { SubrecordComponent } from './subrecord-component';
-import { SigninFormPanelContainer } from './signin-form-panel';
+import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import { List } from 'immutable';
@@ -14,7 +14,7 @@ import { MergeDialog } from './merge-dialog';
 export class BaseComponent extends React.Component {
 
   static propTypes = {
-    sessionState: React.PropTypes.string.isRequired,
+    sessionState: React.PropTypes.string,
     shouldRenderSubrecordComponent: React.PropTypes.bool.isRequired,
     mergeDialog: React.PropTypes.object.isRequired,
     closeMergeDialog: React.PropTypes.func.isRequired,
@@ -27,8 +27,8 @@ export class BaseComponent extends React.Component {
     return null;
   }
 
-  renderSignin() {
-    return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer />;
+  renderSignin() {   
+    return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer title='Merge' />;
   }
 
   renderSubrecordComponent() {

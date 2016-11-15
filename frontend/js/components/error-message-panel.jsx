@@ -9,11 +9,9 @@ export class ErrorMessagePanel extends React.Component {
 
   render() {
     return (
-
       <div className="card-panel red lighten-4 error-message-panel">
         <p>{this.props.message}</p>
       </div>
-
-      );
+    );
   }
 }

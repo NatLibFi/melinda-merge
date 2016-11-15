@@ -9,16 +9,16 @@ const INITIAL_STATE = Map({
 
 export default function targetRecord(state = INITIAL_STATE, action) {
   switch (action.type) {
-  case LOAD_TARGET_RECORD:
-    return loadTargetRecord(state, action.id);
-  case SET_TARGET_RECORD:
-    return setTargetRecord(state, action.record, action.subrecords);
-  case SET_TARGET_RECORD_ERROR:
-    return setTargetRecordError(state, action.error);
-  case SET_TARGET_RECORD_ID:
-    return setTargetRecordId(state, action.recordId);
-  case RESET_WORKSPACE:
-    return INITIAL_STATE;
+    case LOAD_TARGET_RECORD:
+      return loadTargetRecord(state, action.id);
+    case SET_TARGET_RECORD:
+      return setTargetRecord(state, action.record, action.subrecords);
+    case SET_TARGET_RECORD_ERROR:
+      return setTargetRecordError(state, action.error);
+    case SET_TARGET_RECORD_ID:
+      return setTargetRecordId(state, action.recordId);
+    case RESET_WORKSPACE:
+      return INITIAL_STATE;
   }
   return state;
 }

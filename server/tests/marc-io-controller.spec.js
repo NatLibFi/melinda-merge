@@ -6,7 +6,7 @@ import request from 'supertest';
 import HttpStatus from 'http-status-codes';
 import { __RewireAPI__ as MarcIOControllerRewireAPI } from '../marc-io-controller';
 import { marcIOController } from '../marc-io-controller';
-import { createSessionToken } from '../session-crypt';
+import { createSessionToken } from 'server/session-crypt';
 
 chai.use(sinonChai);
 

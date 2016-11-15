@@ -1,13 +1,13 @@
 import express from 'express';
 import cors from 'cors';
-import { readEnvironmentVariable, corsOptions, requireBodyParams } from './utils';
-import { logger } from './logger';
+import { readEnvironmentVariable, corsOptions, requireBodyParams } from 'server/utils';
+import { logger } from 'server/logger';
 import bodyParser from 'body-parser';
 import MarcRecord from 'marc-record-js';
 import cookieParser from 'cookie-parser';
 import HttpStatus from 'http-status-codes';
 import { commitMerge } from './melinda-merge-update';
-import { readSessionMiddleware } from './session-controller';
+import { readSessionMiddleware } from 'server/session-controller';
 import _ from 'lodash';
 import { createArchive } from './archive-service';
 
