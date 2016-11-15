@@ -1,5 +1,6 @@
 'use strict';
 import express from 'express';
+import path from 'path';
 import { logger, expressWinston } from 'server/logger';
 import { readEnvironmentVariable } from 'server/utils';
 import { sessionController } from 'server/session-controller';
@@ -20,7 +21,8 @@ app.use('/api', marcIOController);
 app.use('/session', sessionController);
 app.use('/duplicates', duplicateDatabaseController);
 
-app.use(express.static('public'));
+app.use(express.static(path.resolve(__dirname, 'public')));
+
 
 app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 
