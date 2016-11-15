@@ -25,16 +25,16 @@ export class RecordMergePanel extends React.Component {
 
   getRecord(type) {
     switch(type) {
-    case 'SOURCE': return this.props.sourceRecord;
-    case 'TARGET': return this.props.targetRecord;
-    case 'MERGED': return this.props.mergedRecord;
+      case 'SOURCE': return this.props.sourceRecord;
+      case 'TARGET': return this.props.targetRecord;
+      case 'MERGED': return this.props.mergedRecord;
     }
   }
   getErrorMessage(type) {
     switch(type) {
-    case 'SOURCE': return this.props.sourceRecordError;
-    case 'TARGET': return this.props.targetRecordError;
-    case 'MERGED': return this.props.mergedRecordError;
+      case 'SOURCE': return this.props.sourceRecordError;
+      case 'TARGET': return this.props.targetRecordError;
+      case 'MERGED': return this.props.mergedRecordError;
     }
   }
 

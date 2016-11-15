@@ -5,10 +5,10 @@ const INITIAL_STATE = {};
 
 export default function location(state = INITIAL_STATE, action) {
   switch (action.type) {
-  case SET_LOCATION:
-    return setLocation(state, action.location);
-  case RESET_WORKSPACE:
-    return INITIAL_STATE;
+    case SET_LOCATION:
+      return setLocation(state, action.location);
+    case RESET_WORKSPACE:
+      return INITIAL_STATE;
   }
   return state;
 }

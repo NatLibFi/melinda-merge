@@ -19,47 +19,47 @@ const INITIAL_STATE = fromJS({
 
 export default function duplicateDatabaseReducer(state = INITIAL_STATE, action) {
   switch (action.type) {
-  
-  case DUPLICATE_COUNT_SUCCESS:
-    return setDuplicateCount(state, action.count);
-  case DUPLICATE_COUNT_ERROR:
-    return setDuplicateCountError(state, action.error);
-  case NEXT_DUPLICATE_START:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING);
-  case NEXT_DUPLICATE_SUCCESS:
-    return setCurrentDuplicatePair(state, action.pair);
-  case NEXT_DUPLICATE_ERROR: 
-    return setCurrentDuplicatePairError(state, action.error);
-  
-  case MARK_AS_MERGED_START:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_MERGED_ONGOING);
-  case MARK_AS_MERGED_SUCCESS:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
-  case MARK_AS_MERGED_ERROR:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    
+    case DUPLICATE_COUNT_SUCCESS:
+      return setDuplicateCount(state, action.count);
+    case DUPLICATE_COUNT_ERROR:
+      return setDuplicateCountError(state, action.error);
+    case NEXT_DUPLICATE_START:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING);
+    case NEXT_DUPLICATE_SUCCESS:
+      return setCurrentDuplicatePair(state, action.pair);
+    case NEXT_DUPLICATE_ERROR: 
+      return setCurrentDuplicatePairError(state, action.error);
+    
+    case MARK_AS_MERGED_START:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_MERGED_ONGOING);
+    case MARK_AS_MERGED_SUCCESS:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    case MARK_AS_MERGED_ERROR:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
 
-  case MARK_AS_NOT_DUPLICATE_START:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING);
-  case MARK_AS_NOT_DUPLICATE_SUCCESS:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
-  case MARK_AS_NOT_DUPLICATE_ERROR:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    case MARK_AS_NOT_DUPLICATE_START:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING);
+    case MARK_AS_NOT_DUPLICATE_SUCCESS:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    case MARK_AS_NOT_DUPLICATE_ERROR:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
 
-  case SKIP_PAIR_START:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.SKIP_PAIR_ONGOING);
-  case SKIP_PAIR_SUCCESS:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
-  case SKIP_PAIR_ERROR:
-    return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    case SKIP_PAIR_START:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.SKIP_PAIR_ONGOING);
+    case SKIP_PAIR_SUCCESS:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
+    case SKIP_PAIR_ERROR:
+      return setDuplicateDatabaseControlsStatus(state, DuplicateDatabaseStates.READY);
 
-  case SET_SOURCE_RECORD:
-  case SET_TARGET_RECORD:
-    return normalizeCurrentPair(state, action.recordId);
+    case SET_SOURCE_RECORD:
+    case SET_TARGET_RECORD:
+      return normalizeCurrentPair(state, action.recordId);
 
-  case RESET_WORKSPACE:
-    return state
-      .set('currentPair', Map())
-      .set('status', DuplicateDatabaseStates.READY);
+    case RESET_WORKSPACE:
+      return state
+        .set('currentPair', Map())
+        .set('status', DuplicateDatabaseStates.READY);
   }
 
   return state;    

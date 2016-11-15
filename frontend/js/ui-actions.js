@@ -63,8 +63,8 @@ export function commitMerge() {
 
           } else {
             switch (response.status) {
-            case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
-            case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
+              case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
+              case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
             }
 
             dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
@@ -330,10 +330,6 @@ export const fetchRecord = (function() {
  
 })();
 
-if (__DEV__) {
-  window.fetchRecord = fetchRecord;
-}
-
 function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordErrorAction) {
   let currentRecordId;
   return function(recordId, dispatch) {
@@ -373,8 +369,8 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
 
         if (error instanceof FetchNotOkError) {
           switch (error.response.status) {
-          case HttpStatus.NOT_FOUND: return dispatch(setRecordErrorAction('Tietuetta ei löytynyt'));
-          case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(setRecordErrorAction('Tietueen lataamisessa tapahtui virhe.'));
+            case HttpStatus.NOT_FOUND: return dispatch(setRecordErrorAction('Tietuetta ei löytynyt'));
+            case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(setRecordErrorAction('Tietueen lataamisessa tapahtui virhe.'));
           }
         }
                 

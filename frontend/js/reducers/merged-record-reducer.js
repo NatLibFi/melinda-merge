@@ -10,18 +10,18 @@ const INITIAL_STATE = Map({
 
 export default function mergedRecord(state = INITIAL_STATE, action) {
   switch (action.type) {
-  case CLEAR_MERGED_RECORD:
-    return clearMergedRecord(state);
-  case SET_MERGED_RECORD_ERROR:
-    return setMergedRecordError(state, action.error);
-  case SET_MERGED_RECORD:
-    return setMergedRecord(state, action.record);
-  case ADD_SOURCE_RECORD_FIELD:
-    return addField(state, action.field);
-  case REMOVE_SOURCE_RECORD_FIELD:
-    return removeField(state, action.field);
-  case RESET_WORKSPACE:
-    return INITIAL_STATE;
+    case CLEAR_MERGED_RECORD:
+      return clearMergedRecord(state);
+    case SET_MERGED_RECORD_ERROR:
+      return setMergedRecordError(state, action.error);
+    case SET_MERGED_RECORD:
+      return setMergedRecord(state, action.record);
+    case ADD_SOURCE_RECORD_FIELD:
+      return addField(state, action.field);
+    case REMOVE_SOURCE_RECORD_FIELD:
+      return removeField(state, action.field);
+    case RESET_WORKSPACE:
+      return INITIAL_STATE;
   }
   return state;
 }
