@@ -17,32 +17,32 @@ const INITIAL_STATE = fromJS({
 export default function subrecords(state = INITIAL_STATE, action) {
   switch (action.type) {
 
-  case INSERT_SUBRECORD_ROW:
-    return insertSubrecordRow(state, action.rowIndex);
-  case REMOVE_SUBRECORD_ROW:
-    return removeSubrecordRow(state, action.rowIndex);
-  case CHANGE_SOURCE_SUBRECORD_ROW:
-    return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
-  case CHANGE_TARGET_SUBRECORD_ROW:
-    return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+    case INSERT_SUBRECORD_ROW:
+      return insertSubrecordRow(state, action.rowIndex);
+    case REMOVE_SUBRECORD_ROW:
+      return removeSubrecordRow(state, action.rowIndex);
+    case CHANGE_SOURCE_SUBRECORD_ROW:
+      return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+    case CHANGE_TARGET_SUBRECORD_ROW:
+      return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
 
-  case CHANGE_SUBRECORD_ROW: 
-    return changeSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
-  case SET_SUBRECORD_ACTION:
-    return setSubrecordAction(state, action.rowIndex, action.actionType);
-  case SET_MERGED_SUBRECORD:
-    return setMergedSubrecord(state, action.rowIndex, action.record);
-  case SET_MERGED_SUBRECORD_ERROR:
-    return setMergedSubrecordError(state, action.rowIndex, action.error);
+    case CHANGE_SUBRECORD_ROW: 
+      return changeSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+    case SET_SUBRECORD_ACTION:
+      return setSubrecordAction(state, action.rowIndex, action.actionType);
+    case SET_MERGED_SUBRECORD:
+      return setMergedSubrecord(state, action.rowIndex, action.record);
+    case SET_MERGED_SUBRECORD_ERROR:
+      return setMergedSubrecordError(state, action.rowIndex, action.error);
 
-  case SET_SOURCE_RECORD:
-    return setSourceSubrecords(state, action.record, action.subrecords);
-  case SET_TARGET_RECORD:
-    return setTargetSubrecords(state, action.record, action.subrecords);
-  case SET_MERGED_RECORD:
-    return resetMergedSubrecordsActions(state, action.record);
-  case RESET_WORKSPACE:
-    return INITIAL_STATE;
+    case SET_SOURCE_RECORD:
+      return setSourceSubrecords(state, action.record, action.subrecords);
+    case SET_TARGET_RECORD:
+      return setTargetSubrecords(state, action.record, action.subrecords);
+    case SET_MERGED_RECORD:
+      return resetMergedSubrecordsActions(state, action.record);
+    case RESET_WORKSPACE:
+      return INITIAL_STATE;
 
   }
   return state;

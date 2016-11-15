@@ -1,7 +1,7 @@
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable } from 'server/utils';
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
-import { logger } from './logger';
+import { logger } from 'server/logger';
 import _ from 'lodash';
 
 const duplicateDatabaseUrl = readEnvironmentVariable('DUPLICATE_DB_URL');

@@ -10,7 +10,7 @@ import {Provider} from 'react-redux';
 import {Router, Route, hashHistory} from 'react-router';
 import App from './components/app';
 import * as Cookies from 'js-cookie';
-import { validateSession } from './ui-actions';
+import { validateSession } from 'commons/action-creators/session-actions';
 
 const loggerMiddleware = createLogger();
 

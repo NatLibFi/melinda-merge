@@ -3,8 +3,8 @@ import { combineReducers } from 'redux-immutable';
 
 import { RESET_STATE } from './ui-actions';
 
+import session from 'commons/reducers/session-reducer';
 import subrecords from './reducers/subrecord-reducer';
-import session from './reducers/session-reducer';
 import duplicateDatabase from './reducers/duplicate-db-reducer';
 import location from './reducers/location-reducer';
 import sourceRecord from './reducers/source-record-reducer';
@@ -18,12 +18,11 @@ export const DEFAULT_MERGED_RECORD = Map({
 
 export default function reducer(state = Map(), action) {
   if (action.type === RESET_STATE) {
-    return Map();
+    state = Map();
   }
 
   let rawState = combinedRootReducer(state, action);
   return normalizeMergedRecord(rawState);
-
 }
 
 export const combinedRootReducer = combineReducers({

@@ -1,10 +1,10 @@
 import express from 'express';
 import cors from 'cors';
-import { corsOptions, requireBodyParams } from './utils';
 import bodyParser from 'body-parser';
-import { logger } from './logger';
 import HttpStatus from 'http-status-codes';
-import { readSessionMiddleware, requireSession } from './session-controller';
+import { corsOptions, requireBodyParams } from 'server/utils';
+import { logger } from 'server/logger';
+import { readSessionMiddleware, requireSession } from 'server/session-controller';
 
 import { getDuplicateCount, getNextDuplicatePair, markDuplicatePairAsMerged, skipPair, markPairAsNotDuplicates } from './duplicate-db-service';
 

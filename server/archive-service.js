@@ -3,7 +3,7 @@ import path from 'path';
 import archiver from 'archiver';
 import mkdirp from 'mkdirp';
 import moment from 'moment';
-import { readEnvironmentVariable } from './utils';
+import { readEnvironmentVariable } from 'server/utils';
 import _ from 'lodash';
 
 const defaultArchivePath = path.resolve(__dirname, '..', 'merge-action-archive');

@@ -35,7 +35,7 @@ export function fetchCount() {
 
         } else {
           switch (response.status) {
-          case HttpStatus.UNAUTHORIZED: return dispatch(fetchDuplicateCountError('Käyttäjätunnus ja salasana eivät täsmää.'));
+            case HttpStatus.UNAUTHORIZED: return dispatch(fetchDuplicateCountError('Käyttäjätunnus ja salasana eivät täsmää.'));
           }
 
           dispatch(fetchDuplicateCountError('Tuplien lukumäärän haussa tapahtui virhe.'));
@@ -83,7 +83,7 @@ export function fetchNextPair() {
 
         } else {
           switch (response.status) {
-          case HttpStatus.UNAUTHORIZED: return dispatch(fetchNextPairError('Käyttäjätunnus ja salasana eivät täsmää.'));
+            case HttpStatus.UNAUTHORIZED: return dispatch(fetchNextPairError('Käyttäjätunnus ja salasana eivät täsmää.'));
           }
 
           dispatch(fetchNextPairError('Seuraavan tietueparin hakemisessa tapahtui virhe.'));

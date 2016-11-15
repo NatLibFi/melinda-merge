@@ -49,17 +49,17 @@ export class SubrecordActionButton extends React.Component {
     const selectedIconClasses = classNames('btn-floating', 'btn-small', 'waves-effect', 'waves-light', 'subrecord-action-button', color);
 
     return (
-        <div className="fixed-action-btn click-to-toggle horizontal subrecord-action-button-container" ref={(c) => this._button = c}>
-          <a className={selectedIconClasses}>
-            <i className="large material-icons">{this.getIcon(selectedAction)}</i>
-          </a>
-          <ul className="open-left">
-            <li><a onClick={this.selectAction(SubrecordActionTypes.BLOCK)} className="btn-floating red"><i className="material-icons">block</i></a></li>
-            { !isMergeActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.MERGE)} className="btn-floating green"><i className="material-icons">queue</i></a></li>}
-            { !isCopyActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.COPY)} className="btn-floating blue"><i className="material-icons">forward</i></a></li>}
-          </ul>
-        </div>
-      );
+      <div className="fixed-action-btn click-to-toggle horizontal subrecord-action-button-container" ref={(c) => this._button = c}>
+        <a className={selectedIconClasses}>
+          <i className="large material-icons">{this.getIcon(selectedAction)}</i>
+        </a>
+        <ul className="open-left">
+          <li><a onClick={this.selectAction(SubrecordActionTypes.BLOCK)} className="btn-floating red"><i className="material-icons">block</i></a></li>
+          { !isMergeActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.MERGE)} className="btn-floating green"><i className="material-icons">queue</i></a></li>}
+          { !isCopyActionAvailable ? '' : <li><a onClick={this.selectAction(SubrecordActionTypes.COPY)} className="btn-floating blue"><i className="material-icons">forward</i></a></li>}
+        </ul>
+      </div>
+    );
   }
 
 }
