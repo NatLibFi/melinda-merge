@@ -17,7 +17,7 @@ class SubRecordPanelDragSource extends React.Component {
 
     const { connectDragSource } = this.props;
 
-    return connectDragSource(<div><SubRecordPanel {...this.props} /></div>);
+    return connectDragSource(<div className="fill-height"><SubRecordPanel {...this.props} /></div>);
       
   }
 }
@@ -26,6 +26,12 @@ const subrecordSource = {
   beginDrag(props) {
     const { type, rowIndex } = props;
     return { type, rowIndex };
+  },
+  canDrag(props) {
+    if (props && props.isExpanded) {
+      return false;
+    }
+    return true;
   }
 };
 

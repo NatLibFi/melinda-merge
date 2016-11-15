@@ -1,5 +1,6 @@
 import React from 'react';
-import * as uiActionCreators from '../ui-actions';
+import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow } from '../ui-actions';
+import { expandSubrecordRow, compressSubrecordRow } from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { List } from 'immutable';
@@ -20,15 +21,18 @@ export class SubrecordMergePanel extends React.Component {
     targetSubrecords: React.PropTypes.array.isRequired,
     mergedSubrecords: React.PropTypes.array.isRequired,
     selectedActions: React.PropTypes.array.isRequired,
+    expanded: React.PropTypes.array.isRequired,
     insertSubrecordRow: React.PropTypes.func.isRequired,
     removeSubrecordRow: React.PropTypes.func.isRequired,
-    changeSubrecordRow: React.PropTypes.func.isRequired
+    changeSubrecordRow: React.PropTypes.func.isRequired,
+    expandSubrecordRow: React.PropTypes.func.isRequired,
+    compressSubrecordRow: React.PropTypes.func.isRequired
   }
 
   renderSubrecordList() {
-    const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions} = this.props;
+    const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions, expanded} = this.props;
 
-    const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions).map(([sourceRecord, targetRecord, mergedRecord, selectedAction], i) => {
+    const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions, expanded).map(([sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded], i) => {
       
       const key = createKey(sourceRecord, targetRecord, i);
 
@@ -36,10 +40,13 @@ export class SubrecordMergePanel extends React.Component {
         onMoveRow={this.onMoveRow.bind(this)}
         key={key}
         rowIndex={i}
+        isExpanded={isExpanded}
         selectedAction={selectedAction}
         sourceRecord={sourceRecord}
         targetRecord={targetRecord}
         mergedRecord={mergedRecord}
+        onExpandRow={this.onExpandRow.bind(this)}
+        onCompressRow={this.onCompressRow.bind(this)}
         onRemoveRow={this.onRemoveRow.bind(this)}
       />);
     });
@@ -72,6 +79,14 @@ export class SubrecordMergePanel extends React.Component {
 
   onRemoveRow(rowIndex) {
     this.props.removeSubrecordRow(rowIndex);
+  }
+
+  onExpandRow(rowIndex) {
+    this.props.expandSubrecordRow(rowIndex);
+  }
+
+  onCompressRow(rowIndex) {
+    this.props.compressSubrecordRow(rowIndex);
   }
 
   onMoveRow(fromIndex, toIndex) {
@@ -107,7 +122,8 @@ function mapStateToProps(state) {
     sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()).toJS(),
     targetSubrecords: state.getIn(['subrecords', 'targetRecord'], List()).toJS(),
     mergedSubrecords: state.getIn(['subrecords', 'mergedRecord'], List()).toJS(),
-    selectedActions: state.getIn(['subrecords', 'actions'], List()).toJS()
+    selectedActions: state.getIn(['subrecords', 'actions'], List()).toJS(),
+    expanded: state.getIn(['subrecords', 'expanded'], List()).toJS()
   };
 }
 
@@ -117,6 +133,6 @@ export const DraggableSubrecordMergePanelContainer = compose(
 
   connect(
     mapStateToProps,
-    uiActionCreators
+    { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow }
   )
 )(SubrecordMergePanel);

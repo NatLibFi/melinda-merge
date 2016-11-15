@@ -9,11 +9,12 @@ export class SubRecordPanel extends React.Component {
   static propTypes = {
     record: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
-    isDragging: React.PropTypes.bool
+    isDragging: React.PropTypes.bool,
+    isExpanded: React.PropTypes.bool
   }
 
   render() {
-    const { record, isDragging } = this.props;
+    const { record, isDragging, isExpanded } = this.props;
     const selectedFields = record.fields
       .filter(f => _.includes(['245', '336'], f.tag));
 
@@ -32,9 +33,11 @@ export class SubRecordPanel extends React.Component {
       fields: selectedFields
     };
 
+    const res = isExpanded ? record : trimmedRecord;
+
     return (
       <div className={classes}>
-        <MarcRecordPanel record={trimmedRecord} />
+        <MarcRecordPanel record={res} />
       </div>
     );
   }

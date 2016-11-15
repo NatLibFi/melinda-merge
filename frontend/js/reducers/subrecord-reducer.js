@@ -6,12 +6,15 @@ import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW,
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 
 import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-actions';
+import { EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW } from '../constants/action-type-constants';
+
 
 const INITIAL_STATE = fromJS({
   sourceRecord: [],
   targetRecord: [],
   mergedRecord: [],
-  actions: []
+  actions: [],
+  expanded: []
 });
 
 export default function subrecords(state = INITIAL_STATE, action) {
@@ -41,11 +44,30 @@ export default function subrecords(state = INITIAL_STATE, action) {
       return setTargetSubrecords(state, action.record, action.subrecords);
     case SET_MERGED_RECORD:
       return resetMergedSubrecordsActions(state, action.record);
+    
+    case EXPAND_SUBRECORD_ROW:
+      return expandRow(state, action.rowIndex);
+    case COMPRESS_SUBRECORD_ROW:
+      return compressRow(state, action.rowIndex);
+
+
     case RESET_WORKSPACE:
       return INITIAL_STATE;
 
   }
   return state;
+}
+
+function expandRow(state, rowIndex) {
+  return state.updateIn(['expanded'], expandedList => {
+    return expandedList.set(rowIndex, true);
+  });
+}
+
+function compressRow(state, rowIndex) {
+  return state.updateIn(['expanded'], expandedList => {
+    return expandedList.set(rowIndex, false);
+  });
 }
 
 export function setSourceSubrecords(state, record, subrecords) {
@@ -115,7 +137,8 @@ export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
     .updateIn(['sourceRecord'], changeRow)
     .updateIn(['targetRecord'], changeRow)
     .updateIn(['mergedRecord'], changeRow)
-    .updateIn(['actions'], changeRow);
+    .updateIn(['actions'], changeRow)
+    .updateIn(['expanded'], changeRow);
 }
 
 function resetListIndices(rowIndexArr, list) {

@@ -1,6 +1,6 @@
 .marc-record {
   font-family: 'Roboto Mono'; 
-  white-space: pre; 
+  white-space: pre-wrap; 
   overflow-x: auto;
 
   &.marc-record-source {

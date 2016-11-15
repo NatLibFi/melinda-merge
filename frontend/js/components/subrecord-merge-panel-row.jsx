@@ -18,30 +18,33 @@ export class SubrecordMergePanelRow extends React.Component {
     mergedRecord: React.PropTypes.object,
     selectedAction: React.PropTypes.string,
     rowIndex: React.PropTypes.number.isRequired,
+    isExpanded: React.PropTypes.bool,
     onRemoveRow: React.PropTypes.func.isRequired,
+    onExpandRow: React.PropTypes.func.isRequired,
+    onCompressRow: React.PropTypes.func.isRequired,
 
     connectDragSource: React.PropTypes.func.isRequired,
     connectDropTarget: React.PropTypes.func.isRequired,
     isOver: React.PropTypes.bool.isRequired
   }
 
-  renderSubrecordPanel(record, type, rowIndex) {
+  renderSubrecordPanel(record, type, rowIndex, isExpanded) {
 
     if (record) {
       return (
-        <DraggableSubRecordPanel record={record} type={type} rowIndex={rowIndex} />
+        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowIndex={rowIndex} />
       );
     } else {
       return <DropTargetEmptySubRecordPanel type={type} rowIndex={rowIndex}/>;
     }
   }
 
-  renderMergedSubrecordPanel(mergedSubrecord, rowIndex, opts) {
+  renderMergedSubrecordPanel(mergedSubrecord, rowIndex, isExpanded, opts) {
     if (mergedSubrecord) {
       return (
-        <div>
+        <div className="fill-height">
           <SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />
-          <SubRecordPanel record={mergedSubrecord} type="MERGED" />
+          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" />
         </div>
       );
     } else {
@@ -57,8 +60,33 @@ export class SubrecordMergePanelRow extends React.Component {
     );
   }
 
+  renderExpandToggleButton(rowIndex, isEmptyRow, isExpanded) {
+
+    if (isEmptyRow) {
+      return null;
+    } else {
+      return isExpanded ? this.renderCompressRowButton(rowIndex) : this.renderExpandRowButton(rowIndex);
+    }
+  }
+
+  renderExpandRowButton(rowIndex) {
+    return (
+      <button onClick={() => this.props.onExpandRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
+        <i className="material-icons">expand_more</i>
+      </button>
+    ); 
+  }
+
+  renderCompressRowButton(rowIndex) {
+    return (
+      <button onClick={() => this.props.onCompressRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
+        <i className="material-icons">expand_less</i>
+      </button>
+    ); 
+  }
+
   render() {
-    const {sourceRecord, targetRecord, mergedRecord, rowIndex, selectedAction, connectDragSource, connectDropTarget, isOver} = this.props;
+    const {sourceRecord, targetRecord, mergedRecord, rowIndex, selectedAction, connectDragSource, connectDropTarget, isOver, isExpanded} = this.props;
 
     const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
     const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
@@ -76,13 +104,14 @@ export class SubrecordMergePanelRow extends React.Component {
       <tr className={rowClasses}>
 
         <td>
-          {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, rowIndex)}
+          {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, rowIndex, isExpanded)}
         </td>
         <td>
-          {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, rowIndex)}
+          {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, rowIndex, isExpanded)}
         </td>
         <td>
-         { isEmptyRow ? this.renderRemoveRowButton(rowIndex) : this.renderMergedSubrecordPanel(mergedRecord, rowIndex, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
+         { isEmptyRow ? this.renderRemoveRowButton(rowIndex) : this.renderMergedSubrecordPanel(mergedRecord, rowIndex, isExpanded, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
+         { this.renderExpandToggleButton(rowIndex, isEmptyRow, isExpanded) }
         </td>
       </tr>
     ));
@@ -95,6 +124,12 @@ const rowSource = {
   beginDrag(props) {
     const { rowIndex } = props;
     return { rowIndex };
+  },
+  canDrag(props) {
+    if (props && props.isExpanded) {
+      return false;
+    }
+    return true;
   }
 };
 
@@ -105,7 +140,6 @@ function collect(connect, monitor) {
   };
 }
 
-
 var rowTarget = {
   drop(props, monitor) {
     
@@ -114,8 +148,7 @@ var rowTarget = {
     const toRow = props.rowIndex;
     
     props.onMoveRow(fromRow, toRow);
-  },
-
+  }
 };
 
 var collectTarget = function(connect, monitor) {

@@ -104,6 +104,7 @@
     transform: translateY(-50%);
     left: -18px;
     padding-bottom: 2px;
+    height: 0px;
 
     &.fixed-action-btn > ul.open-left {
       bottom: auto;
@@ -129,5 +130,4 @@
       margin: 0px 10px 0 0;
     }
   }
-
 }
