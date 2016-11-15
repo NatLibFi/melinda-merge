@@ -1,5 +1,5 @@
 import React from 'react';
-import * as uiActionCreators from '../ui-actions';
+import * as subrecordActions from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import { SubrecordActionTypes } from '../constants';
 import classNames from 'classnames';
@@ -66,5 +66,5 @@ export class SubrecordActionButton extends React.Component {
 
 export const SubrecordActionButtonContainer = connect(
   null,
-  uiActionCreators
+  subrecordActions
 )(SubrecordActionButton);

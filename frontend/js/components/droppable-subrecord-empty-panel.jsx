@@ -2,7 +2,7 @@ import React from 'react';
 import { ItemTypes } from '../constants';
 import { DropTarget } from 'react-dnd';
 import { EmptySubRecordPanelContainer } from './subrecord-empty-panel';
-import * as uiActionCreators from '../ui-actions';
+import * as subrecordActions from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import compose from 'lodash/flowRight';
 
@@ -62,7 +62,7 @@ function collect(connect, monitor) {
 export const DropTargetEmptySubRecordPanel = compose(
   connect(
     null,
-    uiActionCreators
+    subrecordActions
   ),
   DropTarget(ItemTypes.SUBRECORD, emptySlotTarget, collect)
 )(DroppableEmptySubRecordPanel);

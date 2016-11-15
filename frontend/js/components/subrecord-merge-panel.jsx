@@ -1,6 +1,5 @@
 import React from 'react';
-import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow } from '../ui-actions';
-import { expandSubrecordRow, compressSubrecordRow } from '../action-creators/subrecord-actions';
+import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow } from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { List } from 'immutable';

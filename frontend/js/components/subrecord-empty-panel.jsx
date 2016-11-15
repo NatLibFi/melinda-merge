@@ -1,5 +1,5 @@
 import React from 'react';
-import * as uiActionCreators from '../ui-actions';
+import * as subrecordActions from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
 
@@ -30,5 +30,5 @@ export class EmptySubRecordPanel extends React.Component {
 
 export const EmptySubRecordPanelContainer = connect(
   null,
-  uiActionCreators
+  subrecordActions
 )(EmptySubRecordPanel);
