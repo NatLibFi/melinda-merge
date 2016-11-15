@@ -1,6 +1,6 @@
 import {executeTransaction, RollbackError} from './async-transaction';
 import _ from 'lodash';
-import { logger } from './logger';
+import { logger } from 'server/logger';
 
 export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) {
 
