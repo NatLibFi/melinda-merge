@@ -3,7 +3,7 @@ import { MarcRecordPanel } from './marc-record-panel';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import '../../styles/components/record-merge-panel.scss';
-import { Preloader } from './preloader';
+import { Preloader } from 'commons/components/preloader';
 import { ErrorMessagePanel } from './error-message-panel';
 import { isControlField } from '../utils';
 

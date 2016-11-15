@@ -7,7 +7,8 @@ const INITIAL_STATE = Map({
   dialog: Map({
     visible: false,
     closable: false
-  })
+  }),
+  status: CommitMergeStates.COMMIT_MERGE_NOT_STARTED
 });
 
 export default function mergeStatus(state = INITIAL_STATE, action) {
