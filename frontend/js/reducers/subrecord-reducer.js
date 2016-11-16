@@ -1,3 +1,4 @@
+import MarcRecord from 'marc-record-js';
 import { Map, List } from 'immutable';
 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
@@ -6,7 +7,7 @@ import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-ac
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
-  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW } from '../constants/action-type-constants';
+  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -45,6 +46,10 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case COMPRESS_SUBRECORD_ROW:
       return compressRow(state, action.rowId);
 
+    case ADD_SOURCE_SUBRECORD_FIELD:
+      return addField(state, action.rowId, action.field);
+    case REMOVE_SOURCE_SUBRECORD_FIELD:
+      return removeField(state, action.rowId, action.field);
 
     case RESET_WORKSPACE:
       return INITIAL_STATE;
@@ -52,6 +57,62 @@ export default function subrecords(state = INITIAL_STATE, action) {
   }
   return state;
 }
+
+
+function isControlField(field) {
+  return field.subfields === undefined;
+}
+
+export function addField(state, rowId, field) {
+  const record = state.get(rowId).get('mergedRecord');
+  const sourceRecord = state.get(rowId).get('sourceRecord');
+
+  if (isControlField(field)) {
+    record.insertControlField(field);
+  } else {
+    record.insertField(field);
+  }
+  
+  return state
+    .setIn([rowId, 'mergedRecord'], setFieldSelected(record, field))
+    .setIn([rowId, 'sourceRecord'], setFieldSelected(sourceRecord, field));
+}
+
+export function removeField(state, rowId, field) {
+
+  const record = state.get(rowId).get('mergedRecord');
+  const sourceRecord = state.get(rowId).get('sourceRecord');
+
+  record.fields = record.fields.filter(currentField => currentField.uuid !== field.uuid);
+
+  return state
+    .setIn([rowId, 'mergedRecord'], setFieldUnselected(record, field))
+    .setIn([rowId, 'sourceRecord'], setFieldUnselected(sourceRecord, field));
+}
+
+function setFieldSelected(record, field) {
+  
+  record.fields
+    .filter(recordField => recordField.uuid === field.uuid)
+    .forEach(recordField => {
+      recordField.fromOther = true;
+      recordField.wasUsed = true;
+    });
+  return new MarcRecord(record);
+
+}
+
+function setFieldUnselected(record, field) {
+  record.fields
+    .filter(recordField => recordField.uuid === field.uuid)
+    .forEach(recordField => {
+      recordField.fromOther = false;
+      recordField.wasUsed = false;
+    });
+
+  return new MarcRecord(record);
+}
+
 
 function expandRow(state, rowId) {
   return state.update(rowId, createEmptyRow(), row => row.set('isExpanded', true));

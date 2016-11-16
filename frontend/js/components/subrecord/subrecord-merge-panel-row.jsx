@@ -25,14 +25,28 @@ export class SubrecordMergePanelRow extends React.Component {
 
     connectDragSource: React.PropTypes.func.isRequired,
     connectDropTarget: React.PropTypes.func.isRequired,
+    onSourceFieldClick: React.PropTypes.func,
+    onMergedFieldClick: React.PropTypes.func,
     isOver: React.PropTypes.bool.isRequired
+  }
+
+  handleSourceFieldClick(field) {
+    if (this.props.onSourceFieldClick) {
+      this.props.onSourceFieldClick(this.props.rowId, field);
+    }
+  }
+  handleMergedFieldClick(field) {
+    if (this.props.onMergedFieldClick) {
+      this.props.onMergedFieldClick(this.props.rowId, field);
+    }
   }
 
   renderSubrecordPanel(record, type, rowId, isExpanded) {
 
     if (record) {
+      const fieldClickHandler = type === ItemTypes.SOURCE_SUBRECORD ? this.handleSourceFieldClick.bind(this) : undefined;
       return (
-        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowId={rowId} />
+        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowId={rowId} onFieldClick={fieldClickHandler} />
       );
     } else {
       return <DropTargetEmptySubRecordPanel type={type} rowId={rowId} />;
@@ -44,7 +58,7 @@ export class SubrecordMergePanelRow extends React.Component {
       return (
         <div className="fill-height">
           <SubrecordActionButtonContainer rowId={rowId} {...opts} />
-          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" />
+          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" onFieldClick={this.handleMergedFieldClick.bind(this)} />
         </div>
       );
     } else {

@@ -1,5 +1,5 @@
 import React from 'react';
-import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow } from '../../action-creators/subrecord-actions';
+import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection } from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { DragDropContext } from 'react-dnd';
@@ -22,7 +22,8 @@ export class SubrecordMergePanel extends React.Component {
     removeSubrecordRow: React.PropTypes.func.isRequired,
     changeSubrecordRow: React.PropTypes.func.isRequired,
     expandSubrecordRow: React.PropTypes.func.isRequired,
-    compressSubrecordRow: React.PropTypes.func.isRequired
+    compressSubrecordRow: React.PropTypes.func.isRequired,
+    toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired
   }
 
   constructor(props) {
@@ -55,6 +56,8 @@ export class SubrecordMergePanel extends React.Component {
         onExpandRow={this.onExpandRow}
         onCompressRow={this.onCompressRow}
         onRemoveRow={this.onRemoveRow}
+        onSourceFieldClick={this.handleFieldClick.bind(this)}
+        onMergedFieldClick={this.handleMergedFieldClick.bind(this)}
       />);
     });
 
@@ -82,6 +85,22 @@ export class SubrecordMergePanel extends React.Component {
     return function() {
       this.props.insertSubrecordRow(rowIndex);
     }.bind(this);
+  }
+
+  isControlField(field) {
+    return field.subfields === undefined;
+  }
+
+  handleFieldClick(rowId, field) {
+    if (!this.isControlField(field)) {
+      this.props.toggleSourceSubrecordFieldSelection(rowId, field);
+    }
+  }
+
+  handleMergedFieldClick(rowId, field) {
+    if (field.fromOther && !this.isControlField(field)) {
+      this.props.toggleSourceSubrecordFieldSelection(rowId, field);
+    }
   }
 
   onRemoveRow(rowId) {
@@ -126,6 +145,6 @@ export const DraggableSubrecordMergePanelContainer = compose(
 
   connect(
     mapStateToProps,
-    { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow }
+    { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection }
   )
 )(SubrecordMergePanel);

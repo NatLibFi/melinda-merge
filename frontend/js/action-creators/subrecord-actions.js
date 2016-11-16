@@ -1,7 +1,7 @@
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
-  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW } from '../constants/action-type-constants';
+  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from '../constants';
 import createRecordMerger from 'marc-record-merge';
@@ -105,4 +105,28 @@ export function setMergedSubrecord(rowId, record) {
 
 export function setMergedSubrecordError(rowId, error) {
   return { 'type': SET_MERGED_SUBRECORD_ERROR, rowId, error };
+}
+
+export function addSourceSubrecordField(rowId, field) {
+  return { 'type': ADD_SOURCE_SUBRECORD_FIELD, rowId, field};
+}
+export function removeSourceSubrecordField(rowId, field) {
+  return { 'type': REMOVE_SOURCE_SUBRECORD_FIELD, rowId, field};
+}
+
+export function toggleSourceSubrecordFieldSelection(rowId, fieldInSourceRecord) {
+  return function(dispatch, getState) {
+
+    const row = getState().getIn(['subrecords', rowId]);
+    const mergedRecord = row.get('mergedRecord');
+
+    const field = mergedRecord.fields.find(fieldInMergedRecord => fieldInMergedRecord.uuid === fieldInSourceRecord.uuid);
+
+    if (field === undefined) {
+      dispatch(addSourceSubrecordField(rowId, fieldInSourceRecord));
+    } else {
+      dispatch(removeSourceSubrecordField(rowId, fieldInSourceRecord));
+    }
+
+  };
 }

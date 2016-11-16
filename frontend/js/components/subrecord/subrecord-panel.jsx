@@ -10,7 +10,8 @@ export class SubRecordPanel extends React.Component {
     record: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
     isDragging: React.PropTypes.bool,
-    isExpanded: React.PropTypes.bool
+    isExpanded: React.PropTypes.bool,
+    onFieldClick: React.PropTypes.func,
   }
 
   render() {
@@ -37,7 +38,7 @@ export class SubRecordPanel extends React.Component {
 
     return (
       <div className={classes}>
-        <MarcRecordPanel record={res} />
+        <MarcRecordPanel record={res} onFieldClick={this.props.onFieldClick} />
       </div>
     );
   }

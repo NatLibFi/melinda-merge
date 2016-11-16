@@ -13,7 +13,7 @@
     }
   }
 
-  &.marc-record-source:not(.marc-record-subrecord) {
+  &.marc-record-source {
     .fieldList {
       .marc-field-datafield {
         &:hover {
