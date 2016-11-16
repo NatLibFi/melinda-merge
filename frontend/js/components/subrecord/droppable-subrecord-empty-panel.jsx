@@ -1,8 +1,8 @@
 import React from 'react';
-import { ItemTypes } from '../constants';
+import { ItemTypes } from '../../constants';
 import { DropTarget } from 'react-dnd';
 import { EmptySubRecordPanelContainer } from './subrecord-empty-panel';
-import * as subrecordActions from '../action-creators/subrecord-actions';
+import * as subrecordActions from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import compose from 'lodash/flowRight';
 

@@ -1,5 +1,5 @@
 import React from 'react';
-import * as subrecordActions from '../action-creators/subrecord-actions';
+import * as subrecordActions from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
 

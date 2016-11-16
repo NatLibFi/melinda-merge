@@ -1,14 +1,13 @@
 import React from 'react';
 import classNames from 'classnames';
-import { SubrecordActionTypes } from '../constants';
-import { ItemTypes } from '../constants';
+import { SubrecordActionTypes, ItemTypes } from '../../constants';
 import { DropTargetEmptySubRecordPanel } from './droppable-subrecord-empty-panel';
 import { DraggableSubRecordPanel } from './draggable-subrecord-panel';
 import { SubRecordPanel } from './subrecord-panel';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
 import { DropTarget, DragSource } from 'react-dnd';
 
-import '../../styles/components/subrecord-merge-panel-row.scss';
+import '../../../styles/components/subrecord-merge-panel-row.scss';
 
 export class SubrecordMergePanelRow extends React.Component {
 

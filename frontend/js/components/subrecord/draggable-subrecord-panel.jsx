@@ -1,6 +1,6 @@
 import React from 'react';
 import { DragSource } from 'react-dnd';
-import { ItemTypes } from '../constants';
+import { ItemTypes } from '../../constants';
 import { SubRecordPanel } from './subrecord-panel';
 
 class SubRecordPanelDragSource extends React.Component {

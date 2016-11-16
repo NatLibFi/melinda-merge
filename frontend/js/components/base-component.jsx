@@ -4,7 +4,7 @@ import { NavBarContainer } from './navbar';
 import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
-import { SubrecordComponent } from './subrecord-component';
+import { SubrecordComponent } from './subrecord/subrecord-component';
 import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';

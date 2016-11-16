@@ -1,17 +1,17 @@
 import React from 'react';
-import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow } from '../action-creators/subrecord-actions';
+import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow } from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
-import { ItemTypes } from '../constants';
+import { ItemTypes } from '../../constants';
 import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
 import { DragDropSubrecordMergePanelRow } from './subrecord-merge-panel-row';
 import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
-import { subrecordOrder, subrecords } from '../selectors/subrecord-selectors';
+import { subrecordOrder, subrecords } from '../../selectors/subrecord-selectors';
 
-import '../../styles/components/subrecord-merge-panel.scss';
+import '../../../styles/components/subrecord-merge-panel.scss';
 
 export class SubrecordMergePanel extends React.Component {
 

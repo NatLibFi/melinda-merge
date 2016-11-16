@@ -1,7 +1,6 @@
 import React from 'react';
-import * as uiActionCreators from '../ui-actions';
+import * as uiActionCreators from '../../ui-actions';
 import {connect} from 'react-redux';
-//import '../../styles/components/subrecord-header.scss';
 
 export class SubrecordHeader extends React.Component {
 
