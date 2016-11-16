@@ -8,52 +8,54 @@ import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
 import MarcRecordMergeMelindaUtils from '../vendor/marc-record-merge-melindautils';
 
-export function expandSubrecordRow(rowIndex) {
-  return { type: EXPAND_SUBRECORD_ROW, rowIndex };
+export function expandSubrecordRow(rowId) {
+  return { type: EXPAND_SUBRECORD_ROW, rowId };
 }
 
-export function compressSubrecordRow(rowIndex) {
-  return { type: COMPRESS_SUBRECORD_ROW, rowIndex };
+export function compressSubrecordRow(rowId) {
+  return { type: COMPRESS_SUBRECORD_ROW, rowId };
 }
 
 export function insertSubrecordRow(rowIndex) {
   return { 'type': INSERT_SUBRECORD_ROW, rowIndex };
 }
 
-export function removeSubrecordRow(rowIndex) {
-  return { 'type': REMOVE_SUBRECORD_ROW, rowIndex };
+export function removeSubrecordRow(rowId) {
+  return { 'type': REMOVE_SUBRECORD_ROW, rowId };
 }
 
-export function changeSourceSubrecordRow(fromRowIndex, toRowIndex) {
-  return { 'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+export function changeSourceSubrecordRow(fromRowId, toRowId) {
+  return { 'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowId, toRowId };
 }
 
-export function changeTargetSubrecordRow(fromRowIndex, toRowIndex) {
-  return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+export function changeTargetSubrecordRow(fromRowId, toRowId) {
+  return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowId, toRowId };
 }
 
 export function changeSubrecordRow(fromRowIndex, toRowIndex) {
   return { 'type': CHANGE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
 }
 
-export function setSubrecordAction(rowIndex, actionType) {
-  return { 'type': SET_SUBRECORD_ACTION, rowIndex, actionType };
+export function setSubrecordAction(rowId, actionType) {
+  return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
 }
 
-export function changeSubrecordAction(rowIndex, actionType) {
+export function changeSubrecordAction(rowId, actionType) {
   return function(dispatch) {
-    dispatch(setSubrecordAction(rowIndex, actionType));
-    dispatch(updateMergedSubrecord(rowIndex));
+    dispatch(setSubrecordAction(rowId, actionType));
+    dispatch(updateMergedSubrecord(rowId));
   };
 }
 
-export function updateMergedSubrecord(rowIndex) {
+export function updateMergedSubrecord(rowId) {
 
   return function(dispatch, getState) {
 
-    const selectedActionType = getState().getIn(['subrecords', 'actions']).get(rowIndex);
-    const preferredRecord = getState().getIn(['subrecords', 'targetRecord']).get(rowIndex);
-    const otherRecord = getState().getIn(['subrecords', 'sourceRecord']).get(rowIndex);
+    const row = getState().getIn(['subrecords', rowId]);
+
+    const selectedActionType = row.get('selectedAction');
+    const preferredRecord = row.get('targetRecord');
+    const otherRecord = row.get('sourceRecord');
 
     if (selectedActionType === SubrecordActionTypes.COPY) {
       if (preferredRecord && otherRecord) {
@@ -61,12 +63,12 @@ export function updateMergedSubrecord(rowIndex) {
       }
       
       const recordToCopy = preferredRecord || otherRecord;
-      return dispatch(setMergedSubrecord(rowIndex, recordToCopy));
+      return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }
 
     if (selectedActionType === SubrecordActionTypes.BLOCK) {
-      return dispatch(setMergedSubrecord(rowIndex, undefined));
+      return dispatch(setMergedSubrecord(rowId, undefined));
     }
 
     if (selectedActionType === SubrecordActionTypes.MERGE) {
@@ -79,30 +81,28 @@ export function updateMergedSubrecord(rowIndex) {
           const mergedRecord = merge(preferredRecord, otherRecord);
 
           mergeChecks.applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord).then(fixedMergedRecord => {
-            dispatch(setMergedSubrecord(rowIndex, fixedMergedRecord));
+            dispatch(setMergedSubrecord(rowId, fixedMergedRecord));
           }).catch(error => {
-            dispatch(setMergedSubrecordError(rowIndex, error));
+            dispatch(setMergedSubrecordError(rowId, error));
           });
 
         } catch(e) {
-          dispatch(setMergedSubrecordError(rowIndex, e));
+          dispatch(setMergedSubrecordError(rowId, e));
         }
         
 
       } else {
-        dispatch(setMergedSubrecordError(rowIndex, new Error('Cannot merge undefined records')));
+        dispatch(setMergedSubrecordError(rowId, new Error('Cannot merge undefined records')));
       }
     }
 
   };
 }
 
-
-export function setMergedSubrecord(rowIndex, record) {
-  return { 'type': SET_MERGED_SUBRECORD, rowIndex, record };
+export function setMergedSubrecord(rowId, record) {
+  return { 'type': SET_MERGED_SUBRECORD, rowId, record };
 }
 
-
-export function setMergedSubrecordError(rowIndex, error) {
-  return { 'type': SET_MERGED_SUBRECORD_ERROR, rowIndex, error };
+export function setMergedSubrecordError(rowId, error) {
+  return { 'type': SET_MERGED_SUBRECORD_ERROR, rowId, error };
 }

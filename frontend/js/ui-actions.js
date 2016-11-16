@@ -11,6 +11,7 @@ import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
 import uuid from 'node-uuid';
+import { subrecordRows } from './selectors/subrecord-selectors';
 
 export function commitMerge() {
 
@@ -23,9 +24,10 @@ export function commitMerge() {
     const targetRecord = getState().getIn(['targetRecord', 'record']);
     const mergedRecord = getState().getIn(['mergedRecord', 'record']);
 
-    const sourceSubrecordList = getState().getIn(['subrecords', 'sourceRecord']).filter(_.identity);
-    const targetSubrecordList = getState().getIn(['subrecords', 'targetRecord']).filter(_.identity);
-    const mergedSubrecordList = getState().getIn(['subrecords', 'mergedRecord']).filter(_.identity);
+    const subrecords = subrecordRows(getState());
+    const sourceSubrecordList = _(subrecords).map('sourceRecord').compact().value();
+    const targetSubrecordList = _(subrecords).map('targetRecord').compact().value();
+    const mergedSubrecordList = _(subrecords).map('mergedRecord').compact().value();
 
     const fetchOptions = {
       method: 'POST',

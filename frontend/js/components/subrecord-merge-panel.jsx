@@ -2,7 +2,6 @@ import React from 'react';
 import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow } from '../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import { List } from 'immutable';
 import { DragDropContext } from 'react-dnd';
 import HTML5Backend from 'react-dnd-html5-backend';
 import { ItemTypes } from '../constants';
@@ -10,17 +9,15 @@ import compose from 'lodash/flowRight';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
 import { DragDropSubrecordMergePanelRow } from './subrecord-merge-panel-row';
 import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
+import { subrecordOrder, subrecords } from '../selectors/subrecord-selectors';
 
 import '../../styles/components/subrecord-merge-panel.scss';
 
 export class SubrecordMergePanel extends React.Component {
 
   static propTypes = {
-    sourceSubrecords: React.PropTypes.array.isRequired,
-    targetSubrecords: React.PropTypes.array.isRequired,
-    mergedSubrecords: React.PropTypes.array.isRequired,
-    selectedActions: React.PropTypes.array.isRequired,
-    expanded: React.PropTypes.array.isRequired,
+    subrecordOrder: React.PropTypes.array.isRequired,
+    subrecords: React.PropTypes.object.isRequired,
     insertSubrecordRow: React.PropTypes.func.isRequired,
     removeSubrecordRow: React.PropTypes.func.isRequired,
     changeSubrecordRow: React.PropTypes.func.isRequired,
@@ -28,25 +25,36 @@ export class SubrecordMergePanel extends React.Component {
     compressSubrecordRow: React.PropTypes.func.isRequired
   }
 
-  renderSubrecordList() {
-    const { sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions, expanded} = this.props;
+  constructor(props) {
+    super(props);
 
-    const items = _.zip(sourceSubrecords, targetSubrecords, mergedSubrecords, selectedActions, expanded).map(([sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded], i) => {
+    this.onMoveRow = this.onMoveRow.bind(this);
+    this.onExpandRow = this.onExpandRow.bind(this);
+    this.onCompressRow = this.onCompressRow.bind(this);
+    this.onRemoveRow = this.onRemoveRow.bind(this);
+  }
+
+  renderSubrecordList() {
+   
+    const { subrecordOrder, subrecords } = this.props;
+
+    const items = subrecordOrder.map((rowId, i) => {
       
-      const key = createKey(sourceRecord, targetRecord, i);
+      const {sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded} = subrecords[rowId];
 
       return (<DragDropSubrecordMergePanelRow
-        onMoveRow={this.onMoveRow.bind(this)}
-        key={key}
+        key={rowId}
         rowIndex={i}
+        rowId={rowId}
         isExpanded={isExpanded}
         selectedAction={selectedAction}
         sourceRecord={sourceRecord}
         targetRecord={targetRecord}
         mergedRecord={mergedRecord}
-        onExpandRow={this.onExpandRow.bind(this)}
-        onCompressRow={this.onCompressRow.bind(this)}
-        onRemoveRow={this.onRemoveRow.bind(this)}
+        onMoveRow={this.onMoveRow}
+        onExpandRow={this.onExpandRow}
+        onCompressRow={this.onCompressRow}
+        onRemoveRow={this.onRemoveRow}
       />);
     });
 
@@ -76,16 +84,16 @@ export class SubrecordMergePanel extends React.Component {
     }.bind(this);
   }
 
-  onRemoveRow(rowIndex) {
-    this.props.removeSubrecordRow(rowIndex);
+  onRemoveRow(rowId) {
+    this.props.removeSubrecordRow(rowId);
   }
 
-  onExpandRow(rowIndex) {
-    this.props.expandSubrecordRow(rowIndex);
+  onExpandRow(rowId) {
+    this.props.expandSubrecordRow(rowId);
   }
 
-  onCompressRow(rowIndex) {
-    this.props.compressSubrecordRow(rowIndex);
+  onCompressRow(rowId) {
+    this.props.compressSubrecordRow(rowId);
   }
 
   onMoveRow(fromIndex, toIndex) {
@@ -105,24 +113,10 @@ export class SubrecordMergePanel extends React.Component {
   }
 }
 
-function createKey(sourceRecord, targetRecord, i) {
-  if (sourceRecord === undefined && targetRecord === undefined) {
-    return `empty-${i}`;
-  }
-
-  const s = _.get(sourceRecord, 'fields', []).filter(f => f.tag === '001').map(f => f.value);
-  const t = _.get(targetRecord, 'fields', []).filter(f => f.tag === '001').map(f => f.value);
-
-  return `${s}-${t}`;
-}
-
 function mapStateToProps(state) {
   return {
-    sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()).toJS(),
-    targetSubrecords: state.getIn(['subrecords', 'targetRecord'], List()).toJS(),
-    mergedSubrecords: state.getIn(['subrecords', 'mergedRecord'], List()).toJS(),
-    selectedActions: state.getIn(['subrecords', 'actions'], List()).toJS(),
-    expanded: state.getIn(['subrecords', 'expanded'], List()).toJS()
+    subrecordOrder: subrecordOrder(state),
+    subrecords: subrecords(state)
   };
 }
 

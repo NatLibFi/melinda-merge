@@ -7,7 +7,7 @@ import classNames from 'classnames';
 export class SubrecordActionButton extends React.Component {
 
   static propTypes = {
-    rowIndex: React.PropTypes.number.isRequired,
+    rowId: React.PropTypes.string.isRequired,
     changeSubrecordAction: React.PropTypes.func.isRequired,
     selectedAction: React.PropTypes.string,
     isMergeActionAvailable: React.PropTypes.bool,
@@ -19,10 +19,10 @@ export class SubrecordActionButton extends React.Component {
   }
 
   selectAction(type) {
-    const {rowIndex, changeSubrecordAction} = this.props;
+    const {rowId, changeSubrecordAction} = this.props;
 
     return function() {
-      changeSubrecordAction(rowIndex, type);      
+      changeSubrecordAction(rowId, type);      
     };
   }
 

@@ -1,7 +1,6 @@
 import React from 'react';
 import { commitMerge} from '../ui-actions';
 import {connect} from 'react-redux';
-import { List } from 'immutable';
 import { mergeButtonEnabled } from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
 import { removeSession } from 'commons/action-creators/session-actions';
@@ -66,10 +65,7 @@ function mapStateToProps(state) {
   return {
     mergeButtonEnabled: mergeButtonEnabled(state),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
-    statusInfo: state.getIn(['mergeStatus', 'message']),
-    sourceSubrecords: state.getIn(['subrecords', 'sourceRecord'], List()),
-    targetSubrecords: state.getIn(['subrecords', 'targetRecord'], List()),
-    selectedActions: state.getIn(['subrecords', 'actions'], List())
+    statusInfo: state.getIn(['mergeStatus', 'message'])
   };
 }
 

@@ -9,7 +9,7 @@ export class EmptySubRecordPanel extends React.Component {
     isOver: React.PropTypes.bool.isRequired,
     canDrop: React.PropTypes.bool.isRequired,
     type: React.PropTypes.string.isRequired,
-    rowIndex: React.PropTypes.number.isRequired,
+    rowId: React.PropTypes.string.isRequired,
     changeSourceSubrecordRow: React.PropTypes.func.isRequired,
     changeTargetSubrecordRow: React.PropTypes.func.isRequired
   }

@@ -1,9 +1,10 @@
 import {expect} from 'chai';
 import * as actions from '../js/ui-actions';
-
+import _ from 'lodash';
 import { INITIAL_STATE } from '../js/root-reducer';
 import reducer from '../js/root-reducer';
 import MarcRecord from 'marc-record-js';
+import { subrecordRows } from '../js/selectors/subrecord-selectors';
 
 describe('ui reducers', () => {
 
@@ -88,7 +89,7 @@ describe('ui reducers', () => {
         record: testRecordObject
       });
 
-      const sourceSubrecords = nextState.getIn(['subrecords', 'sourceRecord']).toJS();
+      const sourceSubrecords = _.map(subrecordRows(nextState), 'sourceRecord');
       expect(sourceSubrecords).to.eql([ssub1]);
 
     });
@@ -96,7 +97,7 @@ describe('ui reducers', () => {
   
     it('initialized subrecords to empty correctly', () => {
       let nextState = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject));
-      const sourceSubrecords = nextState.getIn(['subrecords', 'sourceRecord']).toJS();
+      const sourceSubrecords = _.map(subrecordRows(nextState), 'sourceRecord');
       expect(sourceSubrecords).to.eql([]);
     });
   });

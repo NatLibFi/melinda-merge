@@ -13,6 +13,7 @@ import '../../styles/components/subrecord-merge-panel-row.scss';
 export class SubrecordMergePanelRow extends React.Component {
 
   static propTypes = {
+    rowId: React.PropTypes.string.isRequired,
     sourceRecord: React.PropTypes.object,
     targetRecord: React.PropTypes.object,
     mergedRecord: React.PropTypes.object,
@@ -28,66 +29,66 @@ export class SubrecordMergePanelRow extends React.Component {
     isOver: React.PropTypes.bool.isRequired
   }
 
-  renderSubrecordPanel(record, type, rowIndex, isExpanded) {
+  renderSubrecordPanel(record, type, rowId, isExpanded) {
 
     if (record) {
       return (
-        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowIndex={rowIndex} />
+        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowId={rowId} />
       );
     } else {
-      return <DropTargetEmptySubRecordPanel type={type} rowIndex={rowIndex}/>;
+      return <DropTargetEmptySubRecordPanel type={type} rowId={rowId} />;
     }
   }
 
-  renderMergedSubrecordPanel(mergedSubrecord, rowIndex, isExpanded, opts) {
+  renderMergedSubrecordPanel(mergedSubrecord, rowId, isExpanded, opts) {
     if (mergedSubrecord) {
       return (
         <div className="fill-height">
-          <SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />
+          <SubrecordActionButtonContainer rowId={rowId} {...opts} />
           <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" />
         </div>
       );
     } else {
-      return (<SubrecordActionButtonContainer rowIndex={rowIndex} {...opts} />);
+      return (<SubrecordActionButtonContainer rowId={rowId} {...opts} />);
     }
   }
 
-  renderRemoveRowButton(rowIndex) {
+  renderRemoveRowButton(rowId) {
     return (
-      <button onClick={() => this.props.onRemoveRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
+      <button onClick={() => this.props.onRemoveRow(rowId)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
         <i className="material-icons">clear</i>
       </button>
     );
   }
 
-  renderExpandToggleButton(rowIndex, isEmptyRow, isExpanded) {
+  renderExpandToggleButton(rowId, isEmptyRow, isExpanded) {
 
     if (isEmptyRow) {
       return null;
     } else {
-      return isExpanded ? this.renderCompressRowButton(rowIndex) : this.renderExpandRowButton(rowIndex);
+      return isExpanded ? this.renderCompressRowButton(rowId) : this.renderExpandRowButton(rowId);
     }
   }
 
-  renderExpandRowButton(rowIndex) {
+  renderExpandRowButton(rowId) {
     return (
-      <button onClick={() => this.props.onExpandRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
+      <button onClick={() => this.props.onExpandRow(rowId)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
         <i className="material-icons">expand_more</i>
       </button>
     ); 
   }
 
-  renderCompressRowButton(rowIndex) {
+  renderCompressRowButton(rowId) {
     return (
-      <button onClick={() => this.props.onCompressRow(rowIndex)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
+      <button onClick={() => this.props.onCompressRow(rowId)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
         <i className="material-icons">expand_less</i>
       </button>
     ); 
   }
 
   render() {
-    const {sourceRecord, targetRecord, mergedRecord, rowIndex, selectedAction, connectDragSource, connectDropTarget, isOver, isExpanded} = this.props;
-
+    const {rowId, sourceRecord, targetRecord, mergedRecord, selectedAction, connectDragSource, connectDropTarget, isOver, isExpanded} = this.props;
+    
     const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
     const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
     const isCopyActionAvailable = !isMergeActionAvailable && !isEmptyRow;
@@ -104,14 +105,14 @@ export class SubrecordMergePanelRow extends React.Component {
       <tr className={rowClasses}>
 
         <td>
-          {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, rowIndex, isExpanded)}
+          {this.renderSubrecordPanel(sourceRecord, ItemTypes.SOURCE_SUBRECORD, rowId, isExpanded)}
         </td>
         <td>
-          {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, rowIndex, isExpanded)}
+          {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, rowId, isExpanded)}
         </td>
         <td>
-         { isEmptyRow ? this.renderRemoveRowButton(rowIndex) : this.renderMergedSubrecordPanel(mergedRecord, rowIndex, isExpanded, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
-         { this.renderExpandToggleButton(rowIndex, isEmptyRow, isExpanded) }
+         { isEmptyRow ? this.renderRemoveRowButton(rowId) : this.renderMergedSubrecordPanel(mergedRecord, rowId, isExpanded, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
+         { this.renderExpandToggleButton(rowId, isEmptyRow, isExpanded) }
         </td>
       </tr>
     ));
