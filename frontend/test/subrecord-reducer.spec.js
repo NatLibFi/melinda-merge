@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import MarcRecord from 'marc-record-js';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from '../js/constants';
-import { setSourceRecord, setTargetRecord } from '../js/ui-actions';
+import { setSourceRecord, setTargetRecord, swapRecords } from '../js/ui-actions';
 import { setSubrecordAction, setMergedSubrecord, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeSubrecordRow } from '../js/action-creators/subrecord-actions';
 import reducer from '../js/root-reducer';
 import { subrecordRows } from '../js/selectors/subrecord-selectors';
@@ -111,14 +111,54 @@ describe('Subrecord reducer', () => {
 
     describe('set subrecords', function() {
 
-      it('keex', () => {
+      describe('when records are swapped', () => {
         let state;
-        state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.MERGE));
-        const subrecordActions = _.map(subrecordRows(state), 'selectedAction');
-        expect(subrecordActions).to.eql([SubrecordActionTypes.MERGE, undefined]);
+
+        beforeEach(() => {
+          state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+          state = reducer(state, setTargetRecord(otherTestRecordObject, []));
+          
+          state = reducer(state, setSourceRecord(otherTestRecordObject, []));
+          state = reducer(state, setTargetRecord(testRecordObject, [ssub1, ssub2]));
+        });
+
+        it('sets the subfields of target record', () => {
+          const { targetSubrecords } = subrecords(state);
+          expect(targetSubrecords).to.eql([ssub1, ssub2]);
+        });
+
+        it('sets the subfields of source record', () => {
+          const { sourceSubrecords } = subrecords(state);
+          expect(sourceSubrecords).to.eql([undefined, undefined]);
+        });
 
       });
+
+      describe('when records are swapped other way', () => {
+        let state;
+
+        beforeEach(() => {
+          state = INITIAL_STATE;
+          state = reducer(state, setSourceRecord(otherTestRecordObject, []));
+          state = reducer(state, setTargetRecord(testRecordObject, [ssub1, ssub2]));
+
+          state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+          state = reducer(state, setTargetRecord(otherTestRecordObject, []));
+          
+        });
+
+        it('sets the subfields of target record', () => {
+          const { sourceSubrecords } = subrecords(state);
+          expect(sourceSubrecords).to.eql([ssub1, ssub2]);
+        });
+
+        it('sets the subfields of source record', () => {
+          const { targetSubrecords } = subrecords(state);
+          expect(targetSubrecords).to.eql([undefined, undefined]);
+        });
+
+      });
+
 
     });
 

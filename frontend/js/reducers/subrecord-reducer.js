@@ -124,6 +124,10 @@ function compressRow(state, rowId) {
 
 export function setSourceSubrecords(state, record, subrecords) {
 
+  state = state.get('index').reduce((state, key) => {
+    return state.update(key, row => row.set('sourceRecord', undefined));
+  }, state);
+
   return subrecords.reduce((state, subrecord, i) => {
 
     const key = state.get('index').get(i);
@@ -139,10 +143,13 @@ export function setSourceSubrecords(state, record, subrecords) {
     }
     
   }, state);
-  
 }
 
 export function setTargetSubrecords(state, record, subrecords) {
+
+  state = state.get('index').reduce((state, key) => {
+    return state.update(key, row => row.set('targetRecord', undefined));
+  }, state);
 
   return subrecords.reduce((state, subrecord, i) => {
 
