@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import MarcRecord from 'marc-record-js';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from '../js/constants';
-import { setSourceRecord, setTargetRecord, swapRecords } from '../js/ui-actions';
+import { setSourceRecord, setTargetRecord } from '../js/ui-actions';
 import { setSubrecordAction, setMergedSubrecord, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeSubrecordRow } from '../js/action-creators/subrecord-actions';
 import reducer from '../js/root-reducer';
 import { subrecordRows } from '../js/selectors/subrecord-selectors';
