@@ -1,7 +1,8 @@
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
-  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD } from '../constants/action-type-constants';
+  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
+  UPDATE_SUBRECORD_ARRANGEMENT } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from '../constants';
 import createRecordMerger from 'marc-record-merge';
@@ -38,6 +39,10 @@ export function changeSubrecordRow(fromRowIndex, toRowIndex) {
 
 export function setSubrecordAction(rowId, actionType) {
   return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
+}
+
+export function updateSubrecordArrangement() {
+  return { 'type': UPDATE_SUBRECORD_ARRANGEMENT };
 }
 
 export function changeSubrecordAction(rowId, actionType) {

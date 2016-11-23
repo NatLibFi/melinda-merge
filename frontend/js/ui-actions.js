@@ -12,6 +12,7 @@ import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
 import uuid from 'node-uuid';
 import { subrecordRows } from './selectors/subrecord-selectors';
+import { updateSubrecordArrangement } from './action-creators/subrecord-actions';
 
 export function commitMerge() {
 
@@ -269,6 +270,10 @@ export function updateMergedRecord() {
         .catch(error => {
           dispatch(setMergedRecordError(error.message));
         }).done();
+
+
+      // calculate new arrangement for subrecords
+      dispatch(updateSubrecordArrangement());
 
     }
   };
