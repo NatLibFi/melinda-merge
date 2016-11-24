@@ -41,8 +41,8 @@ export function setSubrecordAction(rowId, actionType) {
   return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
 }
 
-export function updateSubrecordArrangement() {
-  return { 'type': UPDATE_SUBRECORD_ARRANGEMENT };
+export function updateSubrecordArrangement(pairs) {
+  return { 'type': UPDATE_SUBRECORD_ARRANGEMENT, pairs };
 }
 
 export function changeSubrecordAction(rowId, actionType) {

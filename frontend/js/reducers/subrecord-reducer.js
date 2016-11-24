@@ -47,7 +47,7 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case COMPRESS_SUBRECORD_ROW:
       return compressRow(state, action.rowId);
     case UPDATE_SUBRECORD_ARRANGEMENT:
-      return updateSubrecordArrangement(state, '');
+      return setSubrecordsFromPairs(action.pairs);
 
     case ADD_SOURCE_SUBRECORD_FIELD:
       return addField(state, action.rowId, action.field);
@@ -133,7 +133,7 @@ export function setSourceSubrecords(state, record, subrecords) {
 
   state = pruneEmptyRows(state);
 
-  return subrecords.reduce((state, subrecord, i) => {
+  return subrecords.reduce((state, subrecord) => {
 
     const row = createEmptyRow().set('sourceRecord', subrecord);
     const newRowKey = row.get('rowId');
@@ -141,20 +141,6 @@ export function setSourceSubrecords(state, record, subrecords) {
         .set(newRowKey, row)
         .update('index', index => index.push(newRowKey));
 
-      /*
-    const key = state.get('index').get(i);
-
-    if (key === undefined) {
-      const row = createEmptyRow().set('sourceRecord', subrecord);
-      const newRowKey = row.get('rowId');
-      return state
-        .set(newRowKey, row)
-        .update('index', index => index.set(i, newRowKey));
-    } else {
-      return state.setIn([key, 'sourceRecord'], subrecord);
-    }
-    */
-    
   }, state);
 }
 
@@ -180,7 +166,7 @@ export function setTargetSubrecords(state, record, subrecords) {
 
   state = pruneEmptyRows(state);
 
-  return subrecords.reduce((state, subrecord, i) => {
+  return subrecords.reduce((state, subrecord) => {
 
     const row = createEmptyRow().set('targetRecord', subrecord);
     const newRowKey = row.get('rowId');
@@ -188,25 +174,21 @@ export function setTargetSubrecords(state, record, subrecords) {
         .set(newRowKey, row)
         .update('index', index => index.push(newRowKey));
 
-/*
-    const key = state.get('index').get(i);
-
-    if (key === undefined) {
-      const row = createEmptyRow().set('targetRecord', subrecord);
-      const newRowKey = row.get('rowId');
-      return state
-        .set(newRowKey, row)
-        .update('index', index => index.set(i, newRowKey));
-    } else {
-      return state.setIn([key, 'targetRecord'], subrecord);
-    }
-  */  
   }, state);
 
 }
 
-function updateSubrecordArrangement(state) {
-  return state;
+function setSubrecordsFromPairs(pairs) {
+  return pairs.reduce((state, pair) => {
+    const row = createEmptyRow()
+      .set('sourceRecord', pair[0])
+      .set('targetRecord', pair[1]);
+    const rowId = row.get('rowId');
+    return state
+      .set(rowId, row)
+      .update('index', index => index.push(rowId));
+
+  }, INITIAL_STATE);
 }
 
 export function resetMergedSubrecordsActions(state) {
