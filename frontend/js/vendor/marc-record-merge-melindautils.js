@@ -1,5 +1,37 @@
 //mergeutils melinda
 
+/*
+
+B fail: Both records have same record id
+B fail: Record is deleted (source)
+B fail: Record is deleted (target)
+B fail: Record is suppressed (source)
+B fail: Record is suppressed (target)
+B fail: Both records have have LOW tag: <LOW-TAG>
+B fail: Records are of different type (leader/6): <RECORD-A-LDR6> - <RECORD-B-LDR6>
+H fail: record is a component record: <RECORD-ID>
+
+B warn: Record contains long field which has been split to multiple fields. Check that it looks ok. <TAG>
+B warn: Other record has LOW: FENNI, but preferred does not.
+
+
+Post-merge:
+B warn: Merged record has 041a field with length less than 3. This may break when saved to aleph.
+
+
+Adds LOW tags from source & target
+Adds sid fields from source & target (if low is also there). So if source has extra sids, they are dropped.
+Adds FCC SID fields if no other sids exist
+
+Adds 035z with (FI-MELINDA)' + other_id },
+Adds 035z with (FI-MELINDA)' + preferred_id },
+
+adds 583 "MERGED FROM..."
+adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
+
+
+ */
+
 (function(root, factory) {
   "use strict";
 
@@ -87,9 +119,13 @@
         return arr.indexOf(item) !== -1;
       }
       
+      /*
+      TODO: this should be changed to a warning.
+      
       if (arrayContains(other_LOW, "FENNI") && !arrayContains(preferred_LOW, "FENNI")) {
         errors.push("Other record has LOW: FENNI, but preferred does not.");
       }
+      */
 
       // record type, leader index 6
       var oType = otherRecord.leader.substr(6,1);
@@ -107,7 +143,7 @@
         '830': { validate: ["identical", "preferredIsSupersetExceptIfEmpty"] }, 
         '880': { validate: ["identical", "otherHas"]} */
       };
-
+/*
       var stopFieldErrors = validateFields(stopFields, otherRecord, preferredRecord);
       errors = errors.concat(stopFieldErrors);
 
@@ -119,6 +155,7 @@
           deferred.notify("STAT 245] " + msg);
         });
       });
+*/
 
       /* 
       checkForDiacritics(['245'], otherRecord, preferredRecord).forEach(function(msg) {
@@ -159,6 +196,9 @@
         
       });
 
+      /* 
+      TODO: turn this into a warning
+
       [otherRecord, preferredRecord].forEach(function(record, i) {
 
         record.fields.some(function(field) {
@@ -177,6 +217,7 @@
         });
 
       });
+      */
 
       /*
       var o300a = selectValue(otherRecord, '300', 'a');
@@ -393,15 +434,16 @@
       
       var deferred = Q.defer();
 
+      // TODO: make it a warning
+      /*
       mergedRecord.fields.filter(byTag("041")).forEach(function(field) {
         var hasShortLanguageCode = field.subfields.filter(propValue('code', 'a')).some(function(f) { return f.value.length < 3; });
         if (hasShortLanguageCode) {
           throw mergeError("Merged record has 041a field with length less than 3. This may break when saved to aleph.");
         }
       });
+      */
 
-
-    
       var LOW_fields = otherRecord.fields.filter(byTag('LOW'));
       
       var other_id = findId(otherRecord);
@@ -427,10 +469,11 @@
         mergedRecord.fields.push({
           tag: 'SID',
           subfields: [
-            { code: 'c', value:'FCC' + other_id },
-            { code: 'b', value: libraryId.toLowerCase() },          
+            { code: 'c', value: 'FCC' + other_id },
+            { code: 'b', value: libraryId.toLowerCase() },
           ]
         });
+
       });
 
       // Now make sid links from preferred record to merged too.
@@ -455,30 +498,33 @@
         mergedRecord.fields.push({
           tag: 'SID',
           subfields: [
-            { code: 'c', value:'FCC' + preferred_id },
-            { code: 'b', value: libraryId.toLowerCase() },          
+            { code: 'c', value: 'FCC' + preferred_id },
+            { code: 'b', value: libraryId.toLowerCase() },
           ]
         });
+
       });
 
-      // Handle 035 tags by creating a,z fields to mergedRecrod from other and preferred records
+      // Handle 035 tags by creating a, z fields to mergedRecrod from other and preferred records
       mergedRecord.fields.push({
-          tag: '035',
-          subfields: [
-            { code: 'z', value:'(FI-MELINDA)' + other_id },
-          ]
+        tag: '035',
+        subfields: [
+          { code: 'z', value: '(FI-MELINDA)' + other_id },
+        ]
       });
       
       mergedRecord.fields.push({
-          tag: '035',
-          subfields: [
-            { code: 'z', value:'(FI-MELINDA)' + preferred_id },
-          ]
+        tag: '035',
+        subfields: [
+          { code: 'z', value: '(FI-MELINDA)' + preferred_id },
+        ]
       });
+
+      //TODO: remove 035a subfields with content (FI-MELINDA).*
 
       // Remove bib-id from mergedRecord 001, because we are going to save it as new
       mergedRecord.fields = mergedRecord.fields.filter(function(field) {
-        return field.tag !== "001";
+        return field.tag !== '001';
       });
       mergedRecord.fields.push({
         tag: '001',
@@ -488,12 +534,12 @@
       // add 583 field with comments about merge operation.
       
       mergedRecord.fields.push({
-          tag: '583',
-          subfields: [
-            { code: 'a', value:'MERGED FROM ' + '(FI-MELINDA)' + other_id + " + " + '(FI-MELINDA)' + preferred_id },
-            { code: 'c', value: formatDate(new Date()) },
-            { code: '5', value:'MELINDA' },
-          ]
+        tag: '583',
+        subfields: [
+          { code: 'a', value: 'MERGED FROM ' + '(FI-MELINDA)' + other_id + ' + ' + '(FI-MELINDA)' + preferred_id },
+          { code: 'c', value: formatDate(new Date()) },
+          { code: '5', value: 'MELINDA' },
+        ]
       });
 
       // Remove CAT-fields from the merged record, history is kept in the source records.
