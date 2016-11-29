@@ -16,6 +16,8 @@ export class SubRecordPanel extends React.Component {
 
   render() {
     const { record, isDragging, isExpanded } = this.props;
+
+
     const selectedFields = record.fields
       .filter(f => _.includes(['245', '336'], f.tag));
 

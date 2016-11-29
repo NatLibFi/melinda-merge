@@ -237,8 +237,9 @@ export function changeSourceSubrecordRow(state, fromRowId, toRowId) {
     .setIn([toRowId, 'selectedAction'], undefined)
     .setIn([fromRowId, 'sourceRecord'], undefined)
     .setIn([fromRowId, 'mergedRecord'], undefined)
-    .setIn([fromRowId, 'selectedAction'], undefined);
-
+    .setIn([fromRowId, 'selectedAction'], undefined)
+    .setIn([toRowId, 'mergeError'], undefined)
+    .setIn([fromRowId, 'mergeError'], undefined);
 }
 
 export function changeTargetSubrecordRow(state, fromRowId, toRowId) {
@@ -253,7 +254,9 @@ export function changeTargetSubrecordRow(state, fromRowId, toRowId) {
     .setIn([toRowId, 'selectedAction'], undefined)
     .setIn([fromRowId, 'targetRecord'], undefined)
     .setIn([fromRowId, 'mergedRecord'], undefined)
-    .setIn([fromRowId, 'selectedAction'], undefined);
+    .setIn([fromRowId, 'selectedAction'], undefined)
+    .setIn([toRowId, 'mergeError'], undefined)
+    .setIn([fromRowId, 'mergeError'], undefined);
 
 }
 
@@ -271,10 +274,8 @@ export function setMergedSubrecord(state, rowId, record) {
   return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record));
 }
 
-export function setMergedSubrecordError(state, rowIndex, error) {
-  return state.updateIn(['mergedRecordErrors'], errorsList => {
-    return errorsList.set(rowIndex, error);
-  });
+export function setMergedSubrecordError(state, rowId, error) {
+  return state.update(rowId, createEmptyRow(), row => row.set('mergeError', error));
 }
 
 function moveRow(fromRowIndex, toRowIndex, list) {

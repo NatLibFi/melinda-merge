@@ -89,7 +89,8 @@ export function updateMergedSubrecord(rowId) {
         MergeValidation.validateMergeCandidates(componentRecordValidationRules, preferredRecord, otherRecord)
           .then(() => merge(preferredRecord, otherRecord))
           .then(mergedRecord => PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, otherRecord, mergedRecord))
-          .then(fixedMergedRecord => {
+          .then(result => {
+            const fixedMergedRecord = result.record;
             dispatch(setMergedSubrecord(rowId, fixedMergedRecord));
           }).catch(error => {
             dispatch(setMergedSubrecordError(rowId, error));
