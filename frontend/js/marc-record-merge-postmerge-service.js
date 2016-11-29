@@ -41,7 +41,7 @@ export function applyPostMergeModifications(postMergeFunctions, preferredRecord,
 
     return {
       mergedRecord: fnResult.mergedRecord,
-      notes: _.concat(result.notes, fnResult.notes)
+      notes: _.concat(result.notes, fnResult.notes || [])
     };
   }, initial_value);
 
@@ -51,7 +51,7 @@ export function applyPostMergeModifications(postMergeFunctions, preferredRecord,
   };
 }
 
-function check041aLength(preferredRecord, otherRecord, mergedRecord) {
+export function check041aLength(preferredRecord, otherRecord, mergedRecord) {
   const notes = _.chain(mergedRecord.fields)
     .filter(field => field.tag === '041')
     .flatMap(field => field.subfields.filter(subfield => subfield.code === 'a'))
@@ -67,7 +67,7 @@ function check041aLength(preferredRecord, otherRecord, mergedRecord) {
   };
 }
 
-function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, originalMergedRecord) {
+export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
   var otherRecordLOWFieldList = otherRecord.fields.filter(field => field.tag === 'LOW');
@@ -102,12 +102,8 @@ function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, originalMergedRe
   };
 }
 
-function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, originalMergedRecord) {
+export function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
-
-  var preferredRecordLOWFieldList = preferredRecord.fields.filter(field => field.tag === 'LOW');
-  mergedRecord.fields = mergedRecord.fields.concat(preferredRecordLOWFieldList);
-
 
   const preferredRecordLibraryIdList = selectValues(preferredRecord, 'LOW', 'a');
 
@@ -133,7 +129,7 @@ function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, originalMerg
   };
 }
 
-function add035zFromOther(preferredRecord, otherRecord, originalMergedRecord) {
+export function add035zFromOther(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
   const otherRecordId = selectRecordId(otherRecord);
   
@@ -149,7 +145,7 @@ function add035zFromOther(preferredRecord, otherRecord, originalMergedRecord) {
   };
 }
 
-function add035zFromPreferred(preferredRecord, otherRecord, originalMergedRecord) {
+export function add035zFromPreferred(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
   const preferredRecordId = selectRecordId(preferredRecord);
   
@@ -165,23 +161,31 @@ function add035zFromPreferred(preferredRecord, otherRecord, originalMergedRecord
   };
 }
 
-function removeExtra035aFromMerged(preferredRecord, otherRecord, originalMergedRecord) {
+export function removeExtra035aFromMerged(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
-  mergedRecord.fields = mergedRecord.fields.map(field => {
+  mergedRecord.fields = mergedRecord.fields.reduce((fields, field) => {
 
     if (field.tag === '035') {
-      field.subfields = field.subfields.filter(subfield => subfield.code === 'a' && subfield.value.substr(0,12) === '(FI-MELINDA)');
+      field.subfields = field.subfields.filter(subfield => {
+        const isExtraSubfield = subfield.code === 'a' && subfield.value.substr(0,12) === '(FI-MELINDA)';
+        return isExtraSubfield === false;
+      });
+
+      if (field.subfields.length == 0) {
+        return fields;
+      }
     }
-    return field;
-  });
+
+    return _.concat(fields, field);
+  }, []);
 
   return {
     mergedRecord
   };
 }
 
-function setAllZeroRecordId(preferredRecord, otherRecord, originalMergedRecord) {
+export function setAllZeroRecordId(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
   mergedRecord.fields = mergedRecord.fields.filter(function(field) {
@@ -197,12 +201,11 @@ function setAllZeroRecordId(preferredRecord, otherRecord, originalMergedRecord) 
   };
 }
 
-function add583NoteAboutMerge(preferredRecord, otherRecord, originalMergedRecord) {
+export function add583NoteAboutMerge(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
   const preferredRecordId = selectRecordId(preferredRecord);
   const otherRecordId = selectRecordId(otherRecord);
   
-
   mergedRecord.fields.push({
     tag: '583',
     subfields: [
@@ -217,7 +220,7 @@ function add583NoteAboutMerge(preferredRecord, otherRecord, originalMergedRecord
   };
 }
 
-function removeCATHistory(preferredRecord, otherRecord, originalMergedRecord) {
+export function removeCATHistory(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
   mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== 'CAT');
@@ -226,7 +229,8 @@ function removeCATHistory(preferredRecord, otherRecord, originalMergedRecord) {
     mergedRecord
   };
 }
-function add500ReprintInfo(preferredRecord, otherRecord, originalMergedRecord) {
+
+export function add500ReprintInfo(preferredRecord, otherRecord, originalMergedRecord) {
 
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
@@ -288,9 +292,9 @@ function selectFieldsByValue(record, tag, subcode, value) {
 
 function selectValues(record, tag, subcode) {
   return _.chain(record.fields)
-    .filter(field => tag.equals(field.tag))
+    .filter(field => tag.equals ? tag.equals(field.tag) : tag === field.tag)
     .flatMap(field => field.subfields)
-    .filter(subfield => subcode.equals(subfield.code))
+    .filter(subfield => subcode.equals ? subcode.equals(subfield.code) : subcode === subfield.code)
     .map(subfield => subfield.value)
     .filter(value => value !== undefined)
     .value();
