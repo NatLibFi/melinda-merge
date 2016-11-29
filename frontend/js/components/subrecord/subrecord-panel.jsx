@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
 import '../../../styles/components/subrecord-panel';
-import { MarcRecordPanel } from '../marc-record-panel';
+import { MarcRecordPanel } from 'commons/components/marc-record-panel';
 import _ from 'lodash';
 
 export class SubRecordPanel extends React.Component {

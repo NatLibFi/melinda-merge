@@ -1,5 +1,5 @@
 import React from 'react';
-import { MarcRecordPanel } from './marc-record-panel';
+import { MarcRecordPanel } from 'commons/components/marc-record-panel';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import '../../styles/components/record-merge-panel.scss';
