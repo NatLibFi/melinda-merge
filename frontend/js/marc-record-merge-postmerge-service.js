@@ -20,6 +20,7 @@ adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
 import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
+import moment from 'moment';
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
@@ -327,23 +328,5 @@ function selectRecordId(record) {
 }
 
 function formatDate(date) {
-  const tzo = -date.getTimezoneOffset();
-  const dif = tzo >= 0 ? '+' : '-';
-
-  return date.getFullYear() +
-      '-' + pad(date.getMonth()+1) +
-      '-' + pad(date.getDate()) +
-      'T' + pad(date.getHours()) +
-      ':' + pad(date.getMinutes()) +
-      ':' + pad(date.getSeconds()) +
-      dif + pad(tzo / 60) +
-      ':' + pad(tzo % 60);
-
-  function pad(num) {
-    var str = num.toString();
-    while(str.length < 2) {
-      str = '0' + str;
-    }
-    return str;
-  }
+  return moment(date).format('YYYY-MM-DDTHH:mm:ssZ');
 }

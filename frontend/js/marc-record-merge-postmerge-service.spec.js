@@ -1,9 +1,10 @@
+import sinon from 'sinon';
 import _ from 'lodash';
 import { expect } from 'chai';
 import path from 'path';
 import fs from 'fs';
 import * as MarcRecordMergePostmergeService from './marc-record-merge-postmerge-service';
-import { freeze, reset } from 'timekeeper';
+import { __RewireAPI__ as RewireAPI } from './marc-record-merge-postmerge-service';
 
 import MarcRecord from 'marc-record-js';
 
@@ -14,13 +15,16 @@ const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge
 describe('marc-record-merge-validate-service', () => {
 
   before(() => {
-    // 2016-11-29T13:25:21+02:00
-    const time = new Date(1480418721000);
-    freeze(time);
+  
+    const formatDateStub = sinon.stub();
 
+    formatDateStub.returns('2016-11-29T13:25:21+02:00');
+
+    RewireAPI.__Rewire__('formatDate', formatDateStub);
+    
   });
   after(() => {
-    reset();
+    RewireAPI.__ResetDependency__('formatDate');
   });
 
   const files = fs.readdirSync(storiesPath);
