@@ -20,7 +20,8 @@ export class MarcRecordPanel extends React.Component {
     const classes = classNames('marc-field marc-field-controlfield', {
       'wasUsed': field.wasUsed,
       'from-preferred': field.fromPreferred,
-      'from-other': field.fromOther
+      'from-other': field.fromOther,
+      'from-postmerge': field.fromPostmerge
     });
 
     return (
@@ -39,7 +40,8 @@ export class MarcRecordPanel extends React.Component {
       const classes = classNames('marc-subfield', {
         'is-selected': subfield.wasUsed,
         'from-preferred': subfield.fromPreferred,
-        'from-other': subfield.fromOther
+        'from-other': subfield.fromOther,
+        'from-postmerge': subfield.fromPostmerge
       });
 
       return (
@@ -53,7 +55,8 @@ export class MarcRecordPanel extends React.Component {
     const classes = classNames('marc-field marc-field-datafield', {
       'is-selected': field.wasUsed,
       'from-preferred': field.fromPreferred,
-      'from-other': field.fromOther
+      'from-other': field.fromOther,
+      'from-postmerge': field.fromPostmerge
     });
 
     const i1 = field.ind1 || ' ';

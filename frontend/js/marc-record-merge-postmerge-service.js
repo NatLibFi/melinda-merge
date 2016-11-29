@@ -19,6 +19,7 @@ adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
 
 import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
+import uuid from 'node-uuid';
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
@@ -70,9 +71,11 @@ export function check041aLength(preferredRecord, otherRecord, mergedRecord) {
 export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
 
-  var otherRecordLOWFieldList = otherRecord.fields.filter(field => field.tag === 'LOW');
-  mergedRecord.fields = mergedRecord.fields.concat(otherRecordLOWFieldList);
+  var otherRecordLOWFieldList = otherRecord.fields
+    .filter(field => field.tag === 'LOW')
+    .map(markAsPostmergeField);
 
+  mergedRecord.fields = mergedRecord.fields.concat(otherRecordLOWFieldList);
 
   const otherRecordLibraryIdList = selectValues(otherRecord, 'LOW', 'a');
 
@@ -81,19 +84,19 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, originalM
 
     if (otherRecordSIDFieldList.length > 0) {
 
-      mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDFieldList);
+      mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDFieldList.map(markAsPostmergeField));
 
     } else {
 
       const otherRecordId = selectRecordId(otherRecord);
 
-      mergedRecord.fields.push({
+      mergedRecord.fields.push(createField({
         tag: 'SID',
         subfields: [
           { code: 'c', value: 'FCC' + otherRecordId },
           { code: 'b', value: libraryId.toLowerCase() },
         ]
-      });
+      }));
     }
   });
 
@@ -114,13 +117,13 @@ export function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, origi
 
       const preferredRecordId = selectRecordId(preferredRecord);
 
-      mergedRecord.fields.push({
+      mergedRecord.fields.push(createField({
         tag: 'SID',
         subfields: [
           { code: 'c', value: 'FCC' + preferredRecordId },
           { code: 'b', value: libraryId.toLowerCase() },
         ]
-      });
+      }));
     }
   });
 
@@ -133,12 +136,12 @@ export function add035zFromOther(preferredRecord, otherRecord, originalMergedRec
   const mergedRecord = new MarcRecord(originalMergedRecord);
   const otherRecordId = selectRecordId(otherRecord);
   
-  mergedRecord.fields.push({
+  mergedRecord.fields.push(createField({
     tag: '035',
     subfields: [
       { code: 'z', value: '(FI-MELINDA)' + otherRecordId },
     ]
-  });
+  }));
 
   return {
     mergedRecord
@@ -149,12 +152,12 @@ export function add035zFromPreferred(preferredRecord, otherRecord, originalMerge
   const mergedRecord = new MarcRecord(originalMergedRecord);
   const preferredRecordId = selectRecordId(preferredRecord);
   
-  mergedRecord.fields.push({
+  mergedRecord.fields.push(createField({
     tag: '035',
     subfields: [
       { code: 'z', value: '(FI-MELINDA)' + preferredRecordId },
     ]
-  });
+  }));
 
   return {
     mergedRecord
@@ -191,10 +194,10 @@ export function setAllZeroRecordId(preferredRecord, otherRecord, originalMergedR
   mergedRecord.fields = mergedRecord.fields.filter(function(field) {
     return field.tag !== '001';
   });
-  mergedRecord.fields.push({
+  mergedRecord.fields.push(createField({
     tag: '001',
     value: '000000000'
-  });
+  }));
 
   return {
     mergedRecord
@@ -206,14 +209,14 @@ export function add583NoteAboutMerge(preferredRecord, otherRecord, originalMerge
   const preferredRecordId = selectRecordId(preferredRecord);
   const otherRecordId = selectRecordId(otherRecord);
   
-  mergedRecord.fields.push({
+  mergedRecord.fields.push(createField({
     tag: '583',
     subfields: [
       { code: 'a', value: `MERGED FROM (FI-MELINDA)${otherRecordId} + (FI-MELINDA)${preferredRecordId}` },
       { code: 'c', value: formatDate(new Date()) },
       { code: '5', value: 'MELINDA' },
     ]
-  });
+  }));
 
   return {
     mergedRecord
@@ -259,12 +262,12 @@ export function add500ReprintInfo(preferredRecord, otherRecord, originalMergedRe
       }
 
       if (!mergedRecord.fields.filter(field => field.tag === '500').some(fieldHasSubfield('a', text))) {
-        mergedRecord.fields.push({
+        mergedRecord.fields.push(createField({
           tag: '500',
           subfields: [
             { code: 'a', value: text },
           ]
-        });
+        }));
       }
     });
 
@@ -272,7 +275,19 @@ export function add500ReprintInfo(preferredRecord, otherRecord, originalMergedRe
     mergedRecord
   };
 }
- 
+
+function markAsPostmergeField(field) {
+  field.fromPostmerge = true;
+  return field;
+}
+
+function createField(fieldContent) {
+  return _.assign({}, {
+    uuid: uuid.v4(),
+    fromPostmerge: true
+  }, fieldContent);
+}
+
 function fieldHasSubfield(code, value) {
   const querySubfield = { code, value };
 

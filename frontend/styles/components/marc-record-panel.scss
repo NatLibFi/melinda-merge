@@ -26,10 +26,12 @@
 
   &.marc-record-merged {
     .fieldList {
+      .from-postmerge {
+        background-color: #e3f2fd;
+      }
+
       .is-selected {
-        &.from-preferred {
-          background-color: #e3f2fd;
-        }
+        
         &.from-other {
           background-color: #b2dfdb;
 

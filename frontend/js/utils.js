@@ -13,3 +13,7 @@ export function exceptCoreErrors(fn) {
 export function isControlField(field) {
   return field.subfields === undefined;
 }
+
+export function isCoreError(error) {
+  return ([EvalError, RangeError, URIError, TypeError, SyntaxError, ReferenceError].some(errorType => error instanceof errorType));
+}

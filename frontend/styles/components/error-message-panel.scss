@@ -1,4 +1,12 @@
 
 .error-message-panel {
-  white-space: normal;  
+  white-space: normal;
+  padding: 10px 20px;
+  color: #6b3636;
+  
+ .heading {
+    font-size: 1.2em;
+    font-weight: 600;
+  }
+
 }
