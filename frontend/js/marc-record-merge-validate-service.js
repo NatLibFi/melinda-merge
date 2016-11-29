@@ -2,7 +2,7 @@ import _ from 'lodash';
 
 /*
 
-B fail: Both records have same record f
+B fail: Both records have same record id
 B fail: Record is deleted (source)
 B fail: Record is deleted (target)
 B fail: Record is suppressed (source)
@@ -30,10 +30,10 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
 
   const validationResults = validationFunctions.map(fn => fn(preferredRecord, otherRecord));
 
-  return Promise.all(validationResults, results => {
-
-    const failures = results.filter(result => result.valid);
-
+  return Promise.all(validationResults).then(results => {
+    
+    const failures = results.filter(result => result.valid === false);
+    
     if (failures.length > 0) {
       const failureMessages = failures.map(failure => failure.validationFailureMessage);
       throw new MergeValidationError('Merge validation failed', failureMessages);
@@ -45,25 +45,18 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
   });
 }
 
-function recordsHaveDifferentIds(preferredRecord, otherRecord) {
+export function recordsHaveDifferentIds(preferredRecord, otherRecord) {
   return {
     valid: getRecordId(preferredRecord) !== getRecordId(otherRecord),
     validationFailureMessage: 'Both records have the same record id'
   };
 }
 
-function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
+export function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
   
-  const preferredRecordLibraryTagList = _.chain(preferredRecord.fields)
-    .filter(field => field.tag === 'LOW')
-    .flatMap(field => field.subfields.filter(subfield => subfield.code === 'a'))
-    .value();
-
-  const otherRecordLibraryTagList = _.chain(otherRecord.fields)
-    .filter(field => field.tag === 'LOW')
-    .flatMap(field => field.subfields.filter(subfield => subfield.code === 'a'))
-    .value();
-    
+  const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
+  const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
+  
   const libraryTagsInBoth = _.intersection(preferredRecordLibraryTagList, otherRecordLibraryTagList);
 
   return {
@@ -72,7 +65,7 @@ function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
   };
 }
 
-function recordsHaveSameType(preferredRecord, otherRecord) {
+export function recordsHaveSameType(preferredRecord, otherRecord) {
   
   var preferredRecordType = preferredRecord.leader.substr(6,1);
   var otherRecordType = otherRecord.leader.substr(6,1);
@@ -83,14 +76,14 @@ function recordsHaveSameType(preferredRecord, otherRecord) {
   };
 }
 
-function preferredRecordIsNotDeleted(preferredRecord) {
+export function preferredRecordIsNotDeleted(preferredRecord) {
   return {
     valid: isDeleted(preferredRecord) === false,
     validationFailureMessage: 'Preferred record is deleted'
   };
 }
 
-function otherRecordIsNotDeleted(preferredRecord, otherRecord) {
+export function otherRecordIsNotDeleted(preferredRecord, otherRecord) {
   return {
     valid: isDeleted(otherRecord) === false,
     validationFailureMessage: 'Other record is deleted'
@@ -98,21 +91,21 @@ function otherRecordIsNotDeleted(preferredRecord, otherRecord) {
 }
 
 
-function preferredRecordIsNotSuppressed(preferredRecord) {
+export function preferredRecordIsNotSuppressed(preferredRecord) {
   return {
     valid: isSuppressed(preferredRecord) === false,
     validationFailureMessage: 'Preferred record is suppressed'
   };
 }
 
-function otherRecordIsNotSuppressed(preferredRecord, otherRecord) {
+export function otherRecordIsNotSuppressed(preferredRecord, otherRecord) {
   return {
     valid: isSuppressed(otherRecord) === false,
     validationFailureMessage: 'Other record is suppressed'
   };
 }
 
-function preferredRecordIsNotComponentRecord(preferredRecord) {
+export function preferredRecordIsNotComponentRecord(preferredRecord) {
   const recordType = preferredRecord.leader.charAt(7);
   const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
   return {
@@ -121,7 +114,7 @@ function preferredRecordIsNotComponentRecord(preferredRecord) {
   };
 }
 
-function otherRecordIsNotComponentRecord(preferredRecord, otherRecord) {
+export function otherRecordIsNotComponentRecord(preferredRecord, otherRecord) {
   const recordType = otherRecord.leader.charAt(7);
   const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
   return {
@@ -130,7 +123,7 @@ function otherRecordIsNotComponentRecord(preferredRecord, otherRecord) {
   };
 }
 
-function preferredRecordFromFENNI(preferredRecord, otherRecord) {
+export function preferredRecordFromFENNI(preferredRecord, otherRecord) {
   const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
   const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
 
@@ -142,10 +135,10 @@ function preferredRecordFromFENNI(preferredRecord, otherRecord) {
   };
 }
 
-function preferredRecordHasAlephSplitFields(preferredRecord) {
+export function preferredRecordHasAlephSplitFields(preferredRecord) {
   const splitFields = preferredRecord.fields.filter(isSplitField);
 
-  const splitFieldTags = splitFields.map(field => field.tag);
+  const splitFieldTags = _.uniq(splitFields.map(field => field.tag));
 
   return {
     valid: splitFields.length === 0,
@@ -153,10 +146,10 @@ function preferredRecordHasAlephSplitFields(preferredRecord) {
   };
 }
 
-function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
+export function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
   const splitFields = otherRecord.fields.filter(isSplitField);
 
-  const splitFieldTags = splitFields.map(field => field.tag);
+  const splitFieldTags = _.uniq(splitFields.map(field => field.tag));
 
   return {
     valid: splitFields.length === 0,
@@ -167,7 +160,7 @@ function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
 
 function isSplitField(field) {
   if (field.subfields !== undefined && field.subfields.length > 0) {
-    return field.subfields[0].value.substr(0,2) === '^^'
+    return field.subfields[0].value.substr(0,2) === '^^';
   }
 }
 
@@ -175,6 +168,7 @@ function getLibraryTagList(record) {
   return _.chain(record.fields)
     .filter(field => field.tag === 'LOW')
     .flatMap(field => field.subfields.filter(subfield => subfield.code === 'a'))
+    .map('value')
     .value();
 }
 
@@ -221,12 +215,12 @@ function isDeleted(record) {
 
 
 function getRecordId(record) {
-  var field001List = record.fields.filter(field => field.tag === '001');
-  return _.head(field001List) || 'unknown';
+  var field001ValuesList = record.fields.filter(field => field.tag === '001').map(field => field.value);
+  return _.head(field001ValuesList) || 'unknown';
 }
 
 export function MergeValidationError(message, failureMessages) {
-  var temp = Error.apply(this, message);
+  var temp = Error.call(this, message);
   temp.name = this.name = 'MergeValidationError';
   this.stack = temp.stack;
   this.message = temp.message;

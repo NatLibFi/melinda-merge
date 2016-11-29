@@ -2,7 +2,7 @@
 
 /*
 
-B fail: Both records have same record id
+B fail: Both records have same record f
 B fail: Record is deleted (source)
 B fail: Record is deleted (target)
 B fail: Record is suppressed (source)
@@ -18,6 +18,7 @@ B warn: Other record has LOW: FENNI, but preferred does not.
 Post-merge:
 B warn: Merged record has 041a field with length less than 3. This may break when saved to aleph.
 
+Actions:
 
 Adds LOW tags from source & target
 Adds sid fields from source & target (if low is also there). So if source has extra sids, they are dropped.
