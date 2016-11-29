@@ -56,6 +56,7 @@ mustBeIdentical (true|false)
  requires the fields have identical sets of subfields (subfield values are still normalized)
 
 */
+/*eslint-disable quotes*/
 
 module.exports = {
   fields: {
@@ -179,3 +180,5 @@ module.exports = {
     "9..": { "action": "copy", "options": { "compareWithout": ["9"] } }
   }
 };
+
+/*eslint-enable quotes*/
