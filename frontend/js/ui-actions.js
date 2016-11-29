@@ -4,7 +4,7 @@ import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
-import { isCoreError, exceptCoreErrors } from './utils';
+import { exceptCoreErrors } from './utils';
 import {hashHistory} from 'react-router';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
