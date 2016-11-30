@@ -15,7 +15,7 @@ export class SubrecordHeader extends React.Component {
             <div className="col s4"><h5>Osakohteet</h5></div>
             <div className="col s4 right">
                <select>
-                <option value="" disabled selected>Järjestä</option>
+                <option value="" disabled>Järjestä</option>
                 <option value="1">id</option>
                 <option value="2">nimi</option>
                 <option value="3">muu</option>
@@ -30,7 +30,7 @@ export class SubrecordHeader extends React.Component {
             <div className="col s4 right">
           
               <select>
-                <option value="" disabled selected>Järjestä</option>
+                <option value="" disabled>Järjestä</option>
                 <option value="1">id</option>
                 <option value="2">nimi</option>
                 <option value="3">muu</option>

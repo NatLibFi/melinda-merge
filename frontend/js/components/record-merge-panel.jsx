@@ -1,12 +1,14 @@
 import React from 'react';
-import { RecordPanel } from 'commons/components/record-panel';
-import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
-import '../../styles/components/record-merge-panel.scss';
+
+import * as uiActionCreators from '../ui-actions';
+import { RecordPanel } from 'commons/components/record-panel';
 import { Preloader } from 'commons/components/preloader';
 import { ErrorMessagePanel } from './error-message-panel';
 import { MergeValidationErrorMessagePanel} from './merge-validation-error-message-panel';
 import { isControlField } from '../utils';
+
+import '../../styles/components/record-merge-panel.scss';
 
 export class RecordMergePanel extends React.Component {
 
@@ -24,21 +26,6 @@ export class RecordMergePanel extends React.Component {
     editMergedRecord: React.PropTypes.func.isRequired
   }
 
-  getRecord(type) {
-    switch(type) {
-      case 'SOURCE': return this.props.sourceRecord;
-      case 'TARGET': return this.props.targetRecord;
-      case 'MERGED': return this.props.mergedRecord;
-    }
-  }
-  getErrorMessage(type) {
-    switch(type) {
-      case 'SOURCE': return this.props.sourceRecordError;
-      case 'TARGET': return this.props.targetRecordError;
-      case 'MERGED': return this.props.mergedRecordError;
-    }
-  }
-
   toggleSourceRecordField(field) {
     if (!isControlField(field)) {
       this.props.toggleSourceRecordFieldSelection(field);
@@ -51,73 +38,59 @@ export class RecordMergePanel extends React.Component {
     }
   }
 
-  getContent(recordState, type) {
-
+  renderSourceRecordPanel(recordState, errorMessage, record) {
     if (recordState === 'ERROR') {
-      if (type === 'MERGED') {
-        return <MergeValidationErrorMessagePanel error={this.getErrorMessage(type)} />;
-      } else {
-        return <ErrorMessagePanel message={this.getErrorMessage(type)} />;
-      }
+      return <ErrorMessagePanel message={errorMessage} />;
     }
 
-    if (type === 'SOURCE') {
-
-      const record = this.getRecord(type);
-
-      return (       
-        <RecordPanel
-          showHeader
-          title="Poistuva tietue"
-          record={record}
-          onFieldClick={(field) => this.toggleSourceRecordField(field)}>
-          
-          { recordState === 'LOADING' ? <Preloader /> : null }
-
-        </RecordPanel>
+    return (       
+      <RecordPanel
+        showHeader
+        title="Poistuva tietue"
+        record={record}
+        onFieldClick={(field) => this.toggleSourceRecordField(field)}>
         
-      );
+        { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
+
+      </RecordPanel>
+    );
+  }
+
+  renderTargetRecordPanel(recordState, errorMessage, record) {
+    if (recordState === 'ERROR') {
+      return <ErrorMessagePanel message={errorMessage} />;
     }
 
-    if (type === 'MERGED') {
-      return (
-       
-        <RecordPanel 
-          showHeader
-          editable
-          title="Yhdistetty"
-          record={this.getRecord(type)} 
-          onFieldClick={(field) => this.toggleMergedRecordField(field)}
-          onRecordUpdate={(record) => this.props.editMergedRecord(record)}>
+    return (     
+      <RecordPanel
+        showHeader
+        title="Säilyvä tietue"
+        record={record}>
 
-          { recordState === 'LOADING' ? <Preloader /> : null }
-
-        </RecordPanel>
+        { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
         
-      );
+      </RecordPanel>
+    );
+  }
+
+  renderMergedRecordPanel(recordState, errorMessage, record) {
+    if (recordState === 'ERROR') {
+      return <MergeValidationErrorMessagePanel error={errorMessage} />;
     }
 
-    if (type === 'TARGET') {
+    return (
+      <RecordPanel 
+        showHeader
+        editable
+        title="Yhdistetty"
+        record={record} 
+        onFieldClick={(field) => this.toggleMergedRecordField(field)}
+        onRecordUpdate={(record) => this.props.editMergedRecord(record)}>
 
-      const record = this.getRecord(type);
+        { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
 
-      return (
-       
-        <RecordPanel
-          showHeader
-          title="Säilyvä tietue"
-          record={record}>
-          
-          { recordState === 'LOADING' ? <Preloader /> : null }
-
-        </RecordPanel>
-        
-      );
-    }
-
-    // empty
-    return '';
-     
+      </RecordPanel>
+    );
   }
 
   render() {
@@ -125,17 +98,17 @@ export class RecordMergePanel extends React.Component {
       <div className="row record-merge-panel">
         <div className="col s4">
           <div className="card darken-1 marc-record marc-record-source">
-            {this.getContent(this.props.sourceRecordState, 'SOURCE')}
+            {this.renderSourceRecordPanel(this.props.sourceRecordState, this.props.sourceRecordError, this.props.sourceRecord)}
           </div>
         </div>
         <div className="col s4">
           <div className="card darken-1 marc-record marc-record-target">
-            {this.getContent(this.props.targetRecordState, 'TARGET')}
+            {this.renderTargetRecordPanel(this.props.targetRecordState, this.props.targetRecordError, this.props.targetRecord)}
           </div>
         </div>
         <div className="col s4">
           <div className="card darken-1 marc-record marc-record-merged">
-            {this.getContent(this.props.mergedRecordState, 'MERGED')}
+            {this.renderMergedRecordPanel(this.props.mergedRecordState, this.props.mergedRecordError, this.props.mergedRecord)}
           </div>
         </div>
 
