@@ -285,7 +285,9 @@ function markAsPostmergeField(field) {
 function createField(fieldContent) {
   return _.assign({}, {
     uuid: uuid.v4(),
-    fromPostmerge: true
+    fromPostmerge: true,
+    ind1: ' ',
+    ind2: ' '
   }, fieldContent);
 }
 

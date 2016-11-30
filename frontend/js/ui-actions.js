@@ -291,16 +291,20 @@ export function updateMergedRecord() {
   };
 }
 
-
-//import * as MergeValidation from './marc-record-merge-validate-service';
-//import * as PostMerge from './marc-record-merge-postmerge-service';
-
-
 export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';
 
 export function setMergedRecord(record) {
   return {
     'type': SET_MERGED_RECORD,
+    'record': record
+  };
+}
+
+export const EDIT_MERGED_RECORD = 'EDIT_MERGED_RECORD';
+
+export function editMergedRecord(record) {
+  return {
+    'type': EDIT_MERGED_RECORD,
     'record': record
   };
 }
