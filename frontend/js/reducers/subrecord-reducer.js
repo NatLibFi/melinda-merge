@@ -1,5 +1,6 @@
 import MarcRecord from 'marc-record-js';
 import { Map, List } from 'immutable';
+import { SubrecordActionTypes } from '../constants';
 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-actions';
@@ -269,11 +270,16 @@ export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
 }
 
 export function setSubrecordAction(state, rowId, actionType) {
-  return state.update(rowId, createEmptyRow(), row => row.set('selectedAction', actionType));
+  if (actionType === SubrecordActionTypes.UNSET) {
+    return state.update(rowId, createEmptyRow(), row => row.set('selectedAction', undefined));
+  } else {
+    return state.update(rowId, createEmptyRow(), row => row.set('selectedAction', actionType));  
+  }
+  
 }
 
 export function setMergedSubrecord(state, rowId, record) {
-  return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record));
+  return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record).set('mergeError', undefined));
 }
 
 export function setMergedSubrecordError(state, rowId, error) {

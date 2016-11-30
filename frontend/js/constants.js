@@ -18,7 +18,8 @@ export const DuplicateDatabaseStates = {
 export const SubrecordActionTypes = {
   BLOCK: 'BLOCK',
   MERGE: 'MERGE',
-  COPY: 'COPY'
+  COPY: 'COPY',
+  UNSET: 'UNSET'
 };
 
 export const CommitMergeStates = {
