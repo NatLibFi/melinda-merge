@@ -28,6 +28,7 @@ export class SubrecordMergePanelRow extends React.Component {
     connectDropTarget: React.PropTypes.func.isRequired,
     onSourceFieldClick: React.PropTypes.func,
     onMergedFieldClick: React.PropTypes.func,
+    onMergedRecordUpdate: React.PropTypes.func.isRequired,
     isOver: React.PropTypes.bool.isRequired,
     mergeError: React.PropTypes.instanceOf(Error)
   }
@@ -42,13 +43,20 @@ export class SubrecordMergePanelRow extends React.Component {
       this.props.onMergedFieldClick(this.props.rowId, field);
     }
   }
+  handleRecordUpdate(record) {
+    this.props.onMergedRecordUpdate(this.props.rowId, record);
+  }
 
   renderSubrecordPanel(record, type, rowId, isExpanded) {
 
+
     if (record) {
+
+      const title = type === ItemTypes.SOURCE_SUBRECORD ? 'Poistuva tietue' : 'Säilyvä tietue';
+
       const fieldClickHandler = type === ItemTypes.SOURCE_SUBRECORD ? this.handleSourceFieldClick.bind(this) : undefined;
       return (
-        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowId={rowId} onFieldClick={fieldClickHandler} />
+        <DraggableSubRecordPanel isExpanded={isExpanded} record={record} type={type} rowId={rowId} onFieldClick={fieldClickHandler} showHeader title={title}/>
       );
     } else {
       return <DropTargetEmptySubRecordPanel type={type} rowId={rowId} />;
@@ -68,7 +76,17 @@ export class SubrecordMergePanelRow extends React.Component {
       return (
         <div className="fill-height">
           <SubrecordActionButtonContainer rowId={rowId} {...opts} />
-          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" onFieldClick={this.handleMergedFieldClick.bind(this)} error={mergeError} />
+          <SubRecordPanel 
+            isExpanded={isExpanded} 
+            record={mergedSubrecord} 
+            type="MERGED" 
+            onFieldClick={this.handleMergedFieldClick.bind(this)}
+            onRecordUpdate={this.handleRecordUpdate.bind(this)}
+            error={mergeError}
+            showHeader
+            editable
+            title="Yhdistetty"
+             />
         </div>
       );
     } else {
