@@ -15,7 +15,7 @@
     "test": "npm run lint && npm run test:frontend && npm run test:server",
     "test:frontend": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./frontend/test/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
     "test:frontend:watch": "npm run test:frontend -- --watch --watch-extensions story,stories",
-    "test:server": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/tests/test_bootstrap.js \"./server/tests\"  \"./melinda-ui-commons/server/**/*@(.spec.js|.spec.jsx)\"",
+    "test:server": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/tests/test_bootstrap.js --require ./melinda-ui-commons/server/test_helpers/test_bootstrap.js \"./server/tests\"  \"./melinda-ui-commons/server/**/*@(.spec.js|.spec.jsx)\"",
     "test:server:watch": "npm run test:server -- --watch",
     "lint": "eslint --ext .jsx,.js .",
     "dev": "node ./bin/clean.js && npm run watch",
