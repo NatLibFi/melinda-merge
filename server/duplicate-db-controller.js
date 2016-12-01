@@ -43,12 +43,12 @@ duplicateDatabaseController.get('/pairs/next', cors(corsOptions), requireSession
 
 });
 
-duplicateDatabaseController.put('/pairs/:id/mark-as-merged', cors(corsOptions), requireSession, requireBodyParams('preferredRecordId', 'otherRecordId'), (req, res) => {
+duplicateDatabaseController.put('/pairs/:id/mark-as-merged', cors(corsOptions), requireSession, requireBodyParams('preferredRecordId', 'otherRecordId', 'mergedRecordId'), (req, res) => {
   const {username} = req.session;
   const duplicatePairId = req.params.id;
-  const {preferredRecordId, otherRecordId} = req.body;
+  const {preferredRecordId, otherRecordId, mergedRecordId} = req.body;
 
-  markDuplicatePairAsMerged(username, preferredRecordId, otherRecordId, duplicatePairId)
+  markDuplicatePairAsMerged(username, preferredRecordId, otherRecordId, mergedRecordId, duplicatePairId)
     .then(pair => res.send(pair))
     .catch(error => {
       logger.log('error', error);

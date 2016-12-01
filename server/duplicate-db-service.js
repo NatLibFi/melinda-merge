@@ -109,9 +109,9 @@ export function skipPair(username, duplicatePairId) {
 
 }
 
-export function markDuplicatePairAsMerged(username, preferredRecordId, otherRecordId, duplicatePairId) {
+export function markDuplicatePairAsMerged(username, preferredRecordId, otherRecordId, mergedRecordId, duplicatePairId) {
 
-  const url = `${duplicateDatabaseUrl}?a=handleDouble&id=${duplicatePairId}&action=merged&uid=${username}&source=${preferredRecordId}&target=${otherRecordId}`;
+  const url = `${duplicateDatabaseUrl}?a=handleDouble&id=${duplicatePairId}&action=merged&uid=${username}&source=${preferredRecordId}&target=${otherRecordId}&mergedId=${mergedRecordId}`;
 
   logger.debug(`Marking duplicate pair ${duplicatePairId} as merged ${username}: ${url}`);
   return fetch(url).then(response => {
