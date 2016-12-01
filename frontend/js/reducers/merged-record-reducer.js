@@ -1,5 +1,6 @@
 import { Map } from 'immutable'; 
-import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD, SAVE_RECORD_SUCCESS } from '../ui-actions';
+import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD } from '../ui-actions';
+import { SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE } from '../constants/action-type-constants';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import { DEFAULT_MERGED_RECORD } from '../root-reducer';
 import MarcRecord from 'marc-record-js';
@@ -18,7 +19,11 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
       state = setUnmodifiedMergedRecord(state, action.record);
       return setMergedRecord(state, action.record);
     case SAVE_RECORD_SUCCESS:
-      return handleCommitMergeSuccess(state, action.record);
+      return handleSaveRecordSuccess(state, action.record);
+    case SAVE_RECORD_FAILURE: 
+      return handleSaveRecordFailure(state, action.error);
+    case SAVE_RECORD_START: 
+      return handleSaveRecordStart(state);
     case EDIT_MERGED_RECORD:
       return setMergedRecord(state, action.record);
     case ADD_SOURCE_RECORD_FIELD:
@@ -31,7 +36,18 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
   return state;
 }
 
-export function handleCommitMergeSuccess(state, record) {
+function handleSaveRecordStart(state) {
+  return state
+    .set('state', 'SAVE_ONGOING');
+}
+
+function handleSaveRecordFailure(state, error) {
+  return state
+    .set('state', 'SAVE_FAILED')
+    .set('saveError', error);
+}
+
+export function handleSaveRecordSuccess(state, record) {
 
   return state
     .updateIn(['state'], () => 'SAVED')

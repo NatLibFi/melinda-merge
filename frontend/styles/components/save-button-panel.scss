@@ -1,0 +1,30 @@
+.save-button-panel {
+  min-height: 36px;
+  
+  a {
+    font-size: 1.2em;
+    margin-right: 2em;
+    &.disabled {
+      color: #CCC !important;
+      cursor: default;
+    }
+  }
+
+  .save-status {
+    font-size: 1.2em;
+    display: inline-block;
+  }
+
+  .preloader-container {
+    height: 36px;
+    width: 36px;
+    display: inline-block;
+  }
+  .save-status-error {
+    color: #e57373; //red lighten-2
+  }
+  .save-status-success {
+    color: #66bb6a; // green lighten-2
+  }
+
+}

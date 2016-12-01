@@ -1,12 +1,15 @@
 import React from 'react';
 import {connect} from 'react-redux';
+import _ from 'lodash';
 
-import * as uiActionCreators from '../ui-actions';
+import { editMergedRecord, toggleSourceRecordFieldSelection } from '../ui-actions';
+import { saveRecord } from '../action-creators/record-actions';
 import { RecordPanel } from 'commons/components/record-panel';
 import { Preloader } from 'commons/components/preloader';
 import { ErrorMessagePanel } from './error-message-panel';
 import { MergeValidationErrorMessagePanel} from './merge-validation-error-message-panel';
 import { isControlField } from '../utils';
+import { SaveButtonPanel } from './save-button-panel';
 
 import '../../styles/components/record-merge-panel.scss';
 
@@ -15,6 +18,7 @@ export class RecordMergePanel extends React.Component {
   static propTypes = {
     mergedRecord: React.PropTypes.object,
     mergedRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
+    mergedRecordSaveError: React.PropTypes.instanceOf(Error),
     mergedRecordState: React.PropTypes.string.isRequired,
     sourceRecord: React.PropTypes.object,
     sourceRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
@@ -23,7 +27,9 @@ export class RecordMergePanel extends React.Component {
     targetRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
     targetRecordState: React.PropTypes.string.isRequired,
     toggleSourceRecordFieldSelection: React.PropTypes.func.isRequired,
-    editMergedRecord: React.PropTypes.func.isRequired
+    saveRecord: React.PropTypes.func.isRequired,
+    editMergedRecord: React.PropTypes.func.isRequired,
+    saveButtonVisible: React.PropTypes.bool.isRequired
   }
 
   toggleSourceRecordField(field) {
@@ -89,8 +95,39 @@ export class RecordMergePanel extends React.Component {
 
         { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
 
+        { this.props.saveButtonVisible ? this.renderSaveButton() : null }
+        
       </RecordPanel>
     );
+  }
+  renderSaveButton() {
+
+    const statuses = {
+      'SAVED': 'UPDATE_SUCCESS',
+      'SAVE_ONGOING': 'UPDATE_ONGOING',
+      'SAVE_FAILED': 'UPDATE_FAILED'
+    };
+
+    const status = statuses[this.props.mergedRecordState];
+
+    const enabled = status !== 'UPDATE_ONGOING';
+
+    return (
+      <div className="card-action">
+        <SaveButtonPanel 
+          enabled={enabled}
+          error={this.props.mergedRecordSaveError}
+          status={status}
+          onSubmit={() => this.handleRecordSave()}
+        />
+      </div>
+    );
+  }
+  
+  handleRecordSave() {
+    const mergedRecordId = _.chain(this.props.mergedRecord.fields).filter(field => field.tag === '001').map('value').head().value();
+    this.props.saveRecord(mergedRecordId, this.props.mergedRecord);
+
   }
 
   render() {
@@ -118,20 +155,26 @@ export class RecordMergePanel extends React.Component {
 }
 
 function mapStateToProps(state) {
+
+
+  const saveButtonVisible = ['SAVE_ONGOING', 'SAVE_FAILED', 'SAVED'].some(okState => okState === state.getIn(['mergedRecord', 'state']));
+
   return {
     mergedRecord: (state.getIn(['mergedRecord', 'record'])),
     mergedRecordError: state.getIn(['mergedRecord', 'errorMessage']),
+    mergedRecordSaveError: state.getIn(['mergedRecord', 'saveError']),
     mergedRecordState: state.getIn(['mergedRecord', 'state']),
     sourceRecord: (state.getIn(['sourceRecord', 'record'])),
     sourceRecordError: state.getIn(['sourceRecord', 'errorMessage']),
     sourceRecordState: state.getIn(['sourceRecord', 'state']),
     targetRecord: (state.getIn(['targetRecord', 'record'])),
     targetRecordError: state.getIn(['targetRecord', 'errorMessage']),
-    targetRecordState: state.getIn(['targetRecord', 'state'])
+    targetRecordState: state.getIn(['targetRecord', 'state']),
+    saveButtonVisible: saveButtonVisible
   };
 }
 
 export const RecordMergePanelContainer = connect(
   mapStateToProps,
-  uiActionCreators
+  { editMergedRecord, toggleSourceRecordFieldSelection, saveRecord }
 )(RecordMergePanel);
