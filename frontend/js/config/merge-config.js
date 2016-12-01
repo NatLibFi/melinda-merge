@@ -90,10 +90,10 @@ module.exports = {
     "245": { "action": "selectBetter", "options" : { "comparator": "substring" } },
     "246": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "247": { "action": "copy", "options": { "compareWithout": ["9"] } },
-    "250": { "action": "selectBetter", "options": { "requireFieldInBoth": true } }, // default requireFieldInBoth is false.
-    "254": { "action": "selectBetter", "options": { "requireFieldInBoth": true } }, // default requireFieldInBoth is false.
+    "250": { "action": "selectBetter", "options": { "requireFieldInBoth": true, 'skipOnMultiple': true } },
+    "254": { "action": "selectBetter", "options": { "requireFieldInBoth": true, 'skipOnMultiple': true } },
     "255": { "action": "copy", "options": { "compareWithout": ["9"] } },
-    "256": { "action": "selectBetter", "options": { "requireFieldInBoth": true } }, // default requireFieldInBoth is false.
+    "256": { "action": "selectBetter", "options": { "requireFieldInBoth": true } },
     "257": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "258": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "260": { "action": "copy", "options": { "compareWithout": ["9"] } },
@@ -101,8 +101,8 @@ module.exports = {
     "264": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "270": { "action": "copy", "options": { "compareWithout": ["9"] } },
 
-    "300": { "action": "selectBetter", "options": { "comparator": "substring" } }, // default comparator is equality (with normalizations)
-    "306": { "action": "selectBetter", "options": { 'onlyIfMissing': true } },
+    "300": { "action": "selectBetter", "options": { "comparator": "substring", 'skipOnMultiple': true } }, // default comparator is equality (with normalizations)
+    "306": { "action": "selectBetter", "options": { 'onlyIfMissing': true, 'skipOnMultiple': true } },
     "307": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "310": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "321": { "action": "copy", "options": { "compareWithout": ["9"] } },
@@ -120,7 +120,7 @@ module.exports = {
     "351": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "352": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "355": { "action": "copy", "options": { "compareWithout": ["9"] } },
-    "357": { "action": "selectBetter", 'options': { 'onlyIfMissing': true } },
+    "357": { "action": "selectBetter", 'options': { 'onlyIfMissing': true, 'skipOnMultiple': true } },
     "362": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "363": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "365": { "action": "copy", "options": { "compareWithout": ["9"] } },
@@ -131,7 +131,7 @@ module.exports = {
     "381": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "382": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "383": { "action": "copy", "options": { "compareWithout": ["9"] } },
-    "384": { "action": "selectBetter", 'options': { 'onlyIfMissing': true } },
+    "384": { "action": "selectBetter", 'options': { 'onlyIfMissing': true, 'skipOnMultiple': true } },
     "385": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "386": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "388": { "action": "copy", "options": { "compareWithout": ["9"] } },
