@@ -62,7 +62,12 @@ export function commitMerge() {
           if (response.status == HttpStatus.OK) {
 
             const newMergedRecordId = res.recordId;
+
+            const { record, subrecords } = res;
+
             dispatch(commitMergeSuccess(newMergedRecordId, res));
+            dispatch(saveRecordSuccess(record));
+            
             dispatch(markAsMerged());
          
 
@@ -160,6 +165,12 @@ export function locationDidChange(location) {
       }
     }
   };
+}
+
+export const SAVE_RECORD_SUCCESS = 'SAVE_RECORD_SUCCESS';
+
+export function saveRecordSuccess(record) {
+  return { type: SAVE_RECORD_SUCCESS, record};
 }
 
 export const SET_LOCATION = 'SET_LOCATION';

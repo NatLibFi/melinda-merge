@@ -39,27 +39,23 @@ marcIOController.get('/:id', cors(corsOptions), (req, res) => {
   const client = new MelindaClient(defaultConfig);
 
   logger.log('debug', `Loading record ${req.params.id}`);
-  client.loadChildRecords(req.params.id, {handle_deleted: 1, include_parent: 1}).then((records) => {
-    logger.log('debug', `Record ${req.params.id} with subrecords loaded`);
-    const record = _.head(records);
-    const subrecords = _.tail(records);
+
+  loadRecord(client, req.params.id).then(({record, subrecords}) => {
 
     if (record.fields.length === 0) {
       logger.log('debug', `Record ${req.params.id} appears to be empty record.`);
       return res.sendStatus(404);
     }
-    res.send({
-      record, 
-      subrecords
-    });
+    res.send({ record, subrecords });
+
   }).catch(error => {
     logger.log('error', `Error loading record ${req.params.id}`, error);
     res.sendStatus(500);
-  }).done();
+  });
 
 });
 
-marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord','mergedRecord'), (req, res) => {
+marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord'), (req, res) => {
   
   const {username, password} = req.session;
 
@@ -83,13 +79,43 @@ marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requir
         logger.log('info', `Created archive file of the merge action: ${res.filename} (${res.size} bytes)`);
       });
 
-      res.send(mergedMainRecordResult);
+      const createdRecordId = mergedMainRecordResult.recordId;
+      loadRecord(client, createdRecordId).then(({record, subrecords}) => {
+
+        if (record.fields.length === 0) {
+          logger.log('debug', `Record ${createdRecordId} appears to be empty record.`);
+          return res.sendStatus(404);
+        }
+
+        const response = _.extend({}, mergedMainRecordResult, {
+          record, 
+          subrecords
+        });
+
+        res.send(response);
+      });
+
+      
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
       res.status(500).send(error);
     });
 
 });
+
+function loadRecord(client, id) {
+  return new Promise((resolve, reject) => {
+
+    client.loadChildRecords(id, {handle_deleted: 1, include_parent: 1}).then((records) => {
+      logger.log('debug', `Record ${id} with subrecords loaded`);
+      const record = _.head(records);
+      const subrecords = _.tail(records);
+
+      return resolve({record, subrecords});
+
+    }).catch(reject).done();
+  });
+}
 
 function requireSession(req, res, next) {
 

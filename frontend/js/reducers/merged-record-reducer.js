@@ -1,5 +1,5 @@
 import { Map } from 'immutable'; 
-import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD } from '../ui-actions';
+import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD, SAVE_RECORD_SUCCESS } from '../ui-actions';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import { DEFAULT_MERGED_RECORD } from '../root-reducer';
 import MarcRecord from 'marc-record-js';
@@ -17,6 +17,8 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
     case SET_MERGED_RECORD:
       state = setUnmodifiedMergedRecord(state, action.record);
       return setMergedRecord(state, action.record);
+    case SAVE_RECORD_SUCCESS:
+      return handleCommitMergeSuccess(state, action.record);
     case EDIT_MERGED_RECORD:
       return setMergedRecord(state, action.record);
     case ADD_SOURCE_RECORD_FIELD:
@@ -27,6 +29,14 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
       return INITIAL_STATE;
   }
   return state;
+}
+
+export function handleCommitMergeSuccess(state, record) {
+
+  return state
+    .updateIn(['state'], () => 'SAVED')
+    .updateIn(['record'], () => record);
+
 }
 
 export function setMergedRecord(state, record) {
