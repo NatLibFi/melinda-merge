@@ -42,6 +42,7 @@
     "eslint": "^3.10.1",
     "express": "^4.14.0",
     "express-winston": "^2.0.0",
+    "fbjs": "^0.8.6",
     "http-status-codes": "^1.0.6",
     "immutable": "^3.8.1",
     "isomorphic-fetch": "^2.2.1",
@@ -51,6 +52,7 @@
     "melinda-api-client": "^1.1.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.15.1",
+    "object-assign": "^4.1.0",
     "winston": "^2.2.0",
     "xml2js": "^0.4.17"
   },
