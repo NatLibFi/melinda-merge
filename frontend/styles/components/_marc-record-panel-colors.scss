@@ -1,0 +1,43 @@
+@mixin marc-colors() {
+
+  &.marc-record-source {
+    .fieldList {
+      .is-selected {
+        &.from-other {
+          background-color: #b2dfdb;
+        }
+      }
+    }
+  }
+
+  &.marc-record-source {
+    .fieldList {
+      .marc-field-datafield {
+        &:hover {
+          outline: 1px dashed #CCC;
+          cursor: pointer;
+        } 
+      }
+    }
+  }
+
+  &.marc-record-merged {
+    .fieldList {
+      .from-postmerge {
+        background-color: #e3f2fd;
+      }
+
+      .is-selected {
+        
+        &.from-other {
+          background-color: #b2dfdb;
+
+          &:hover {
+            outline: 1px dashed #CCC;
+            cursor: pointer;
+          } 
+        }
+      }
+    }
+  }
+}

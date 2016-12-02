@@ -1,7 +1,12 @@
+@import 'marc-record-panel-colors';
 
 .subrecord-merge-panel {
 
   table-layout: fixed;
+
+  .marc-record {
+    @include marc-colors();
+  }
 
   .empty-droppable {
     height: 110px;
