@@ -19,7 +19,7 @@ import * as PostMerge from './marc-record-merge-postmerge-service';
 
 export function commitMerge() {
 
-  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/merge': '/merge';
 
   return function(dispatch, getState) {
     dispatch(commitMergeStart());
@@ -63,7 +63,7 @@ export function commitMerge() {
 
             const newMergedRecordId = res.recordId;
 
-            const { record, subrecords } = res;
+            const { record } = res; // should handle subrecords also
 
             dispatch(commitMergeSuccess(newMergedRecordId, res));
             dispatch(saveRecordSuccess(record));

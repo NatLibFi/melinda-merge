@@ -25,7 +25,7 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
     case SAVE_RECORD_START: 
       return handleSaveRecordStart(state);
     case EDIT_MERGED_RECORD:
-      return setMergedRecord(state, action.record);
+      return updateMergedRecord(state, action.record);
     case ADD_SOURCE_RECORD_FIELD:
       return addField(state, action.field);
     case REMOVE_SOURCE_RECORD_FIELD:
@@ -59,6 +59,12 @@ export function setMergedRecord(state, record) {
 
   return state
     .updateIn(['state'], () => 'LOADED')
+    .updateIn(['record'], () => record);
+}
+
+export function updateMergedRecord(state, record) {
+
+  return state
     .updateIn(['record'], () => record);
 }
 
