@@ -2,8 +2,11 @@ import {expect} from 'chai';
 import MarcRecord from 'marc-record-js';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from '../js/constants';
-import * as actions from '../js/ui-actions';
+import { setSourceRecord, setTargetRecord } from '../js/ui-actions';
+import { setSubrecordAction, setMergedSubrecord, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeSubrecordRow } from '../js/action-creators/subrecord-actions';
 import reducer from '../js/root-reducer';
+import { subrecordRows } from '../js/selectors/subrecord-selectors';
+import _ from 'lodash';
 
 describe('Subrecord reducer', () => {
 
@@ -95,30 +98,87 @@ describe('Subrecord reducer', () => {
     }
 
     function subrecords(state) {
-      const sourceSubrecords = state.getIn(['subrecords', 'sourceRecord']).toJS();
-      const targetSubrecords = state.getIn(['subrecords', 'targetRecord']).toJS();
-      const mergedSubrecords = state.getIn(['subrecords', 'mergedRecord']).toJS();
-      const subrecordActions = state.getIn(['subrecords', 'actions']).toJS();
+
+      const sourceSubrecords = _.map(subrecordRows(state), 'sourceRecord');
+      const targetSubrecords = _.map(subrecordRows(state), 'targetRecord');
+      const mergedSubrecords = _.map(subrecordRows(state), 'mergedRecord');
+      const subrecordActions = _.map(subrecordRows(state), 'selectedAction');
       return {sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions};
     }
+    function rowId(state, index) {
+      return state.getIn(['subrecords', 'index']).get(index);
+    }
+
+    describe('set subrecords', function() {
+
+      describe('when records are swapped', () => {
+        let state;
+
+        beforeEach(() => {
+          state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+          state = reducer(state, setTargetRecord(otherTestRecordObject, []));
+          
+          state = reducer(state, setSourceRecord(otherTestRecordObject, []));
+          state = reducer(state, setTargetRecord(testRecordObject, [ssub1, ssub2]));
+        });
+
+        it('sets the subfields of target record', () => {
+          const { targetSubrecords } = subrecords(state);
+          expect(targetSubrecords).to.eql([ssub1, ssub2]);
+        });
+
+        it('sets the subfields of source record', () => {
+          const { sourceSubrecords } = subrecords(state);
+          expect(sourceSubrecords).to.eql([undefined, undefined]);
+        });
+
+      });
+
+      describe('when records are swapped other way', () => {
+        let state;
+
+        beforeEach(() => {
+          state = INITIAL_STATE;
+          state = reducer(state, setSourceRecord(otherTestRecordObject, []));
+          state = reducer(state, setTargetRecord(testRecordObject, [ssub1, ssub2]));
+
+          state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+          state = reducer(state, setTargetRecord(otherTestRecordObject, []));
+          
+        });
+
+        it('sets the subfields of target record', () => {
+          const { sourceSubrecords } = subrecords(state);
+          expect(sourceSubrecords).to.eql([ssub1, ssub2]);
+        });
+
+        it('sets the subfields of source record', () => {
+          const { targetSubrecords } = subrecords(state);
+          expect(targetSubrecords).to.eql([undefined, undefined]);
+        });
+
+      });
+
+
+    });
 
     describe('set subrecord action', function() {
       let state;
       beforeEach(() => {
-        state = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
       });
 
       it('sets the action', () => {
-        state = reducer(state, actions.setSubrecordAction(0, SubrecordActionTypes.MERGE));
-        const { subrecordActions } = subrecords(state);
-        expect(subrecordActions).to.eql([SubrecordActionTypes.MERGE]);
+        state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.MERGE));
+        const subrecordActions = _.map(subrecordRows(state), 'selectedAction');
+        expect(subrecordActions).to.eql([SubrecordActionTypes.MERGE, undefined]);
 
       });
 
       it('sets the action to correct position', () => {
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.MERGE));
-        const { subrecordActions } = subrecords(state);
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.MERGE));
+        const subrecordActions = _.map(subrecordRows(state), 'selectedAction');
         expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.MERGE]);
       });
 
@@ -127,41 +187,41 @@ describe('Subrecord reducer', () => {
     describe('set merged record\'s subrecords', () => {
       let state;
       beforeEach(() => {
-        state = reducer(INITIAL_STATE, actions.setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
       });
 
       it('should set merged subrecord at position', () => {
 
-        state = reducer(state, actions.setMergedSubrecord(1, msub1));
-        const { mergedSubrecords } = subrecords(state); 
+        state = reducer(state, setMergedSubrecord(rowId(state, 1), msub1));
+        const mergedSubrecords = _.map(subrecordRows(state), 'mergedRecord');
         expect(mergedSubrecords).to.eql([undefined, msub1]);
 
       });
 
       it('should set merged subrecord at beginning if position=0', () => {
-        state = reducer(state, actions.setMergedSubrecord(0, msub1));
-        const { mergedSubrecords } = subrecords(state); 
-        expect(mergedSubrecords).to.eql([msub1]);
+        state = reducer(state, setMergedSubrecord(rowId(state, 0), msub1));
+        const mergedSubrecords = _.map(subrecordRows(state), 'mergedRecord');
+        expect(mergedSubrecords).to.eql([msub1, undefined]);
 
       });
        
-    });
+    }); 
 
     describe('insert row with equal amount of subrecords', function() {
 
       let state;
       beforeEach(() => {
         state = undefined;
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
-        state = reducer(state, actions.setSubrecordAction(0, SubrecordActionTypes.BLOCK));
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setMergedSubrecord(1, msub1));
+        state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.BLOCK));
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.MERGE));
+        state = reducer(state, setMergedSubrecord(rowId(state, 1), msub1));
       });
 
       it('inserts empty row in the beginning of subrecords when rowIndex is 0', () => {
-        state = reducer(state, actions.insertSubrecordRow(0));
+        state = reducer(state, insertSubrecordRow(0));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
         
         expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
@@ -172,7 +232,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('inserts empty row in between of subrecords', () => {
-        state = reducer(state, actions.insertSubrecordRow(1));
+        state = reducer(state, insertSubrecordRow(1));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, undefined, ssub2]);
@@ -182,7 +242,7 @@ describe('Subrecord reducer', () => {
       });
       
       it('inserts empty row after subrecords', () => {
-        state = reducer(state, actions.insertSubrecordRow(2));
+        state = reducer(state, insertSubrecordRow(2));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, ssub2, undefined]);
@@ -198,39 +258,39 @@ describe('Subrecord reducer', () => {
 
       let state;
       beforeEach(() => {
-        state = reducer(undefined, actions.setSourceRecord(testRecordObject, [ssub1]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [tsub1, tsub2, tsub3]));
+        state = reducer(undefined, setSourceRecord(testRecordObject, [ssub1]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2, tsub3]));
       });
 
       it('inserts empty row in the beginning of subrecords when rowIndex is 0', () => {
-        state = reducer(state, actions.insertSubrecordRow(0));
+        state = reducer(state, insertSubrecordRow(0));
         const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
-        expect(sourceSubrecords).to.eql([undefined, ssub1]);
+        expect(sourceSubrecords).to.eql([undefined, ssub1, undefined, undefined]);
         expect(targetSubrecords).to.eql([undefined, tsub1, tsub2, tsub3]);
       });
 
       it('inserts empty row in between of subrecords', () => {
-        state = reducer(state, actions.insertSubrecordRow(1));
+        state = reducer(state, insertSubrecordRow(1));
         const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
-        expect(sourceSubrecords).to.eql([ssub1, undefined]);
+        expect(sourceSubrecords).to.eql([ssub1, undefined, undefined, undefined]);
         expect(targetSubrecords).to.eql([tsub1, undefined, tsub2, tsub3]);
       });
       
       it('inserts empty row only between subrecords of longer list', () => {
-        state = reducer(state, actions.insertSubrecordRow(2));
+        state = reducer(state, insertSubrecordRow(2));
         const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
-        expect(sourceSubrecords).to.eql([ssub1]);
+        expect(sourceSubrecords).to.eql([ssub1, undefined, undefined, undefined]);
         expect(targetSubrecords).to.eql([tsub1, tsub2, undefined, tsub3]);
       });
       
       it('inserts empty row only after subrecords of longer list', () => {
-        state = reducer(state, actions.insertSubrecordRow(3));
+        state = reducer(state, insertSubrecordRow(3));
         const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
-        expect(sourceSubrecords).to.eql([ssub1]);
+        expect(sourceSubrecords).to.eql([ssub1, undefined, undefined, undefined]);
         expect(targetSubrecords).to.eql([tsub1, tsub2, tsub3, undefined]);
       });
 
@@ -242,37 +302,37 @@ describe('Subrecord reducer', () => {
       let state;
       beforeEach(() => {
         state = undefined;
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [undefined, ssub1, undefined, ssub2, undefined]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [undefined, tsub1, undefined, tsub2, undefined]));
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.BLOCK));
-        state = reducer(state, actions.setSubrecordAction(3, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setMergedSubrecord(3, msub1));
+        state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, undefined, ssub2, undefined]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [undefined, tsub1, undefined, tsub2, undefined]));
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.BLOCK));
+        state = reducer(state, setSubrecordAction(rowId(state, 3), SubrecordActionTypes.MERGE));
+        state = reducer(state, setMergedSubrecord(rowId(state, 3), msub1));
       });
     
       it('removes empty row in the beginning of subrecords when rowIndex is 0', () => {
-        state = reducer(state, actions.removeSubrecordRow(0));
+        state = reducer(state, removeSubrecordRow(rowId(state, 0)));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, undefined, ssub2, undefined]);
         expect(targetSubrecords).to.eql([tsub1, undefined, tsub2, undefined]);
-        expect(mergedSubrecords).to.eql([undefined, undefined, msub1]);
-        expect(subrecordActions).to.eql([SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE]);
+        expect(mergedSubrecords).to.eql([undefined, undefined, msub1, undefined]);
+        expect(subrecordActions).to.eql([SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE, undefined]);
 
       });
 
       it('removes empty row in between of subrecords', () => {
-        state = reducer(state, actions.removeSubrecordRow(2));
+        state = reducer(state, removeSubrecordRow(rowId(state, 2)));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2, undefined]);
         expect(targetSubrecords).to.eql([undefined, tsub1, tsub2, undefined]);
-        expect(mergedSubrecords).to.eql([undefined, undefined, msub1]);
-        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, SubrecordActionTypes.MERGE]);
+        expect(mergedSubrecords).to.eql([undefined, undefined, msub1, undefined]);
+        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, SubrecordActionTypes.MERGE, undefined]);
 
       });
       
       it('removes empty row after subrecords', () => {
-        state = reducer(state, actions.removeSubrecordRow(4));
+        state = reducer(state, removeSubrecordRow(rowId(state, 4)));
         const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([undefined, ssub1, undefined, ssub2]);
@@ -280,26 +340,26 @@ describe('Subrecord reducer', () => {
       });
 
       it('does not remove non-empty rows', () => {
-        state = reducer(state, actions.removeSubrecordRow(1));
+        state = reducer(state, removeSubrecordRow(rowId(state, 1)));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([undefined, ssub1, undefined, ssub2, undefined]);
         expect(targetSubrecords).to.eql([undefined, tsub1, undefined, tsub2, undefined]);
-        expect(mergedSubrecords).to.eql([undefined, undefined, undefined, msub1]);
-        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE]);
+        expect(mergedSubrecords).to.eql([undefined, undefined, undefined, msub1, undefined]);
+        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE, undefined]);
 
       });
       
       it('does not remove rows with target subrecord', () => {
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [ssub1, undefined, undefined, ssub2, undefined]));
-        state = reducer(state, actions.removeSubrecordRow(1));
+        state = reducer(state, setSourceRecord(testRecordObject, [ssub1, undefined, undefined, ssub2, undefined]));
+        state = reducer(state, removeSubrecordRow(rowId(state, 1)));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, undefined, undefined, ssub2, undefined]);
         expect(targetSubrecords).to.eql([undefined, tsub1, undefined, tsub2, undefined]);
-        expect(mergedSubrecords).to.eql([undefined, undefined, undefined, msub1]);
-        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE]);
+        expect(mergedSubrecords).to.eql([undefined, undefined, undefined, msub1, undefined]);
+        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE, undefined]);
 
       });
       
@@ -309,18 +369,18 @@ describe('Subrecord reducer', () => {
       let state;
       beforeEach(() => {
         state = undefined;
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject, [tsub1, undefined, tsub2]));
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.COPY));
-        state = reducer(state, actions.setSubrecordAction(2, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setMergedSubrecord(1, ssub1));
-        state = reducer(state, actions.setMergedSubrecord(2, msub1));
+        state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, undefined, tsub2]));
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.COPY));
+        state = reducer(state, setSubrecordAction(rowId(state, 2), SubrecordActionTypes.MERGE));
+        state = reducer(state, setMergedSubrecord(rowId(state, 1), ssub1));
+        state = reducer(state, setMergedSubrecord(rowId(state, 2), msub1));
 
       });
 
       it('moves source subrecord at 1 to 0', () => {
 
-        state = reducer(state, actions.changeSourceSubrecordRow(1, 0));
+        state = reducer(state, changeSourceSubrecordRow(rowId(state, 1), rowId(state, 0)));
         const { sourceSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, undefined, ssub2]);
@@ -330,7 +390,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('moves source subrecord at 2 to 0', () => {
-        state = reducer(state, actions.changeSourceSubrecordRow(2, 0));
+        state = reducer(state, changeSourceSubrecordRow(rowId(state, 2), rowId(state, 0)));
 
         const { sourceSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -342,7 +402,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('does nothing if trying to move subrecord to non-undefined index', () => {
-        state = reducer(state, actions.changeSourceSubrecordRow(2, 1));
+        state = reducer(state, changeSourceSubrecordRow(rowId(state, 2), rowId(state, 1)));
 
         const { sourceSubrecords } = subrecords(state);
         expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
@@ -350,7 +410,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('does nothing if trying to move undefined index', () => {
-        state = reducer(state, actions.changeSourceSubrecordRow(0, 1));
+        state = reducer(state, changeSourceSubrecordRow(rowId(state, 0), rowId(state, 1)));
         const { sourceSubrecords } = subrecords(state);
         expect(sourceSubrecords).to.eql([undefined, ssub1, ssub2]);
 
@@ -363,17 +423,17 @@ describe('Subrecord reducer', () => {
       let state;
       beforeEach(() => {
         state = undefined;
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject,    [tsub1, undefined, tsub2]));
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.COPY));
-        state = reducer(state, actions.setSubrecordAction(2, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setMergedSubrecord(1, ssub1));
-        state = reducer(state, actions.setMergedSubrecord(2, msub1));
+        state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject,    [tsub1, undefined, tsub2]));
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.COPY));
+        state = reducer(state, setSubrecordAction(rowId(state, 2), SubrecordActionTypes.MERGE));
+        state = reducer(state, setMergedSubrecord(rowId(state, 1), ssub1));
+        state = reducer(state, setMergedSubrecord(rowId(state, 2), msub1));
 
       });
 
       it('moves whole subrecord row at 1 to 0', () => {
-        state = reducer(state, actions.changeSubrecordRow(1, 0));
+        state = reducer(state, changeSubrecordRow(1, 0));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -386,7 +446,7 @@ describe('Subrecord reducer', () => {
 
       it('moves whole subrecord row at 2 to 0', () => {
 
-        state = reducer(state, actions.changeSubrecordRow(2, 0));
+        state = reducer(state, changeSubrecordRow(2, 0));
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub2, undefined, ssub1]);
@@ -398,7 +458,7 @@ describe('Subrecord reducer', () => {
 
       it('moves whole subrecord row at 0 to 3', () => {
 
-        state = reducer(state, actions.changeSubrecordRow(0, 3));
+        state = reducer(state, changeSubrecordRow(0, 3));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -410,7 +470,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('does nothing when moving whole subrecord row at 0 to 0', () => {
-        state = reducer(state, actions.changeSubrecordRow(0, 0));
+        state = reducer(state, changeSubrecordRow(0, 0));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -423,7 +483,7 @@ describe('Subrecord reducer', () => {
 
       it('moves whole subrecord row at 0 to 1', () => {
 
-        state = reducer(state, actions.changeSubrecordRow(0, 1));
+        state = reducer(state, changeSubrecordRow(0, 1));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -435,7 +495,7 @@ describe('Subrecord reducer', () => {
       });
 
       it('moves whole subrecord row at 8 to 0', () => {
-        state = reducer(state, actions.changeSubrecordRow(8, 0));
+        state = reducer(state, changeSubrecordRow(8, 0));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 
@@ -451,17 +511,17 @@ describe('Subrecord reducer', () => {
     describe('change whole subrecord row when other record has less subrecords', function() {
       let state;
       beforeEach(() => {
-        state = reducer(state, actions.setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, actions.setTargetRecord(otherTestRecordObject,    [tsub1, tsub2, tsub3]));
-        state = reducer(state, actions.setSubrecordAction(0, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setSubrecordAction(1, SubrecordActionTypes.MERGE));
-        state = reducer(state, actions.setMergedSubrecord(0, msub1));
-        state = reducer(state, actions.setMergedSubrecord(1, msub1));
+        state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject,    [tsub1, tsub2, tsub3]));
+        state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.MERGE));
+        state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.MERGE));
+        state = reducer(state, setMergedSubrecord(rowId(state, 0), msub1));
+        state = reducer(state, setMergedSubrecord(rowId(state, 1), msub1));
 
       });
 
       it('moves whole subrecord row at 0 to 2', () => {
-        state = reducer(state, actions.changeSubrecordRow(0, 2));
+        state = reducer(state, changeSubrecordRow(0, 2));
 
         const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
 

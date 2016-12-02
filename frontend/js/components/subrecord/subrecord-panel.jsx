@@ -1,7 +1,7 @@
 import React from 'react';
 import classNames from 'classnames';
-import '../../styles/components/subrecord-panel';
-import { MarcRecordPanel } from './marc-record-panel';
+import '../../../styles/components/subrecord-panel';
+import { MarcRecordPanel } from '../marc-record-panel';
 import _ from 'lodash';
 
 export class SubRecordPanel extends React.Component {
@@ -9,11 +9,13 @@ export class SubRecordPanel extends React.Component {
   static propTypes = {
     record: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
-    isDragging: React.PropTypes.bool
+    isDragging: React.PropTypes.bool,
+    isExpanded: React.PropTypes.bool,
+    onFieldClick: React.PropTypes.func,
   }
 
   render() {
-    const { record, isDragging } = this.props;
+    const { record, isDragging, isExpanded } = this.props;
     const selectedFields = record.fields
       .filter(f => _.includes(['245', '336'], f.tag));
 
@@ -32,9 +34,11 @@ export class SubRecordPanel extends React.Component {
       fields: selectedFields
     };
 
+    const res = isExpanded ? record : trimmedRecord;
+
     return (
       <div className={classes}>
-        <MarcRecordPanel record={trimmedRecord} />
+        <MarcRecordPanel record={res} onFieldClick={this.props.onFieldClick} />
       </div>
     );
   }

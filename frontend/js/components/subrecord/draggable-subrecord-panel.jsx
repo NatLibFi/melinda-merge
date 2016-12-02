@@ -1,6 +1,6 @@
 import React from 'react';
 import { DragSource } from 'react-dnd';
-import { ItemTypes } from '../constants';
+import { ItemTypes } from '../../constants';
 import { SubRecordPanel } from './subrecord-panel';
 
 class SubRecordPanelDragSource extends React.Component {
@@ -8,7 +8,7 @@ class SubRecordPanelDragSource extends React.Component {
   static propTypes = {
     type: React.PropTypes.string.isRequired,
     record: React.PropTypes.object.isRequired,
-    rowIndex: React.PropTypes.number.isRequired,
+    rowId: React.PropTypes.string.isRequired,
     connectDragSource: React.PropTypes.func.isRequired,
     isDragging: React.PropTypes.bool.isRequired
   }
@@ -17,15 +17,21 @@ class SubRecordPanelDragSource extends React.Component {
 
     const { connectDragSource } = this.props;
 
-    return connectDragSource(<div><SubRecordPanel {...this.props} /></div>);
+    return connectDragSource(<div className="fill-height"><SubRecordPanel {...this.props} /></div>);
       
   }
 }
 
 const subrecordSource = {
   beginDrag(props) {
-    const { type, rowIndex } = props;
-    return { type, rowIndex };
+    const { type, rowId } = props;
+    return { type, rowId };
+  },
+  canDrag(props) {
+    if (props && props.isExpanded) {
+      return false;
+    }
+    return true;
   }
 };
 

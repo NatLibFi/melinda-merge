@@ -1,13 +1,13 @@
 import React from 'react';
-import * as uiActionCreators from '../ui-actions';
+import * as subrecordActions from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
-import { SubrecordActionTypes } from '../constants';
+import { SubrecordActionTypes } from '../../constants';
 import classNames from 'classnames';
 
 export class SubrecordActionButton extends React.Component {
 
   static propTypes = {
-    rowIndex: React.PropTypes.number.isRequired,
+    rowId: React.PropTypes.string.isRequired,
     changeSubrecordAction: React.PropTypes.func.isRequired,
     selectedAction: React.PropTypes.string,
     isMergeActionAvailable: React.PropTypes.bool,
@@ -19,10 +19,10 @@ export class SubrecordActionButton extends React.Component {
   }
 
   selectAction(type) {
-    const {rowIndex, changeSubrecordAction} = this.props;
+    const {rowId, changeSubrecordAction} = this.props;
 
     return function() {
-      changeSubrecordAction(rowIndex, type);      
+      changeSubrecordAction(rowId, type);      
     };
   }
 
@@ -66,5 +66,5 @@ export class SubrecordActionButton extends React.Component {
 
 export const SubrecordActionButtonContainer = connect(
   null,
-  uiActionCreators
+  subrecordActions
 )(SubrecordActionButton);

@@ -2,6 +2,19 @@
 .subrecord-merge-panel {
   
   tr {
+    td { 
+      vertical-align: top;
+      height: 1px;
+
+      .fill-height {
+        height: 100%;
+      }
+
+      .marc-record-subrecord  {
+        height: 100%;
+        margin: 0;
+      }
+    }
 
     &.is-over {
       outline: 2px dashed #66bb6a;

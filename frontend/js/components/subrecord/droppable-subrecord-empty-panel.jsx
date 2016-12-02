@@ -1,8 +1,8 @@
 import React from 'react';
-import { ItemTypes } from '../constants';
+import { ItemTypes } from '../../constants';
 import { DropTarget } from 'react-dnd';
 import { EmptySubRecordPanelContainer } from './subrecord-empty-panel';
-import * as uiActionCreators from '../ui-actions';
+import * as subrecordActions from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import compose from 'lodash/flowRight';
 
@@ -13,7 +13,7 @@ export class DroppableEmptySubRecordPanel extends React.Component {
     isOver: React.PropTypes.bool.isRequired,
     canDrop: React.PropTypes.bool.isRequired,
     type: React.PropTypes.string.isRequired,
-    rowIndex: React.PropTypes.number.isRequired,
+    rowId: React.PropTypes.string.isRequired,
     changeSourceSubrecordRow: React.PropTypes.func.isRequired,
     changeTargetSubrecordRow: React.PropTypes.func.isRequired
   }
@@ -28,17 +28,17 @@ export class DroppableEmptySubRecordPanel extends React.Component {
 const emptySlotTarget = {
   drop(props, monitor, component) {
 
-    const { type, rowIndex } = props;
+    const { type, rowId } = props;
     const item = monitor.getItem();
     
-    const fromRowIndex = item.rowIndex;
-    const toRowIndex = rowIndex;
+    const fromRowId = item.rowId;
+    const toRowId = rowId;
 
     if (type == ItemTypes.SOURCE_SUBRECORD) {
-      component.props.changeSourceSubrecordRow(fromRowIndex, toRowIndex);
+      component.props.changeSourceSubrecordRow(fromRowId, toRowId);
     }
     if (type == ItemTypes.TARGET_SUBRECORD) {
-      component.props.changeTargetSubrecordRow(fromRowIndex, toRowIndex);
+      component.props.changeTargetSubrecordRow(fromRowId, toRowId);
     }
 
   },
@@ -62,7 +62,7 @@ function collect(connect, monitor) {
 export const DropTargetEmptySubRecordPanel = compose(
   connect(
     null,
-    uiActionCreators
+    subrecordActions
   ),
   DropTarget(ItemTypes.SUBRECORD, emptySlotTarget, collect)
 )(DroppableEmptySubRecordPanel);

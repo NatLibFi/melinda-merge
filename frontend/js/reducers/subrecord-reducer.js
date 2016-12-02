@@ -1,17 +1,16 @@
-import { List, fromJS } from 'immutable';
-import _ from 'lodash';
+import MarcRecord from 'marc-record-js';
+import { Map, List } from 'immutable';
 
-import {INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
-  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW} from '../ui-actions';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
-
 import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-actions';
 
-const INITIAL_STATE = fromJS({
-  sourceRecord: [],
-  targetRecord: [],
-  mergedRecord: [],
-  actions: []
+import { 
+  INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
+  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
+  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD } from '../constants/action-type-constants';
+
+const INITIAL_STATE = Map({
+  index: List()
 });
 
 export default function subrecords(state = INITIAL_STATE, action) {
@@ -20,27 +19,38 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case INSERT_SUBRECORD_ROW:
       return insertSubrecordRow(state, action.rowIndex);
     case REMOVE_SUBRECORD_ROW:
-      return removeSubrecordRow(state, action.rowIndex);
+      return removeSubrecordRow(state, action.rowId);
     case CHANGE_SOURCE_SUBRECORD_ROW:
-      return changeSourceSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+      return changeSourceSubrecordRow(state, action.fromRowId, action.toRowId);
     case CHANGE_TARGET_SUBRECORD_ROW:
-      return changeTargetSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
+      return changeTargetSubrecordRow(state, action.fromRowId, action.toRowId);
 
     case CHANGE_SUBRECORD_ROW: 
       return changeSubrecordRow(state, action.fromRowIndex, action.toRowIndex);
     case SET_SUBRECORD_ACTION:
-      return setSubrecordAction(state, action.rowIndex, action.actionType);
+      return setSubrecordAction(state, action.rowId, action.actionType);
     case SET_MERGED_SUBRECORD:
-      return setMergedSubrecord(state, action.rowIndex, action.record);
+      return setMergedSubrecord(state, action.rowId, action.record);
     case SET_MERGED_SUBRECORD_ERROR:
-      return setMergedSubrecordError(state, action.rowIndex, action.error);
+      return setMergedSubrecordError(state, action.rowId, action.error);
 
     case SET_SOURCE_RECORD:
-      return setSourceSubrecords(state, action.record, action.subrecords);
+      return setSourceSubrecords(state, action.record, action.subrecords || []);
     case SET_TARGET_RECORD:
-      return setTargetSubrecords(state, action.record, action.subrecords);
+      return setTargetSubrecords(state, action.record, action.subrecords || []);
     case SET_MERGED_RECORD:
       return resetMergedSubrecordsActions(state, action.record);
+    
+    case EXPAND_SUBRECORD_ROW:
+      return expandRow(state, action.rowId);
+    case COMPRESS_SUBRECORD_ROW:
+      return compressRow(state, action.rowId);
+
+    case ADD_SOURCE_SUBRECORD_FIELD:
+      return addField(state, action.rowId, action.field);
+    case REMOVE_SOURCE_SUBRECORD_FIELD:
+      return removeField(state, action.rowId, action.field);
+
     case RESET_WORKSPACE:
       return INITIAL_STATE;
 
@@ -48,12 +58,117 @@ export default function subrecords(state = INITIAL_STATE, action) {
   return state;
 }
 
+
+function isControlField(field) {
+  return field.subfields === undefined;
+}
+
+export function addField(state, rowId, field) {
+  const record = state.get(rowId).get('mergedRecord');
+  const sourceRecord = state.get(rowId).get('sourceRecord');
+
+  if (isControlField(field)) {
+    record.insertControlField(field);
+  } else {
+    record.insertField(field);
+  }
+  
+  return state
+    .setIn([rowId, 'mergedRecord'], setFieldSelected(record, field))
+    .setIn([rowId, 'sourceRecord'], setFieldSelected(sourceRecord, field));
+}
+
+export function removeField(state, rowId, field) {
+
+  const record = state.get(rowId).get('mergedRecord');
+  const sourceRecord = state.get(rowId).get('sourceRecord');
+
+  record.fields = record.fields.filter(currentField => currentField.uuid !== field.uuid);
+
+  return state
+    .setIn([rowId, 'mergedRecord'], setFieldUnselected(record, field))
+    .setIn([rowId, 'sourceRecord'], setFieldUnselected(sourceRecord, field));
+}
+
+function setFieldSelected(record, field) {
+  
+  record.fields
+    .filter(recordField => recordField.uuid === field.uuid)
+    .forEach(recordField => {
+      recordField.fromOther = true;
+      recordField.wasUsed = true;
+    });
+  return new MarcRecord(record);
+
+}
+
+function setFieldUnselected(record, field) {
+  record.fields
+    .filter(recordField => recordField.uuid === field.uuid)
+    .forEach(recordField => {
+      recordField.fromOther = false;
+      recordField.wasUsed = false;
+    });
+
+  return new MarcRecord(record);
+}
+
+
+function expandRow(state, rowId) {
+  return state.update(rowId, createEmptyRow(), row => row.set('isExpanded', true));
+}
+
+function compressRow(state, rowId) {
+  return state.update(rowId, createEmptyRow(), row => row.set('isExpanded', false));
+}
+
 export function setSourceSubrecords(state, record, subrecords) {
-  return state.setIn(['sourceRecord'], List(subrecords));
+
+  state = state.get('index').reduce((state, key) => {
+    return state.update(key, row => row.set('sourceRecord', undefined));
+  }, state);
+
+  return subrecords.reduce((state, subrecord, i) => {
+
+    const key = state.get('index').get(i);
+
+    if (key === undefined) {
+      const row = createEmptyRow().set('sourceRecord', subrecord);
+      const newRowKey = row.get('rowId');
+      return state
+        .set(newRowKey, row)
+        .update('index', index => index.set(i, newRowKey));
+    } else {
+      return state.setIn([key, 'sourceRecord'], subrecord);
+    }
+    
+  }, state);
 }
+
 export function setTargetSubrecords(state, record, subrecords) {
-  return state.setIn(['targetRecord'], List(subrecords));
+
+  state = state.get('index').reduce((state, key) => {
+    return state.update(key, row => row.set('targetRecord', undefined));
+  }, state);
+
+  return subrecords.reduce((state, subrecord, i) => {
+
+    const key = state.get('index').get(i);
+
+    if (key === undefined) {
+      const row = createEmptyRow().set('targetRecord', subrecord);
+      const newRowKey = row.get('rowId');
+      return state
+        .set(newRowKey, row)
+        .update('index', index => index.set(i, newRowKey));
+    } else {
+      return state.setIn([key, 'targetRecord'], subrecord);
+    }
+    
+  }, state);
+
 }
+
 export function resetMergedSubrecordsActions(state) {
   return state
     .setIn(['mergedRecord'], List())
@@ -62,89 +177,76 @@ export function resetMergedSubrecordsActions(state) {
 
 export function insertSubrecordRow(state, rowIndex) {
 
-  const insertUndefinedAtRow = _.curry(insertUndefined)(rowIndex);
- 
+  const row = createEmptyRow();
+  const rowId = row.get('rowId');
   return state
-    .updateIn(['sourceRecord'], insertUndefinedAtRow)
-    .updateIn(['targetRecord'], insertUndefinedAtRow)
-    .updateIn(['mergedRecord'], insertUndefinedAtRow)
-    .updateIn(['actions'], insertUndefinedAtRow);
+    .set(rowId, row)
+    .update('index', index => index.insert(rowIndex, rowId));
 
 }
 
-export function removeSubrecordRow(state, rowIndex) {
-  const removeUndefinedAtRow = _.curry(removeUndefined)(rowIndex);
+export function removeSubrecordRow(state, rowId) {
 
-  const {sourceSubrecords, targetSubrecords} = getSubrecordLists(state);
-  if (sourceSubrecords.get(rowIndex) !== undefined || targetSubrecords.get(rowIndex) !== undefined) {
+  if (state.getIn([rowId, 'sourceRecord']) !== undefined || state.getIn([rowId, 'targetRecord']) !== undefined) {
     return state;
   }
- 
+
   return state
-    .updateIn(['sourceRecord'], removeUndefinedAtRow)
-    .updateIn(['targetRecord'], removeUndefinedAtRow)
-    .updateIn(['mergedRecord'], removeUndefinedAtRow)
-    .updateIn(['actions'], removeUndefinedAtRow);
+    .delete(rowId)
+    .update('index', index => {
+      const rowIndex = index.indexOf(rowId);
+      if (rowIndex !== -1) {
+        return index.remove(rowIndex);
+      } else {
+        return index;
+      }
+    });
+}
+
+export function changeSourceSubrecordRow(state, fromRowId, toRowId) {
+
+  if (state.getIn([toRowId, 'sourceRecord']) !== undefined) {
+    return state;
+  }
+
+  return state
+    .setIn([toRowId, 'sourceRecord'], state.getIn([fromRowId, 'sourceRecord']))
+    .setIn([toRowId, 'mergedRecord'], undefined)
+    .setIn([toRowId, 'selectedAction'], undefined)
+    .setIn([fromRowId, 'sourceRecord'], undefined)
+    .setIn([fromRowId, 'mergedRecord'], undefined)
+    .setIn([fromRowId, 'selectedAction'], undefined);
 
 }
 
-export function changeSourceSubrecordRow(state, fromRowIndex, toRowIndex) {
-  const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
-  const resetRows = _.partial(resetListIndices, [fromRowIndex, toRowIndex]);
+export function changeTargetSubrecordRow(state, fromRowId, toRowId) {
 
+  if (state.getIn([toRowId, 'targetRecord']) !== undefined) {
+    return state;
+  }
+  
   return state
-    .updateIn(['sourceRecord'], swapper)
-    .updateIn(['mergedRecord'], resetRows)
-    .updateIn(['actions'], resetRows);
-}
+    .setIn([toRowId, 'targetRecord'], state.getIn([fromRowId, 'targetRecord']))
+    .setIn([toRowId, 'mergedRecord'], undefined)
+    .setIn([toRowId, 'selectedAction'], undefined)
+    .setIn([fromRowId, 'targetRecord'], undefined)
+    .setIn([fromRowId, 'mergedRecord'], undefined)
+    .setIn([fromRowId, 'selectedAction'], undefined);
 
-export function changeTargetSubrecordRow(state, fromRowIndex, toRowIndex) {
-  const swapper = _.partial(swapItems, fromRowIndex, toRowIndex);
-  const resetRows = _.partial(resetListIndices, [fromRowIndex, toRowIndex]);
-
-  return state
-    .updateIn(['targetRecord'], swapper)
-    .updateIn(['mergedRecord'], resetRows)
-    .updateIn(['actions'], resetRows);
 }
 
 export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
-  const changeRow = _.partial(moveRow, fromRowIndex, toRowIndex);
-
-  return state
-    .updateIn(['sourceRecord'], changeRow)
-    .updateIn(['targetRecord'], changeRow)
-    .updateIn(['mergedRecord'], changeRow)
-    .updateIn(['actions'], changeRow);
-}
-
-function resetListIndices(rowIndexArr, list) {
-  return rowIndexArr.reduce((acc, index) => acc.set(index, undefined), list);
-}
-
-function swapItems(fromRowIndex, toRowIndex, list) {
-  const from = list.get(fromRowIndex);
-  const to = list.get(toRowIndex);
-
-  if (from === undefined || to !== undefined) {
-    return list;
-  }
-
-  return list
-    .set(fromRowIndex, to)
-    .set(toRowIndex, from);
-}
-
-export function setSubrecordAction(state, rowIndex, actionType) {
-  return state.updateIn(['actions'], actionList => {
-    return actionList.set(rowIndex, actionType);
+  return state.update('index', index => {
+    return moveRow(fromRowIndex, toRowIndex, index);
   });
 }
 
-export function setMergedSubrecord(state, rowIndex, record) {
-  return state.updateIn(['mergedRecord'], subrecordList => {
-    return subrecordList.set(rowIndex, record);
-  });
+export function setSubrecordAction(state, rowId, actionType) {
+  return state.update(rowId, createEmptyRow(), row => row.set('selectedAction', actionType));
+}
+
+export function setMergedSubrecord(state, rowId, record) {
+  return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record));
 }
 
 export function setMergedSubrecordError(state, rowIndex, error) {
@@ -167,27 +269,10 @@ function moveRow(fromRowIndex, toRowIndex, list) {
     
 }
 
-function getSubrecordLists(state) {
 
-  const sourceSubrecords = state.getIn(['sourceRecord']);
-  const targetSubrecords = state.getIn(['targetRecord']);
-  const mergedSubrecords = state.getIn(['mergedRecord']);
- 
-  return {sourceSubrecords, targetSubrecords, mergedSubrecords};
-   
+let rowIdSeq = 1;
+function createEmptyRow() {
+  return Map({
+    rowId: `row${rowIdSeq++}`
+  });
 }
-
-function insertUndefined(index, arr) {
-  if (index > arr.size) {
-    return arr;
-  }
-  return arr.insert(index, undefined);
-}
-
-function removeUndefined(index, arr) {
-  if (index > arr.size || arr.get(index) !== undefined) {
-    return arr;
-  }
-  return arr.remove(index, 1);
-}
-

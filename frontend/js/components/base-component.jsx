@@ -4,12 +4,12 @@ import { NavBarContainer } from './navbar';
 import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
-import { SubrecordComponent } from './subrecord-component';
+import { SubrecordComponent } from './subrecord/subrecord-component';
 import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
-import { List } from 'immutable';
 import { MergeDialog } from './merge-dialog';
+import { eitherHasSubrecords } from '../selectors/subrecord-selectors';
 
 export class BaseComponent extends React.Component {
 
@@ -85,19 +85,13 @@ export class BaseComponent extends React.Component {
 
 function mapStateToProps(state) {
 
-  const sourceHasSubrecords = state.getIn(['subrecords', 'sourceRecord'], List()).size > 0;
-  const targetHasSubrecords = state.getIn(['subrecords', 'targetRecord'], List()).size > 0;
-
-  const shouldRenderSubrecordComponent = sourceHasSubrecords || targetHasSubrecords;
-
   return {
     sessionState: state.getIn(['session', 'state']),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
     mergeResponse: state.getIn(['mergeStatus', 'response']),
     mergeDialog: state.getIn(['mergeStatus', 'dialog']).toJS(),
-
-    shouldRenderSubrecordComponent
+    shouldRenderSubrecordComponent: eitherHasSubrecords(state)
   };
 }
 

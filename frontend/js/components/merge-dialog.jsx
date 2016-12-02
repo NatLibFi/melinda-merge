@@ -29,6 +29,10 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
+    if (response.name === 'RollbackError') {
+      return <div className="response-container"><div className="red lighten-5">{response.message}</div></div>;
+    }
+
     const triggers = response.triggers.filter(usefulMessage).map(this.renderSingleMessage);
     const warnings = response.warnings.filter(usefulMessage).map(this.renderSingleMessage);
     const errors = response.errors.map(this.renderSingleMessage);
