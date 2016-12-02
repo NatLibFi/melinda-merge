@@ -35,8 +35,11 @@ export const subrecordRows = createSelector(
   }
 );
 
-export const sourceHasSubrecords = createSelector([subrecordRows], (subrecordRows) => _.chain(subrecordRows).map('sourceRecord').compact().value().length > 0);
-export const targetHasSubrecords = createSelector([subrecordRows], (subrecordRows) => _.chain(subrecordRows).map('targetRecord').compact().value().length > 0);
+export const sourceSubrecords = createSelector([subrecordRows], (subrecordRows) => _.chain(subrecordRows).map('sourceRecord').compact().value());
+export const targetSubrecords = createSelector([subrecordRows], (subrecordRows) => _.chain(subrecordRows).map('targetRecord').compact().value());
+
+export const sourceHasSubrecords = createSelector([sourceSubrecords], (sourceSubrecords) => sourceSubrecords.length > 0);
+export const targetHasSubrecords = createSelector([targetSubrecords], (targetSubrecords) => targetSubrecords.length > 0);
 
 export const eitherHasSubrecords = createSelector([sourceHasSubrecords, targetHasSubrecords], (source, target) => {
   return source || target;

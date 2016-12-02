@@ -3,7 +3,7 @@ import MarcRecord from 'marc-record-js';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from '../js/constants';
 import { setSourceRecord, setTargetRecord } from '../js/ui-actions';
-import { setSubrecordAction, setMergedSubrecord, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeSubrecordRow } from '../js/action-creators/subrecord-actions';
+import { setSubrecordAction, setMergedSubrecord, insertSubrecordRow, removeSubrecordRow, changeSourceSubrecordRow, changeSubrecordRow, updateSubrecordArrangement } from '../js/action-creators/subrecord-actions';
 import reducer from '../js/root-reducer';
 import { subrecordRows } from '../js/selectors/subrecord-selectors';
 import _ from 'lodash';
@@ -167,6 +167,8 @@ describe('Subrecord reducer', () => {
       beforeEach(() => {
         state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([ssub1, ssub2], [tsub1, tsub2])));
+
       });
 
       it('sets the action', () => {
@@ -189,6 +191,8 @@ describe('Subrecord reducer', () => {
       beforeEach(() => {
         state = reducer(INITIAL_STATE, setSourceRecord(testRecordObject, [ssub1, ssub2]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([ssub1, ssub2], [tsub1, tsub2])));
+
       });
 
       it('should set merged subrecord at position', () => {
@@ -215,9 +219,11 @@ describe('Subrecord reducer', () => {
         state = undefined;
         state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([ssub1, ssub2], [tsub1, tsub2])));
         state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.BLOCK));
         state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.MERGE));
         state = reducer(state, setMergedSubrecord(rowId(state, 1), msub1));
+
       });
 
       it('inserts empty row in the beginning of subrecords when rowIndex is 0', () => {
@@ -260,6 +266,7 @@ describe('Subrecord reducer', () => {
       beforeEach(() => {
         state = reducer(undefined, setSourceRecord(testRecordObject, [ssub1]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2, tsub3]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([ssub1], [tsub1, tsub2, tsub3])));
       });
 
       it('inserts empty row in the beginning of subrecords when rowIndex is 0', () => {
@@ -304,6 +311,7 @@ describe('Subrecord reducer', () => {
         state = undefined;
         state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, undefined, ssub2, undefined]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [undefined, tsub1, undefined, tsub2, undefined]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([undefined, ssub1, undefined, ssub2, undefined], [undefined, tsub1, undefined, tsub2, undefined])));
         state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.BLOCK));
         state = reducer(state, setSubrecordAction(rowId(state, 3), SubrecordActionTypes.MERGE));
         state = reducer(state, setMergedSubrecord(rowId(state, 3), msub1));
@@ -351,16 +359,19 @@ describe('Subrecord reducer', () => {
       });
       
       it('does not remove rows with target subrecord', () => {
-        state = reducer(state, setSourceRecord(testRecordObject, [ssub1, undefined, undefined, ssub2, undefined]));
+        let sourceSubrecordList = [ssub1, undefined, undefined, ssub2, undefined];
+        let targetSubrecordList = [undefined, tsub1, undefined, tsub2, undefined];
+
+        state = reducer(state, setSourceRecord(testRecordObject, sourceSubrecordList));
+        state = reducer(state, updateSubrecordArrangement(_.zip(sourceSubrecordList, targetSubrecordList)));
+
         state = reducer(state, removeSubrecordRow(rowId(state, 1)));
 
-        const { sourceSubrecords, targetSubrecords, mergedSubrecords, subrecordActions} = subrecords(state);
+        const { sourceSubrecords, targetSubrecords} = subrecords(state);
 
         expect(sourceSubrecords).to.eql([ssub1, undefined, undefined, ssub2, undefined]);
         expect(targetSubrecords).to.eql([undefined, tsub1, undefined, tsub2, undefined]);
-        expect(mergedSubrecords).to.eql([undefined, undefined, undefined, msub1, undefined]);
-        expect(subrecordActions).to.eql([undefined, SubrecordActionTypes.BLOCK, undefined, SubrecordActionTypes.MERGE, undefined]);
-
+     
       });
       
     });
@@ -371,6 +382,8 @@ describe('Subrecord reducer', () => {
         state = undefined;
         state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
         state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, undefined, tsub2]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([undefined, ssub1, ssub2], [tsub1, undefined, tsub2])));
+
         state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.COPY));
         state = reducer(state, setSubrecordAction(rowId(state, 2), SubrecordActionTypes.MERGE));
         state = reducer(state, setMergedSubrecord(rowId(state, 1), ssub1));
@@ -424,7 +437,9 @@ describe('Subrecord reducer', () => {
       beforeEach(() => {
         state = undefined;
         state = reducer(state, setSourceRecord(testRecordObject, [undefined, ssub1, ssub2]));
-        state = reducer(state, setTargetRecord(otherTestRecordObject,    [tsub1, undefined, tsub2]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, undefined, tsub2]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([undefined, ssub1, ssub2], [tsub1, undefined, tsub2])));
+
         state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.COPY));
         state = reducer(state, setSubrecordAction(rowId(state, 2), SubrecordActionTypes.MERGE));
         state = reducer(state, setMergedSubrecord(rowId(state, 1), ssub1));
@@ -512,7 +527,9 @@ describe('Subrecord reducer', () => {
       let state;
       beforeEach(() => {
         state = reducer(state, setSourceRecord(testRecordObject, [ssub1, ssub2]));
-        state = reducer(state, setTargetRecord(otherTestRecordObject,    [tsub1, tsub2, tsub3]));
+        state = reducer(state, setTargetRecord(otherTestRecordObject, [tsub1, tsub2, tsub3]));
+        state = reducer(state, updateSubrecordArrangement(_.zip([ssub1, ssub2], [tsub1, tsub2, tsub3])));
+
         state = reducer(state, setSubrecordAction(rowId(state, 0), SubrecordActionTypes.MERGE));
         state = reducer(state, setSubrecordAction(rowId(state, 1), SubrecordActionTypes.MERGE));
         state = reducer(state, setMergedSubrecord(rowId(state, 0), msub1));

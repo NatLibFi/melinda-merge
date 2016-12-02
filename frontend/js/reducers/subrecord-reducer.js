@@ -7,7 +7,8 @@ import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-ac
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
-  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD } from '../constants/action-type-constants';
+  EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
+  UPDATE_SUBRECORD_ARRANGEMENT } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -45,6 +46,8 @@ export default function subrecords(state = INITIAL_STATE, action) {
       return expandRow(state, action.rowId);
     case COMPRESS_SUBRECORD_ROW:
       return compressRow(state, action.rowId);
+    case UPDATE_SUBRECORD_ARRANGEMENT:
+      return setSubrecordsFromPairs(action.pairs);
 
     case ADD_SOURCE_SUBRECORD_FIELD:
       return addField(state, action.rowId, action.field);
@@ -128,21 +131,31 @@ export function setSourceSubrecords(state, record, subrecords) {
     return state.update(key, row => row.set('sourceRecord', undefined));
   }, state);
 
-  return subrecords.reduce((state, subrecord, i) => {
+  state = pruneEmptyRows(state);
 
-    const key = state.get('index').get(i);
+  return subrecords.reduce((state, subrecord) => {
 
-    if (key === undefined) {
-      const row = createEmptyRow().set('sourceRecord', subrecord);
-      const newRowKey = row.get('rowId');
-      return state
+    const row = createEmptyRow().set('sourceRecord', subrecord);
+    const newRowKey = row.get('rowId');
+    return state
         .set(newRowKey, row)
-        .update('index', index => index.set(i, newRowKey));
-    } else {
-      return state.setIn([key, 'sourceRecord'], subrecord);
-    }
-    
+        .update('index', index => index.push(newRowKey));
+
   }, state);
+}
+
+function pruneEmptyRows(state) {
+  return state.get('index')
+    .map(rowId => state.get(rowId))
+    .filter(row => row.get('targetRecord') === undefined && row.get('sourceRecord') === undefined)
+    .reduce((state, row) => {
+      const rowId = row.get('rowId');
+
+      return state.delete(rowId).update('index', index => {
+        const itemIndex = index.indexOf(rowId);
+        return itemIndex === -1 ? index : index.delete(itemIndex);
+      });
+    }, state);
 }
 
 export function setTargetSubrecords(state, record, subrecords) {
@@ -151,22 +164,31 @@ export function setTargetSubrecords(state, record, subrecords) {
     return state.update(key, row => row.set('targetRecord', undefined));
   }, state);
 
-  return subrecords.reduce((state, subrecord, i) => {
+  state = pruneEmptyRows(state);
 
-    const key = state.get('index').get(i);
+  return subrecords.reduce((state, subrecord) => {
 
-    if (key === undefined) {
-      const row = createEmptyRow().set('targetRecord', subrecord);
-      const newRowKey = row.get('rowId');
-      return state
+    const row = createEmptyRow().set('targetRecord', subrecord);
+    const newRowKey = row.get('rowId');
+    return state
         .set(newRowKey, row)
-        .update('index', index => index.set(i, newRowKey));
-    } else {
-      return state.setIn([key, 'targetRecord'], subrecord);
-    }
-    
+        .update('index', index => index.push(newRowKey));
+
   }, state);
 
+}
+
+function setSubrecordsFromPairs(pairs) {
+  return pairs.reduce((state, pair) => {
+    const row = createEmptyRow()
+      .set('sourceRecord', pair[0])
+      .set('targetRecord', pair[1]);
+    const rowId = row.get('rowId');
+    return state
+      .set(rowId, row)
+      .update('index', index => index.push(rowId));
+
+  }, INITIAL_STATE);
 }
 
 export function resetMergedSubrecordsActions(state) {

@@ -11,7 +11,9 @@ import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
 import uuid from 'node-uuid';
-import { subrecordRows } from './selectors/subrecord-selectors';
+import { subrecordRows, sourceSubrecords, targetSubrecords } from './selectors/subrecord-selectors';
+import { updateSubrecordArrangement } from './action-creators/subrecord-actions';
+import { match } from './component-record-match-service';
 
 export function commitMerge() {
 
@@ -269,6 +271,14 @@ export function updateMergedRecord() {
         .catch(error => {
           dispatch(setMergedRecordError(error.message));
         }).done();
+
+
+      // find pairs for subrecods
+      const sourceSubrecordList = sourceSubrecords(getState());
+      const targetSubrecordList = targetSubrecords(getState());
+
+      const matchedSubrecordPairs = match(sourceSubrecordList, targetSubrecordList);
+      dispatch(updateSubrecordArrangement(matchedSubrecordPairs));
 
     }
   };
