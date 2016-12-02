@@ -45,8 +45,10 @@ export class SubRecordPanel extends React.Component {
 function toOnlySubfields(tag, subfieldCodes) {
   return function(field) {
     if (field.tag === tag) { 
-      field.subfields = field.subfields.filter(s => _.includes(subfieldCodes, s.code));
+      const subfields = field.subfields.filter(s => _.includes(subfieldCodes, s.code));
+      return _.assign({}, field, {subfields});
     }
     return field;
+    
   };
 }
