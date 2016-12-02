@@ -30,7 +30,7 @@ const [command, arg] = argv._;
 if (command === 'get') {
   const recordId = arg;
 
-  client.loadRecord(recordId).then(record => {
+  client.loadRecord(recordId, {handle_deleted: 1, bypass_low_validation: 1}).then(record => {
     console.log(record.toString());
   }).catch(error => {
     console.error(error);
