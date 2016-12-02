@@ -65,6 +65,8 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
           return res.sendStatus(404);
         }
 
+        // TODO: reorder subrecords into same order with mergedRecord.subrecords
+
         const response = _.extend({}, mergedMainRecordResult, {
           record, 
           subrecords

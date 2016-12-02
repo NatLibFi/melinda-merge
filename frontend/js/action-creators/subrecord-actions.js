@@ -69,6 +69,7 @@ export function updateMergedSubrecord(rowId) {
       }
       
       const recordToCopy = preferredRecord || otherRecord;
+      // TODO: modify copy record. Remove 001
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }
