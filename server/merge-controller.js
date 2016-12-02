@@ -22,40 +22,18 @@ const defaultConfig = {
   password: ''
 };
 
-logger.log('info', `marc-io-controller endpoint: ${defaultConfig.endpoint}`);
+logger.log('info', `merge-controller endpoint: ${defaultConfig.endpoint}`);
 
-export const marcIOController = express();
+export const mergeController = express();
 
-marcIOController.use(cookieParser());
-marcIOController.use(bodyParser.json({limit: '5mb'}));
-marcIOController.use(readSessionMiddleware);
-marcIOController.set('etag', false);
+mergeController.use(cookieParser());
+mergeController.use(bodyParser.json({limit: '5mb'}));
+mergeController.use(readSessionMiddleware);
+mergeController.set('etag', false);
 
-marcIOController.options('/commit-merge', cors(corsOptions)); // enable pre-flight
+mergeController.options('/commit-merge', cors(corsOptions)); // enable pre-flight
 
-
-marcIOController.get('/:id', cors(corsOptions), (req, res) => {
-
-  const client = new MelindaClient(defaultConfig);
-
-  logger.log('debug', `Loading record ${req.params.id}`);
-
-  loadRecord(client, req.params.id).then(({record, subrecords}) => {
-
-    if (record.fields.length === 0) {
-      logger.log('debug', `Record ${req.params.id} appears to be empty record.`);
-      return res.sendStatus(404);
-    }
-    res.send({ record, subrecords });
-
-  }).catch(error => {
-    logger.log('error', `Error loading record ${req.params.id}`, error);
-    res.sendStatus(500);
-  });
-
-});
-
-marcIOController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord'), (req, res) => {
+mergeController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord'), (req, res) => {
   
   const {username, password} = req.session;
 
