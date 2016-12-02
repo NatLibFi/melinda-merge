@@ -15,7 +15,9 @@ export class SubRecordPanel extends React.Component {
   render() {
     const { record, isDragging } = this.props;
     const selectedFields = record.fields
-      .filter(f => _.includes(['245', '336'], f.tag));
+      .filter(f => _.includes(['245', '336', '773'], f.tag))
+      .map(toOnlySubfields('773', ['g','q']))
+      .filter(f => f.subfields.length !== 0);
 
     const classes = classNames({
       'is-dragging': isDragging,
@@ -38,4 +40,15 @@ export class SubRecordPanel extends React.Component {
       </div>
     );
   }
+}
+
+function toOnlySubfields(tag, subfieldCodes) {
+  return function(field) {
+    if (field.tag === tag) { 
+      const subfields = field.subfields.filter(s => _.includes(subfieldCodes, s.code));
+      return _.assign({}, field, {subfields});
+    }
+    return field;
+    
+  };
 }
