@@ -1,5 +1,5 @@
 /* eslint no-console:0 */
-import { readEnvironmentVariable } from '../server/utils';
+import { readEnvironmentVariable } from '../melinda-ui-commons/server/utils';
 import MelindaClient from 'melinda-api-client';
 import _ from 'lodash';
 import { stdin } from 'process';
@@ -41,7 +41,7 @@ if (command === 'get') {
 if (command === 'create') {
 
   readRecordFromStdin()
-    .then(record => client.createRecord(record))
+    .then(record => client.createRecord(record, {handle_deleted: 1, bypass_low_validation: 1}))
     .then(printResponse)
     .catch(printError);
 
@@ -78,7 +78,7 @@ if (command === 'create-family') {
 if (command === 'update') {
 
   readRecordFromStdin()
-    .then(record => client.updateRecord(record))
+    .then(record => client.updateRecord(record, {handle_deleted: 1, bypass_low_validation: 1}))
     .then(printResponse)
     .catch(printError);
 
@@ -91,12 +91,12 @@ if (command === 'set') {
       const updateRecordChangeMetadata = _.curry(setRecordChangeMetadata)(record);
 
       const recordId = getRecordId(record);
-      return client.loadRecord(recordId, {handle_deleted: 1})
+      return client.loadRecord(recordId, {handle_deleted: 1, bypass_low_validation: 1})
         .then(getRecordChangeMetadata)
         .then(updateRecordChangeMetadata);
 
     })
-    .then(record => client.updateRecord(record))
+    .then(record => client.updateRecord(record, {handle_deleted: 1}))
     .then(printResponse)
     .catch(printError);
 
@@ -186,7 +186,6 @@ function strToRecord(str) {
 }
 
 function printResponse(response) {
-  console.log(response);
 
   console.log('Messages:');
   response.messages.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
