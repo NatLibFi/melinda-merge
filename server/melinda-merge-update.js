@@ -15,6 +15,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return Promise.reject(idValidation.error);
   }
 
+  logger.log('info', `${jobId}] Commit merge job ${jobId} started.`);
   logger.log('info', `${jobId}] Removing records ${preferredId.record} [${preferredId.subrecords.join()}], ${otherId.record} [${otherId.subrecords.join()}] and creating new ones.`);
 
   return createRecord(mergedRecord.record).then(res => {
