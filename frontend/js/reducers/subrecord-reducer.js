@@ -8,7 +8,7 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -34,6 +34,8 @@ export default function subrecords(state = INITIAL_STATE, action) {
       return setMergedSubrecord(state, action.rowId, action.record);
     case SET_MERGED_SUBRECORD_ERROR:
       return setMergedSubrecordError(state, action.rowId, action.error);
+    case EDIT_MERGED_SUBRECORD:
+      return setMergedSubrecord(state, action.rowId, action.record);
 
     case SET_SOURCE_RECORD:
       return setSourceSubrecords(state, action.record, action.subrecords || []);

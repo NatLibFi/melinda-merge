@@ -1,5 +1,5 @@
 import React from 'react';
-import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection } from '../../action-creators/subrecord-actions';
+import { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection, editMergedSubrecord } from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { DragDropContext } from 'react-dnd';
@@ -23,7 +23,8 @@ export class SubrecordMergePanel extends React.Component {
     changeSubrecordRow: React.PropTypes.func.isRequired,
     expandSubrecordRow: React.PropTypes.func.isRequired,
     compressSubrecordRow: React.PropTypes.func.isRequired,
-    toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired
+    editMergedSubrecord: React.PropTypes.func.isRequired,
+    toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired,
   }
 
   constructor(props) {
@@ -58,6 +59,7 @@ export class SubrecordMergePanel extends React.Component {
         onRemoveRow={this.onRemoveRow}
         onSourceFieldClick={this.handleFieldClick.bind(this)}
         onMergedFieldClick={this.handleMergedFieldClick.bind(this)}
+        onMergedRecordUpdate={this.props.editMergedSubrecord}
         mergeError={mergeError}
       />);
     });
@@ -146,6 +148,6 @@ export const DraggableSubrecordMergePanelContainer = compose(
 
   connect(
     mapStateToProps,
-    { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection }
+    { insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, compressSubrecordRow, toggleSourceSubrecordFieldSelection, editMergedSubrecord }
   )
 )(SubrecordMergePanel);

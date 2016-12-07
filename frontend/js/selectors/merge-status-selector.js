@@ -1,9 +1,10 @@
 import _ from 'lodash';
 import { createSelector } from 'reselect';
 import { subrecordRows } from './subrecord-selectors';
+import { CommitMergeStates } from '../constants';
 
 const mergedRecordState = state => state.getIn(['mergedRecord', 'state']);
-const commitMergeStatus = state => state.getIn(['mergeStatus', 'status']) || 'COMMIT_MERGE_AVAILABLE';
+const commitMergeStatus = state => state.getIn(['mergeStatus', 'status']) || CommitMergeStates.COMMIT_MERGE_NOT_STARTED;
 
 const allSubrecordActionsAreDefined = createSelector([subrecordRows], (subrecordRows) => {
 
@@ -19,7 +20,9 @@ export const mergeButtonEnabled = createSelector(
   [mergedRecordState, commitMergeStatus, allSubrecordActionsAreDefined], 
   (mergedRecordState, commitMergeStatus, allSubrecordActionsAreDefined) => {
 
-    const mergeAvailable = !_.includes(['COMMIT_MERGE_ONGOING'], commitMergeStatus);
+    const disablingCommitMergeStates = [CommitMergeStates.COMMIT_MERGE_ONGOING, CommitMergeStates.COMMIT_MERGE_COMPLETE];
+
+    const mergeAvailable = !_.includes(disablingCommitMergeStates, commitMergeStatus);
     return (mergedRecordState === 'LOADED' && mergeAvailable && allSubrecordActionsAreDefined);
   }
 );

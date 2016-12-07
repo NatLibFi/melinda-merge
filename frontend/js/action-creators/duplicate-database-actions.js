@@ -1,5 +1,6 @@
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
+import _ from 'lodash';
 
 import { fetchRecord, resetWorkspace } from '../ui-actions';
 
@@ -206,6 +207,9 @@ export function markAsMerged() {
     const preferredRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
     const otherRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'otherRecordId']);
 
+    const mergeResponse = getState().getIn(['mergeStatus', 'response']);
+    const mergedRecordId = _.get(mergeResponse, 'recordId');
+
     if (id === undefined) {
       return;
     }
@@ -216,7 +220,8 @@ export function markAsMerged() {
       method: 'PUT',
       body: JSON.stringify({ 
         preferredRecordId: preferredRecordId,
-        otherRecordId: otherRecordId
+        otherRecordId: otherRecordId,
+        mergedRecordId: mergedRecordId
       }),
       headers: new Headers({
         'Content-Type': 'application/json'

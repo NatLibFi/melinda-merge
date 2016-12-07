@@ -1,7 +1,7 @@
 import { Map } from 'immutable'; 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import { CommitMergeStates } from '../constants';
-import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS, CLOSE_MERGE_DIALOG } from '../ui-actions';
+import {COMMIT_MERGE_START, COMMIT_MERGE_ERROR, COMMIT_MERGE_SUCCESS, CLOSE_MERGE_DIALOG, SET_TARGET_RECORD, SET_SOURCE_RECORD } from '../ui-actions';
 
 const INITIAL_STATE = Map({
   dialog: Map({
@@ -25,6 +25,8 @@ export default function mergeStatus(state = INITIAL_STATE, action) {
       return enableCloseDialog(state, true);
     case CLOSE_MERGE_DIALOG:
       return showDialog(state, false);
+    case SET_TARGET_RECORD:
+    case SET_SOURCE_RECORD:
     case RESET_WORKSPACE:
       return INITIAL_STATE;
   }

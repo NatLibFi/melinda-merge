@@ -1,29 +1,35 @@
 import React from 'react';
 import classNames from 'classnames';
 import '../../../styles/components/subrecord-panel';
-import { MarcRecordPanel } from '../marc-record-panel';
+import { MarcRecordPanel } from 'commons/components/marc-record-panel';
 import _ from 'lodash';
+import { RecordPanel } from 'commons/components/record-panel';
 
 export class SubRecordPanel extends React.Component {
 
   static propTypes = {
     record: React.PropTypes.object.isRequired,
     type: React.PropTypes.string.isRequired,
+    title: React.PropTypes.string,
     isDragging: React.PropTypes.bool,
+    showHeader: React.PropTypes.bool,
+    editable: React.PropTypes.bool,
     isExpanded: React.PropTypes.bool,
     onFieldClick: React.PropTypes.func,
+    onRecordUpdate: React.PropTypes.func,
   }
 
   render() {
     const { record, isDragging, isExpanded } = this.props;
 
-
     const selectedFields = record.fields
-      .filter(f => _.includes(['245', '336'], f.tag));
+      .filter(f => _.includes(['245', '336', '773'], f.tag))
+      .map(toOnlySubfields('773', ['g','q']))
+      .filter(f => f.subfields.length !== 0);
 
     const classes = classNames({
       'is-dragging': isDragging,
-      'card-panel': true,
+      'card': true,
       'darken-1': true,
       'marc-record': true,
       'marc-record-subrecord': true,
@@ -38,10 +44,40 @@ export class SubRecordPanel extends React.Component {
 
     const res = isExpanded ? record : trimmedRecord;
 
-    return (
-      <div className={classes}>
-        <MarcRecordPanel record={res} onFieldClick={this.props.onFieldClick} />
-      </div>
-    );
+    if (isExpanded) {
+      return (
+        <div className={classes}>
+          <RecordPanel 
+            showHeader={this.props.showHeader}
+            editable={this.props.editable}
+            title={this.props.title}
+            record={record} 
+            onFieldClick={this.props.onFieldClick}
+            onRecordUpdate={(record) => this.props.onRecordUpdate(record)}
+          />
+        </div>
+      );
+    } else {
+
+      return (
+        <div className={classes}>
+          <div className="card-content">
+            <MarcRecordPanel record={res} onFieldClick={this.props.onFieldClick} />
+          </div>
+        </div>
+      );      
+    }
+
   }
+}
+
+function toOnlySubfields(tag, subfieldCodes) {
+  return function(field) {
+    if (field.tag === tag) { 
+      const subfields = field.subfields.filter(s => _.includes(subfieldCodes, s.code));
+      return _.assign({}, field, {subfields});
+    }
+    return field;
+    
+  };
 }

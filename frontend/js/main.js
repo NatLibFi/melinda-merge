@@ -11,6 +11,7 @@ import {Router, Route, hashHistory} from 'react-router';
 import App from './components/app';
 import * as Cookies from 'js-cookie';
 import { validateSession } from 'commons/action-creators/session-actions';
+import { initKeyboardListener } from './keyboard-commands';
 
 const loggerMiddleware = createLogger();
 
@@ -45,3 +46,5 @@ ReactDOM.render(
 const sessionToken = Cookies.get('sessionToken');
 
 store.dispatch(validateSession(sessionToken));
+
+initKeyboardListener(document, store);

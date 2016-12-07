@@ -19,7 +19,7 @@ import * as PostMerge from './marc-record-merge-postmerge-service';
 
 export function commitMerge() {
 
-  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/merge': '/merge';
 
   return function(dispatch, getState) {
     dispatch(commitMergeStart());
@@ -62,7 +62,12 @@ export function commitMerge() {
           if (response.status == HttpStatus.OK) {
 
             const newMergedRecordId = res.recordId;
+
+            const { record } = res; // should handle subrecords also
+
             dispatch(commitMergeSuccess(newMergedRecordId, res));
+            dispatch(saveRecordSuccess(record));
+            
             dispatch(markAsMerged());
          
 
@@ -160,6 +165,12 @@ export function locationDidChange(location) {
       }
     }
   };
+}
+
+export const SAVE_RECORD_SUCCESS = 'SAVE_RECORD_SUCCESS';
+
+export function saveRecordSuccess(record) {
+  return { type: SAVE_RECORD_SUCCESS, record};
 }
 
 export const SET_LOCATION = 'SET_LOCATION';
@@ -291,16 +302,20 @@ export function updateMergedRecord() {
   };
 }
 
-
-//import * as MergeValidation from './marc-record-merge-validate-service';
-//import * as PostMerge from './marc-record-merge-postmerge-service';
-
-
 export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';
 
 export function setMergedRecord(record) {
   return {
     'type': SET_MERGED_RECORD,
+    'record': record
+  };
+}
+
+export const EDIT_MERGED_RECORD = 'EDIT_MERGED_RECORD';
+
+export function editMergedRecord(record) {
+  return {
+    'type': EDIT_MERGED_RECORD,
     'record': record
   };
 }

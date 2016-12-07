@@ -177,6 +177,10 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, original
       });
 
       if (field.subfields.length == 0) {
+
+        markFieldAsUnused(otherRecord, field.uuid);
+        markFieldAsUnused(preferredRecord, field.uuid);
+
         return fields;
       }
     }
@@ -188,6 +192,7 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, original
     mergedRecord
   };
 }
+
 
 export function setAllZeroRecordId(preferredRecord, otherRecord, originalMergedRecord) {
   const mergedRecord = new MarcRecord(originalMergedRecord);
@@ -285,7 +290,9 @@ function markAsPostmergeField(field) {
 function createField(fieldContent) {
   return _.assign({}, {
     uuid: uuid.v4(),
-    fromPostmerge: true
+    fromPostmerge: true,
+    ind1: ' ',
+    ind2: ' '
   }, fieldContent);
 }
 
@@ -329,4 +336,13 @@ function selectRecordId(record) {
 
 function formatDate(date) {
   return moment(date).format('YYYY-MM-DDTHH:mm:ssZ');
+}
+
+function markFieldAsUnused(record, fieldUuid) {
+  record.fields
+    .filter(field => field.uuid === fieldUuid)
+    .forEach(field => {
+      delete(field.wasUsed);
+      delete(field.fromOther);
+    });
 }
