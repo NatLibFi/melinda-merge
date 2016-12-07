@@ -44,3 +44,7 @@ export const targetHasSubrecords = createSelector([targetSubrecords], (targetSub
 export const eitherHasSubrecords = createSelector([sourceHasSubrecords, targetHasSubrecords], (source, target) => {
   return source || target;
 });
+
+export const rowsWithResultRecord = createSelector([subrecordRows], (subrecordRows) => {
+  return subrecordRows.filter(row => row.mergedRecord !== undefined);
+});

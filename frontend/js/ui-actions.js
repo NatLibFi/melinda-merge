@@ -10,8 +10,8 @@ import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
 import uuid from 'node-uuid';
-import { subrecordRows, sourceSubrecords, targetSubrecords } from './selectors/subrecord-selectors';
-import { updateSubrecordArrangement } from './action-creators/subrecord-actions';
+import { subrecordRows, sourceSubrecords, targetSubrecords, rowsWithResultRecord } from './selectors/subrecord-selectors';
+import { updateSubrecordArrangement, saveSubrecordSuccess } from './action-creators/subrecord-actions';
 import { match } from './component-record-match-service';
 
 import * as MergeValidation from './marc-record-merge-validate-service';
@@ -63,10 +63,17 @@ export function commitMerge() {
 
             const newMergedRecordId = res.recordId;
 
-            const { record } = res; // should handle subrecords also
+            const { record, subrecords } = res;
 
             dispatch(commitMergeSuccess(newMergedRecordId, res));
             dispatch(saveRecordSuccess(record));
+
+            // subrecords            
+            const rowIds = rowsWithResultRecord(getState()).map(row => row.rowId);
+            _.zip(rowIds, subrecords).forEach(([rowId, subrecord]) => {
+              dispatch(saveSubrecordSuccess(rowId, subrecord));
+            });
+
             
             dispatch(markAsMerged());
          
