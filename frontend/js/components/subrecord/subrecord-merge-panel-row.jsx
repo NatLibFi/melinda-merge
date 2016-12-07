@@ -6,6 +6,7 @@ import { DraggableSubRecordPanel } from './draggable-subrecord-panel';
 import { SubRecordPanel } from './subrecord-panel';
 import { SubrecordActionButtonContainer } from './subrecord-action-button';
 import { DropTarget, DragSource } from 'react-dnd';
+import { MergeValidationErrorMessagePanel } from '../merge-validation-error-message-panel';
 
 import '../../../styles/components/subrecord-merge-panel-row.scss';
 
@@ -27,7 +28,8 @@ export class SubrecordMergePanelRow extends React.Component {
     connectDropTarget: React.PropTypes.func.isRequired,
     onSourceFieldClick: React.PropTypes.func,
     onMergedFieldClick: React.PropTypes.func,
-    isOver: React.PropTypes.bool.isRequired
+    isOver: React.PropTypes.bool.isRequired,
+    mergeError: React.PropTypes.instanceOf(Error)
   }
 
   handleSourceFieldClick(field) {
@@ -53,19 +55,27 @@ export class SubrecordMergePanelRow extends React.Component {
     }
   }
 
-  renderMergedSubrecordPanel(mergedSubrecord, rowId, isExpanded, opts) {
+  renderMergedSubrecordPanel(mergedSubrecord, rowId, isExpanded, mergeError, opts) {
+    if (mergeError) {
+      return (
+        <div className="fill-height">
+          <SubrecordActionButtonContainer rowId={rowId} {...opts} />
+          <MergeValidationErrorMessagePanel error={mergeError} />
+        </div>
+      );
+    }
     if (mergedSubrecord) {
       return (
         <div className="fill-height">
           <SubrecordActionButtonContainer rowId={rowId} {...opts} />
-          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" onFieldClick={this.handleMergedFieldClick.bind(this)} />
+          <SubRecordPanel isExpanded={isExpanded} record={mergedSubrecord} type="MERGED" onFieldClick={this.handleMergedFieldClick.bind(this)} error={mergeError} />
         </div>
       );
     } else {
       return (<SubrecordActionButtonContainer rowId={rowId} {...opts} />);
     }
   }
-
+ 
   renderRemoveRowButton(rowId) {
     return (
       <button onClick={() => this.props.onRemoveRow(rowId)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">
@@ -100,7 +110,7 @@ export class SubrecordMergePanelRow extends React.Component {
   }
 
   render() {
-    const {rowId, sourceRecord, targetRecord, mergedRecord, selectedAction, connectDragSource, connectDropTarget, isOver, isExpanded} = this.props;
+    const {rowId, sourceRecord, targetRecord, mergedRecord, selectedAction, connectDragSource, connectDropTarget, isOver, isExpanded, mergeError} = this.props;
     
     const isEmptyRow = sourceRecord === undefined && targetRecord === undefined;
     const isMergeActionAvailable = sourceRecord !== undefined && targetRecord !== undefined;
@@ -124,7 +134,7 @@ export class SubrecordMergePanelRow extends React.Component {
           {this.renderSubrecordPanel(targetRecord, ItemTypes.TARGET_SUBRECORD, rowId, isExpanded)}
         </td>
         <td>
-         { isEmptyRow ? this.renderRemoveRowButton(rowId) : this.renderMergedSubrecordPanel(mergedRecord, rowId, isExpanded, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
+         { isEmptyRow ? this.renderRemoveRowButton(rowId) : this.renderMergedSubrecordPanel(mergedRecord, rowId, isExpanded, mergeError, {isMergeActionAvailable, isCopyActionAvailable, selectedAction}) }
          { this.renderExpandToggleButton(rowId, isEmptyRow, isExpanded) }
         </td>
       </tr>

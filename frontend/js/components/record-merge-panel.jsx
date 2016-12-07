@@ -5,19 +5,20 @@ import {connect} from 'react-redux';
 import '../../styles/components/record-merge-panel.scss';
 import { Preloader } from 'commons/components/preloader';
 import { ErrorMessagePanel } from './error-message-panel';
+import { MergeValidationErrorMessagePanel} from './merge-validation-error-message-panel';
 import { isControlField } from '../utils';
 
 export class RecordMergePanel extends React.Component {
 
   static propTypes = {
     mergedRecord: React.PropTypes.object,
-    mergedRecordError: React.PropTypes.string,
+    mergedRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
     mergedRecordState: React.PropTypes.string.isRequired,
     sourceRecord: React.PropTypes.object,
-    sourceRecordError: React.PropTypes.string,
+    sourceRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
     sourceRecordState: React.PropTypes.string.isRequired,
     targetRecord: React.PropTypes.object,
-    targetRecordError: React.PropTypes.string,
+    targetRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
     targetRecordState: React.PropTypes.string.isRequired,
 
     toggleSourceRecordFieldSelection: React.PropTypes.func.isRequired
@@ -52,39 +53,47 @@ export class RecordMergePanel extends React.Component {
 
   getContent(recordState, type) {
     if (recordState === 'LOADING') {
-      return <Preloader />;
+      return <div className="card-content"><Preloader /></div>;
     }
 
     if (recordState === 'LOADED') {
 
       if (type === 'SOURCE') {
         return (
-          <MarcRecordPanel
-            record={this.getRecord(type)} 
-            onFieldClick={(field) => this.toggleSourceRecordField(field)}
-          />
+          <div className="card-content">
+            <MarcRecordPanel
+              record={this.getRecord(type)} 
+              onFieldClick={(field) => this.toggleSourceRecordField(field)}
+            />
+          </div>
         );
       } else if(type === 'MERGED') {
         return (
-          <MarcRecordPanel 
-            record={this.getRecord(type)} 
-            onFieldClick={(field) => this.toggleMergedRecordField(field)}
-          />
+          <div className="card-content">
+            <MarcRecordPanel 
+              record={this.getRecord(type)} 
+              onFieldClick={(field) => this.toggleMergedRecordField(field)}
+            />
+          </div>
         );
       } else {
         return (
-          <MarcRecordPanel 
-            record={this.getRecord(type)} 
-          />
+          <div className="card-content">
+            <MarcRecordPanel 
+              record={this.getRecord(type)} 
+            />
+          </div>
         );
       }
       
-     
-    
     }
 
     if (recordState === 'ERROR') {
-      return <ErrorMessagePanel message={this.getErrorMessage(type)} />;
+      if (type === 'MERGED') {
+        return <MergeValidationErrorMessagePanel error={this.getErrorMessage(type)} />;
+      } else {
+        return <ErrorMessagePanel message={this.getErrorMessage(type)} />;
+      }
     }
     // empty
     return '';
@@ -95,17 +104,17 @@ export class RecordMergePanel extends React.Component {
     return (
       <div className="row record-merge-panel">
         <div className="col s4">
-          <div className="card-panel darken-1 marc-record marc-record-source">
+          <div className="card darken-1 marc-record marc-record-source">
             {this.getContent(this.props.sourceRecordState, 'SOURCE')}
           </div>
         </div>
         <div className="col s4">
-          <div className="card-panel darken-1 marc-record marc-record-target">
+          <div className="card darken-1 marc-record marc-record-target">
             {this.getContent(this.props.targetRecordState, 'TARGET')}
           </div>
         </div>
         <div className="col s4">
-          <div className="card-panel darken-1 marc-record marc-record-merged">
+          <div className="card darken-1 marc-record marc-record-merged">
             {this.getContent(this.props.mergedRecordState, 'MERGED')}
           </div>
         </div>

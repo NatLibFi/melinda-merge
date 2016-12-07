@@ -41,7 +41,7 @@ export class SubrecordMergePanel extends React.Component {
 
     const items = subrecordOrder.map((rowId, i) => {
       
-      const {sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded} = subrecords[rowId];
+      const {sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded, mergeError} = subrecords[rowId];
 
       return (<DragDropSubrecordMergePanelRow
         key={rowId}
@@ -58,6 +58,7 @@ export class SubrecordMergePanel extends React.Component {
         onRemoveRow={this.onRemoveRow}
         onSourceFieldClick={this.handleFieldClick.bind(this)}
         onMergedFieldClick={this.handleMergedFieldClick.bind(this)}
+        mergeError={mergeError}
       />);
     });
 

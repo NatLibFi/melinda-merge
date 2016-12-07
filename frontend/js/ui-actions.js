@@ -2,7 +2,6 @@ import fetch from 'isomorphic-fetch';
 import MARCRecord from 'marc-record-js';
 import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
-import MarcRecordMergeMelindaUtils from './vendor/marc-record-merge-melindautils';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
@@ -14,6 +13,9 @@ import uuid from 'node-uuid';
 import { subrecordRows, sourceSubrecords, targetSubrecords } from './selectors/subrecord-selectors';
 import { updateSubrecordArrangement } from './action-creators/subrecord-actions';
 import { match } from './component-record-match-service';
+
+import * as MergeValidation from './marc-record-merge-validate-service';
+import * as PostMerge from './marc-record-merge-postmerge-service';
 
 export function commitMerge() {
 
@@ -261,16 +263,21 @@ export function updateMergedRecord() {
     const otherRecord = getState().getIn(['sourceRecord', 'record']);
     
     if (preferredRecord && otherRecord) {
-      const mergeChecks = new MarcRecordMergeMelindaUtils();
+
+      const validationRules = MergeValidation.preset.melinda_host;
+      const postMergeFixes = PostMerge.preset.defaults;
+
       const merge = createRecordMerger(mergeConfiguration);
 
-      mergeChecks.canMerge(preferredRecord, otherRecord)
+      MergeValidation.validateMergeCandidates(validationRules, preferredRecord, otherRecord)
         .then(() => merge(preferredRecord, otherRecord))
-        .then(mergedRecord => mergeChecks.applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord))
-        .then(mergedRecord => dispatch(setMergedRecord(mergedRecord)))
-        .catch(error => {
-          dispatch(setMergedRecordError(error.message));
-        }).done();
+        .then(mergedRecord => PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, otherRecord, mergedRecord))
+        .then(result => {
+          dispatch(setMergedRecord(result.record));
+        })
+        .catch(exceptCoreErrors(error => {
+          dispatch(setMergedRecordError(error));
+        }));
 
 
       // find pairs for subrecods
@@ -284,6 +291,9 @@ export function updateMergedRecord() {
   };
 }
 
+
+//import * as MergeValidation from './marc-record-merge-validate-service';
+//import * as PostMerge from './marc-record-merge-postmerge-service';
 
 
 export const SET_MERGED_RECORD = 'SET_MERGED_RECORD';

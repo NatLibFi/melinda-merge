@@ -7,7 +7,8 @@ import {
 import { SubrecordActionTypes } from '../constants';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
-import MarcRecordMergeMelindaUtils from '../vendor/marc-record-merge-melindautils';
+import * as MergeValidation from '../marc-record-merge-validate-service';
+import * as PostMerge from '../marc-record-merge-postmerge-service';
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -79,22 +80,21 @@ export function updateMergedSubrecord(rowId) {
     if (selectedActionType === SubrecordActionTypes.MERGE) {
       if (preferredRecord && otherRecord) {
 
-        const mergeChecks = new MarcRecordMergeMelindaUtils();
-        const merge = createRecordMerger(mergeConfiguration);
-        
-        try {
-          const mergedRecord = merge(preferredRecord, otherRecord);
 
-          mergeChecks.applyPostMergeModifications(preferredRecord, otherRecord, mergedRecord).then(fixedMergedRecord => {
+        const componentRecordValidationRules = MergeValidation.preset.melinda_component;
+        const postMergeFixes = PostMerge.preset.defaults;
+
+        const merge = createRecordMerger(mergeConfiguration);
+
+        MergeValidation.validateMergeCandidates(componentRecordValidationRules, preferredRecord, otherRecord)
+          .then(() => merge(preferredRecord, otherRecord))
+          .then(mergedRecord => PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, otherRecord, mergedRecord))
+          .then(result => {
+            const fixedMergedRecord = result.record;
             dispatch(setMergedSubrecord(rowId, fixedMergedRecord));
           }).catch(error => {
             dispatch(setMergedSubrecordError(rowId, error));
           });
-
-        } catch(e) {
-          dispatch(setMergedSubrecordError(rowId, e));
-        }
-        
 
       } else {
         dispatch(setMergedSubrecordError(rowId, new Error('Cannot merge undefined records')));
