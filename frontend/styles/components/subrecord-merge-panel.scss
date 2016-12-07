@@ -84,14 +84,11 @@
     transition: background-color 150ms ease-in;
     transition-delay: 0ms;
     z-index: 1;
-    &:hover {
+    &:hover:not(.disabled) {
       transition-delay: 300ms;
+      cursor: pointer;
+      background-color: rgba(200,230,201,0.5);
     }
-  }
-
-  .add-new-row:hover {
-    cursor: pointer;
-    background-color: rgba(200,230,201,0.5);
   }
 
   .add-new-row td {
@@ -110,6 +107,9 @@
     left: -18px;
     padding-bottom: 2px;
     height: 0px;
+    display: flex;
+    align-items: center;
+    z-index: 1;
 
     &.fixed-action-btn > ul.open-left {
       bottom: auto;

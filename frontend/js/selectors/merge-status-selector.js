@@ -26,3 +26,7 @@ export const mergeButtonEnabled = createSelector(
     return (mergedRecordState === 'LOADED' && mergeAvailable && allSubrecordActionsAreDefined);
   }
 );
+
+export const subrecordActionsEnabled = createSelector([commitMergeStatus], (commitMergeStatus) => {
+  return commitMergeStatus !== CommitMergeStates.COMMIT_MERGE_COMPLETE;
+});
