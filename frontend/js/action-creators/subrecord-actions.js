@@ -99,6 +99,10 @@ export function updateMergedSubrecord(rowId) {
       return dispatch(setMergedSubrecord(rowId, undefined));
     }
 
+    if (selectedActionType === SubrecordActionTypes.UNSET || selectedActionType === undefined) {
+      return dispatch(setMergedSubrecord(rowId, undefined));
+    }
+
     if (selectedActionType === SubrecordActionTypes.MERGE) {
       if (preferredRecord && otherRecord) {
 
@@ -122,6 +126,7 @@ export function updateMergedSubrecord(rowId) {
         dispatch(setMergedSubrecordError(rowId, new Error('Cannot merge undefined records')));
       }
     }
+
 
   };
 }
