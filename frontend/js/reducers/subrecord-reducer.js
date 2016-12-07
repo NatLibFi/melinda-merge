@@ -9,7 +9,7 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_SUCCESS } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -56,6 +56,9 @@ export default function subrecords(state = INITIAL_STATE, action) {
       return addField(state, action.rowId, action.field);
     case REMOVE_SOURCE_SUBRECORD_FIELD:
       return removeField(state, action.rowId, action.field);
+
+    case SAVE_SUBRECORD_SUCCESS:
+      return handleSubrecordSaveSuccess(state, action.rowId, action.record);
 
     case RESET_WORKSPACE:
       return INITIAL_STATE;
@@ -280,6 +283,10 @@ export function setSubrecordAction(state, rowId, actionType) {
 
 export function setMergedSubrecord(state, rowId, record) {
   return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record).set('mergeError', undefined));
+}
+
+export function handleSubrecordSaveSuccess(state, rowId, record) {
+  return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record)); 
 }
 
 export function setMergedSubrecordError(state, rowId, error) {

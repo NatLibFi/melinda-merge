@@ -53,11 +53,15 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
       logger.log('info', 'Commit merge successful', response);
       const mergedMainRecordResult = _.get(response, '[0]');
 
+      
+
       createArchive(username, otherRecord, preferredRecord, mergedRecord, mergedMainRecordResult.recordId).then((res) => {
         logger.log('info', `Created archive file of the merge action: ${res.filename} (${res.size} bytes)`);
       });
 
       const createdRecordId = mergedMainRecordResult.recordId;
+      const subrecordIdList = _.chain(response).filter(res => res.operation === 'CREATE').map('recordId').tail().value();
+
       loadRecord(client, createdRecordId).then(({record, subrecords}) => {
 
         if (record.fields.length === 0) {
@@ -65,11 +69,17 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
           return res.sendStatus(404);
         }
 
-        // TODO: reorder subrecords into same order with mergedRecord.subrecords
+        const subrecordsById = _.zipObject(subrecords.map(selectRecordId), subrecords);
+
+        const subrecordsInRequestOrder = subrecordIdList.map(id => subrecordsById[id]);
+
+        if (_.difference(subrecords, subrecordsInRequestOrder).length !== 0) {
+          logger.log('info', `Warning: merge request had ${subrecords.length} subrecords while merged response had ${subrecordsInRequestOrder.length}`);
+        }
 
         const response = _.extend({}, mergedMainRecordResult, {
           record, 
-          subrecords
+          subrecords: subrecordsInRequestOrder
         });
 
         res.send(response);
@@ -119,4 +129,15 @@ function transformToMarcRecordFamily(json) {
 
 function transformToMarcRecord(json) {
   return new MarcRecord(json);
+}
+
+function selectRecordId(record) {
+
+  const field001List = record.fields.filter(field => field.tag === '001');
+
+  if (field001List.length === 0) {
+    throw new Error('Could not parse record id');
+  } else {
+    return field001List[0].value;
+  }
 }

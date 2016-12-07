@@ -94,7 +94,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     logger.log('info', `${jobId}] Creating new record`);
     return client.createRecord(record, {bypass_low_validation: 1}).then(res => {
       logger.log('info', `${jobId}] Create record ok for ${res.recordId}`, res.messages);
-      return res;
+      return _.assign({}, res, {operation: 'CREATE'});
     }).catch(err => {
       logger.log('info', `${jobId}] Failed to create record`, err);
       throw err;
@@ -108,7 +108,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
       updateRecordLeader(record, 5, 'c');
       return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
         logger.log('info', `${jobId}] Undelete ok for ${recordId}`, res.messages);
-        return res;
+        return _.assign({}, res, {operation: 'UNDELETE'});
       });
     }).catch(err => {
       logger.log('info', `${jobId}] Failed to undelete record`, err);
@@ -125,7 +125,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
     return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
       logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
-      return res;
+      return _.assign({}, res, {operation: 'DELETE'});
     }).catch(err => {
       logger.log('info', `${jobId}] Failed to delete record`, err);
       throw err;
@@ -139,7 +139,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
       updateRecordLeader(record, 5, 'd');
       return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
         logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
-        return res;
+        return _.assign({}, res, {operation: 'DELETE'});
       });
     }).catch(err => {
       logger.log('info', `${jobId}] Failed to delete record`, err);
