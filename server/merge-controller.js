@@ -53,9 +53,7 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
       logger.log('info', 'Commit merge successful', response);
       const mergedMainRecordResult = _.get(response, '[0]');
 
-      
-
-      createArchive(username, otherRecord, preferredRecord, mergedRecord, mergedMainRecordResult.recordId).then((res) => {
+      createArchive(username, otherRecord, preferredRecord, mergedRecord, unmodifiedRecord, mergedMainRecordResult.recordId).then((res) => {
         logger.log('info', `Created archive file of the merge action: ${res.filename} (${res.size} bytes)`);
       });
 
