@@ -1,8 +1,11 @@
 import {executeTransaction, RollbackError} from './async-transaction';
 import _ from 'lodash';
 import { logger } from 'server/logger';
+import uuid from 'uuid';
 
 export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) {
+
+  const jobId = uuid.v4().slice(0,8);
 
   const preferredId = getFamilyId(preferredRecord);
   const otherId = getFamilyId(otherRecord);
@@ -12,7 +15,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return Promise.reject(idValidation.error);
   }
 
-  logger.log('info', `Removing records ${preferredId.record} [${preferredId.subrecords.join()}], ${otherId.record} [${otherId.subrecords.join()}] and creating new ones.`);
+  logger.log('info', `${jobId}] Removing records ${preferredId.record} [${preferredId.subrecords.join()}], ${otherId.record} [${otherId.subrecords.join()}] and creating new ones.`);
 
   return createRecord(mergedRecord.record).then(res => {
     const newParentRecordId = res.recordId;
@@ -65,74 +68,74 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     }).catch(function(error) {
 
       if (error instanceof RollbackError) {
-        logger.log('error', 'Rollback failed');
-        logger.log('error', error);
+        logger.log('error', `${jobId}] Rollback failed`);
+        logger.log('error', jobId, error);
       } else {
         error.message += ' (rollback was successful)';
-        logger.log('info', 'Rollback was successful');
-        logger.log('info', 'Error in transaction', error);
+        logger.log('info', `${jobId}] Rollback was successful`);
+        logger.log('info', `${jobId}] Error in transaction`, error);
       }
       throw error;
     });
   }).catch(error => {
     error.message += ' (rollback was successful)';
-    logger.log('info', 'Rollback was successful');
+    logger.log('info', `${jobId}] Rollback was successful`);
     throw error;
   });
 
   function createRecord(record) {
-    logger.log('info', 'Creating new record');
+    logger.log('info', `${jobId}] Creating new record`);
     return client.createRecord(record, {bypass_low_validation: 1}).then(res => {
-      logger.log('info', `Create record ok for ${res.recordId}`, res.messages);
+      logger.log('info', `${jobId}] Create record ok for ${res.recordId}`, res.messages);
       return res;
     }).catch(err => {
-      logger.log('info', 'Failed to create record', err);
+      logger.log('info', `${jobId}] Failed to create record`, err);
       throw err;
     });
   }
 
   function undeleteRecordFromMelinda(recordId) {
-    logger.log('info', `Undeleting ${recordId}`);
+    logger.log('info', `${jobId}] Undeleting ${recordId}`);
     return client.loadRecord(recordId).then(function(record) {
       record.fields = record.fields.filter(field => field.tag !== 'STA');
       updateRecordLeader(record, 5, 'c');
       return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
-        logger.log('info', `Undelete ok for ${recordId}`, res.messages);
+        logger.log('info', `${jobId}] Undelete ok for ${recordId}`, res.messages);
         return res;
       });
     }).catch(err => {
-      logger.log('info', 'Failed to undelete record', err);
+      logger.log('info', `${jobId}] Failed to undelete record`, err);
       throw err;
     });
   }
 
   function deleteRecordFromMelinda(record) {
     const recordId = getRecordId(record);
-    logger.log('info', `Deleting ${recordId}`);
+    logger.log('info', `${jobId}] Deleting ${recordId}`);
     
     record.appendField(['STA', '', '', 'a', 'DELETED']);
     updateRecordLeader(record, 5, 'd');
 
     return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
-      logger.log('info', `Delete ok for ${recordId}`, res.messages);
+      logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
       return res;
     }).catch(err => {
-      logger.log('info', 'Failed to delete record', err);
+      logger.log('info', `${jobId}] Failed to delete record`, err);
       throw err;
     });
   }
 
   function deleteRecordById(recordId) {
-    logger.log('info', `Deleting ${recordId}`);
+    logger.log('info', `${jobId}] Deleting ${recordId}`);
     return client.loadRecord(recordId).then(function(record) {
       record.appendField(['STA', '', '', 'a', 'DELETED']);
       updateRecordLeader(record, 5, 'd');
       return client.updateRecord(record, {bypass_low_validation: 1}).then(function(res) {
-        logger.log('info', `Delete ok for ${recordId}`, res.messages);
+        logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
         return res;
       });
     }).catch(err => {
-      logger.log('info', 'Failed to delete record', err);
+      logger.log('info', `${jobId}] Failed to delete record`, err);
       throw err;
     });
   }
