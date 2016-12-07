@@ -26,5 +26,7 @@ app.use('/merge', mergeController);
 app.use(express.static(path.resolve(__dirname, 'public')));
 
 
-app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
+const server = app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
+
+server.timeout = 1800000; // Half an hour
 
