@@ -42,6 +42,18 @@ export function setSubrecordAction(rowId, actionType) {
   return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
 }
 
+export function setEverySubrecordAction(actionType) {
+  return function(dispatch, getState) {
+    getState().getIn(['subrecords', 'index']).forEach(rowId => {
+      
+      dispatch(setSubrecordAction(rowId, actionType));
+      dispatch(updateMergedSubrecord(rowId));
+      
+    });
+    
+  };
+}
+
 export function updateSubrecordArrangement(pairs) {
   return { 'type': UPDATE_SUBRECORD_ARRANGEMENT, pairs };
 }
