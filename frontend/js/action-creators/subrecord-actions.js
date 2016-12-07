@@ -42,15 +42,24 @@ export function setSubrecordAction(rowId, actionType) {
   return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
 }
 
-export function setEverySubrecordAction(actionType) {
+export function setEverySubrecordAction() {
   return function(dispatch, getState) {
     getState().getIn(['subrecords', 'index']).forEach(rowId => {
       
-      dispatch(setSubrecordAction(rowId, actionType));
-      dispatch(updateMergedSubrecord(rowId));
-      
+      const subrecordRow = getState().getIn(['subrecords', rowId]).toJS();  
+      const hasSource = subrecordRow.sourceRecord !== undefined;
+      const hasTarget = subrecordRow.targetRecord !== undefined;
+
+      if (hasSource && hasTarget) {
+        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.MERGE));
+      } else if (hasSource || hasTarget) {
+        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.COPY));
+      } else {
+        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.UNSET));
+      }
+     
+      dispatch(updateMergedSubrecord(rowId));  
     });
-    
   };
 }
 
