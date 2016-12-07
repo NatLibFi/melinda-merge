@@ -30,16 +30,16 @@ LOW    ‡aTEST-A
 Expected record after postmerge:
 LDR    00000_a____
 001    000000000
+035    ‡z(FI-MELINDA)28474
+035    ‡z(FI-MELINDA)28475
 041    ‡aFI
 100    ‡aTest Author
 245    ‡aSome content
+500    ‡aLisäpainokset: 7. ed 2016.
+583    ‡aMERGED FROM (FI-MELINDA)28475 + (FI-MELINDA)28474‡c2016-11-29T13:25:21+02:00‡5MELINDA
 LOW    ‡aTEST-A
 LOW    ‡aTEST-B
-SID    ‡btest-b‡c123
 SID    ‡cFCC28474‡btest-a
-035    ‡z(FI-MELINDA)28475
-035    ‡z(FI-MELINDA)28474
-583    ‡aMERGED FROM (FI-MELINDA)28475 + (FI-MELINDA)28474‡c2016-11-29T13:25:21+02:00‡5MELINDA
-500    ‡aLisäpainokset: 7. ed 2016.
+SID    ‡btest-b‡c123
 
 Notes: Record has 041a field with length less than 3. This may break when saved to aleph.
