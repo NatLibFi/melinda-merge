@@ -14,6 +14,7 @@ import { DragDropSubrecordMergePanelRow } from './subrecord-merge-panel-row';
 import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
 import { subrecordOrder, subrecords } from '../../selectors/subrecord-selectors';
 import { recordSaveActionAvailable } from '../../selectors/merge-status-selector';
+import { subrecordActionsEnabled } from '../../selectors/merge-status-selector';
 
 import '../../../styles/components/subrecord-merge-panel.scss';
 
@@ -31,6 +32,7 @@ export class SubrecordMergePanel extends React.Component {
     toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired,
     saveSubrecord: React.PropTypes.func.isRequired,
     saveButtonVisible: React.PropTypes.bool.isRequired,
+    subrecordActionsEnabled: React.PropTypes.bool.isRequired
   }
 
   constructor(props) {
@@ -55,6 +57,7 @@ export class SubrecordMergePanel extends React.Component {
         rowIndex={i}
         rowId={rowId}
         isExpanded={isExpanded}
+        actionsEnabled={this.props.subrecordActionsEnabled}
         selectedAction={selectedAction}
         sourceRecord={sourceRecord}
         targetRecord={targetRecord}
@@ -91,12 +94,14 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   renderAddNewRowElement(key) {
-    return <SubrecordMergePanelNewRow key={key} onClick={this.onAddRow(key)} />;
+    return <SubrecordMergePanelNewRow key={key} onClick={this.onAddRow(key)} enabled={this.props.subrecordActionsEnabled} />;
   }
 
   onAddRow(rowIndex) {
     return function() {
-      this.props.insertSubrecordRow(rowIndex);
+      if (this.props.subrecordActionsEnabled) {
+        this.props.insertSubrecordRow(rowIndex);
+      }
     }.bind(this);
   }
 
@@ -149,7 +154,8 @@ function mapStateToProps(state) {
   return {
     subrecordOrder: subrecordOrder(state),
     subrecords: subrecords(state),
-    saveButtonVisible: recordSaveActionAvailable(state)
+    saveButtonVisible: recordSaveActionAvailable(state),
+    subrecordActionsEnabled: subrecordActionsEnabled(state)
   };
 }
 

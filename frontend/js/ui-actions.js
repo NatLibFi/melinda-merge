@@ -27,11 +27,14 @@ export function commitMerge() {
     const sourceRecord = getState().getIn(['sourceRecord', 'record']);
     const targetRecord = getState().getIn(['targetRecord', 'record']);
     const mergedRecord = getState().getIn(['mergedRecord', 'record']);
+    const unmodifiedRecord = getState().getIn(['mergedRecord', 'unmodifiedRecord']);
 
     const subrecords = subrecordRows(getState());
     const sourceSubrecordList = _(subrecords).map('sourceRecord').compact().value();
     const targetSubrecordList = _(subrecords).map('targetRecord').compact().value();
     const mergedSubrecordList = _(subrecords).map('mergedRecord').compact().value();
+    const unmodifiedMergedSubrecordList = _(subrecords).map('unmodifiedMergedRecord').compact().value();
+
 
     const fetchOptions = {
       method: 'POST',
@@ -47,6 +50,10 @@ export function commitMerge() {
         mergedRecord: {
           record: mergedRecord,
           subrecords: mergedSubrecordList
+        },
+        unmodifiedRecord: {
+          record: unmodifiedRecord,
+          subrecords: unmodifiedMergedSubrecordList
         }
       }),
       headers: new Headers({

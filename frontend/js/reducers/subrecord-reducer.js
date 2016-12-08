@@ -33,6 +33,7 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case SET_SUBRECORD_ACTION:
       return setSubrecordAction(state, action.rowId, action.actionType);
     case SET_MERGED_SUBRECORD:
+      state = setUnmodifiedMergedRecord(state, action.rowId, action.record);
       return setMergedSubrecord(state, action.rowId, action.record);
     case SET_MERGED_SUBRECORD_ERROR:
       return setMergedSubrecordError(state, action.rowId, action.error);
@@ -275,7 +276,8 @@ function resetRowStatus(state, rowId) {
     .setIn([rowId, 'mergedRecord'], undefined)
     .setIn([rowId, 'mergeError'], undefined)
     .setIn([rowId, 'saveStatus'], undefined)
-    .setIn([rowId, 'saveError'], undefined);
+    .setIn([rowId, 'saveError'], undefined)
+    .setIn([rowId, 'unmodifiedMergedRecord'], undefined);
 }
 
 export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
@@ -314,6 +316,9 @@ export function handleSubrecordSaveFailure(state, rowId, error) {
       .set('saveError', error)
       .set('saveStatus', RecordSaveStatus.SAVE_FAILED);
   });
+}
+export function setUnmodifiedMergedRecord(state, rowId, record) {
+  return state.update(rowId, createEmptyRow(), row => row.set('unmodifiedMergedRecord', record));
 }
 
 export function setMergedSubrecordError(state, rowId, error) {
