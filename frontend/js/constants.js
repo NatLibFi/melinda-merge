@@ -28,3 +28,10 @@ export const CommitMergeStates = {
   COMMIT_MERGE_ERROR: 'COMMIT_MERGE_ERROR',
   COMMIT_MERGE_COMPLETE: 'COMMIT_MERGE_COMPLETE'
 };
+
+export const RecordSaveStatus = {
+  'UNSAVED': 'UNSAVED',
+  'SAVED': 'SAVED',
+  'SAVE_ONGOING': 'SAVE_ONGOING',
+  'SAVE_FAILED': 'SAVE_FAILED'
+};
