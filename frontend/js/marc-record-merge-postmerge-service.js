@@ -24,6 +24,8 @@ import moment from 'moment';
 import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
 
+const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
+
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
   setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, sortMergedRecordFields];
@@ -324,7 +326,7 @@ function resetLinkSubfield(field) {
 
     const updatedSubfields = field.subfields.map(sub => {
       if (sub.code === 'w') {
-        sub.value = '(FI-MELINDA)[future-host-id]';
+        sub.value = FUTURE_HOST_ID_PLACEHOLDER;
       }
       return sub;
     });

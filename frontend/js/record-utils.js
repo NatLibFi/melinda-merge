@@ -1,5 +1,5 @@
 import _ from 'lodash';
-
+import uuid from 'uuid';
 
 export function fieldHasSubfield(code, value) {
   const querySubfield = { code, value };
@@ -49,4 +49,10 @@ export function selectFirstValue(field, subcode) {
   } else {
     return field.value;
   }
+}
+
+export function decorateFieldsWithUuid(record) {
+  record.fields.forEach(field => {
+    field.uuid = uuid.v4();
+  });
 }

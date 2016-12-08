@@ -3,7 +3,6 @@ import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
 import { exceptCoreErrors } from '../utils';
 import { FetchNotOkError } from '../errors';
-import uuid from 'node-uuid';
 
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
@@ -18,7 +17,7 @@ import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
 import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
 import _ from 'lodash';
-import { selectRecordId } from '../record-utils';
+import { decorateFieldsWithUuid, selectRecordId } from '../record-utils';
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -206,14 +205,9 @@ export const saveSubrecord = (function() {
         .then(response => response.json())
         .then(json => {
 
-          const mainRecord = json.record;
-      
-          const marcRecord = new MarcRecord(mainRecord);
+          const marcRecord = new MarcRecord(json.record);
+          decorateFieldsWithUuid(marcRecord);
          
-          marcRecord.fields.forEach(field => {
-            field.uuid = uuid.v4();
-          });
-
           dispatch(saveSubrecordSuccess(rowId, marcRecord));
    
         }).catch(exceptCoreErrors((error) => {
