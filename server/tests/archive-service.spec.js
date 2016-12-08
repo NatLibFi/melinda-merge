@@ -32,6 +32,11 @@ describe('Archive service', () => {
     subrecords: []
   };
 
+  const unmodifiedMergedRecord = {
+    record: new MarcRecord({fields: [{ tag: '001', value: '3' }]}),
+    subrecords: []
+  };
+
   const mergedRecordId = '234723';
   
   describe('createArchive without subrecords', () => {
@@ -58,7 +63,7 @@ describe('Archive service', () => {
         return archive;
       });
 
-      return createArchive(username, removedRecord, preferredRecord, mergedRecord, mergedRecordId);
+      return createArchive(username, removedRecord, preferredRecord, mergedRecord, unmodifiedMergedRecord, mergedRecordId);
     });
     afterEach(() => {
       RewireAPI.__ResetDependency__('fs');
@@ -75,6 +80,10 @@ describe('Archive service', () => {
     
     it('adds merged record to the archive', () => {
       expect(callsTo(archiveAppendSpy)).to.include({data: mergedRecord.record.toString(), name: 'merged.txt'});
+    });
+
+    it('adds unmodified merged record to the archive', () => {
+      expect(callsTo(archiveAppendSpy)).to.include({data: unmodifiedMergedRecord.record.toString(), name: 'merged-unmodified.txt'});
     });
 
     it('does not add subrecords of removed record to the archive', () => {
@@ -122,8 +131,9 @@ describe('Archive service', () => {
       removedRecord.subrecords.push(new MarcRecord());
       preferredRecord.subrecords.push(new MarcRecord());
       mergedRecord.subrecords.push(new MarcRecord());
+      unmodifiedMergedRecord.subrecords.push(new MarcRecord());
 
-      return createArchive(username, removedRecord, preferredRecord, mergedRecord, mergedRecordId);
+      return createArchive(username, removedRecord, preferredRecord, mergedRecord, unmodifiedMergedRecord, mergedRecordId);
     });
     afterEach(() => {
       RewireAPI.__ResetDependency__('fs');
@@ -141,6 +151,10 @@ describe('Archive service', () => {
 
     it('adds subrecords of merged record to the archive', () => {
       expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('merged-subrecords.txt');
+    });    
+
+    it('adds subrecords of merged record to the archive', () => {
+      expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('merged-unmodified-subrecords.txt');
     });
 
   });

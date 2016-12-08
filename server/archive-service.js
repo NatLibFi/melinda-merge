@@ -10,7 +10,7 @@ const defaultArchivePath = path.resolve(__dirname, '..', 'merge-action-archive')
 const archivePath = readEnvironmentVariable('ARCHIVE_PATH', defaultArchivePath);
 mkdirp.sync(archivePath);
 
-export function createArchive(user, removedRecord, preferredRecord, mergedRecord, mergedRecordId) {
+export function createArchive(user, removedRecord, preferredRecord, mergedRecord, unmodifiedRecord, mergedRecordId) {
 
   return new Promise(function(resolve, reject) {
 
@@ -50,6 +50,7 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
       .append(removedRecord.record.toString(), {name: 'removed.txt'})
       .append(preferredRecord.record.toString(), {name: 'preferred.txt'})
       .append(mergedRecord.record.toString(), {name: 'merged.txt'})
+      .append(unmodifiedRecord.record.toString(), {name: 'merged-unmodified.txt'})
       .append(JSON.stringify(metadata), {name: 'meta.json'});
 
 
@@ -61,6 +62,9 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
     }
     if (mergedRecord.subrecords && mergedRecord.subrecords.length) {
       archive.append(mergedRecord.subrecords.map(asString).join('\n'), {name: 'merged-subrecords.txt'});
+    }
+    if (unmodifiedRecord.subrecords && unmodifiedRecord.subrecords.length) {
+      archive.append(unmodifiedRecord.subrecords.map(asString).join('\n'), {name: 'merged-unmodified-subrecords.txt'});
     }
         
     archive.finalize();

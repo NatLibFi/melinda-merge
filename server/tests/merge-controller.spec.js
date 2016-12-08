@@ -70,7 +70,8 @@ describe('MARC IO controller', () => {
         .send({
           'otherRecord': createFakeRecordFamily(), 
           'preferredRecord': createFakeRecordFamily(), 
-          'mergedRecord': createFakeRecordFamily()
+          'mergedRecord': createFakeRecordFamily(),
+          'unmodifiedRecord': createFakeRecordFamily()
         })
         .expect(HttpStatus.OK, done);
         
@@ -86,7 +87,8 @@ describe('MARC IO controller', () => {
         .send({
           'otherRecord': createFakeRecordFamily(), 
           'preferredRecord': createFakeRecordFamily(), 
-          'mergedRecord': createFakeRecordFamily()
+          'mergedRecord': createFakeRecordFamily(),
+          'unmodifiedRecord': createFakeRecordFamily()
         })
         .expect(HttpStatus.INTERNAL_SERVER_ERROR, done);
         

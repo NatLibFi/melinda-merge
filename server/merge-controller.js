@@ -33,12 +33,12 @@ mergeController.set('etag', false);
 
 mergeController.options('/commit-merge', cors(corsOptions)); // enable pre-flight
 
-mergeController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord'), (req, res) => {
+mergeController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord', 'unmodifiedRecord'), (req, res) => {
   
   const {username, password} = req.session;
 
-  const [otherRecord, preferredRecord, mergedRecord] = 
-        [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord].map(transformToMarcRecordFamily);
+  const [otherRecord, preferredRecord, mergedRecord, unmodifiedRecord] = 
+        [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord, req.body.unmodifiedRecord].map(transformToMarcRecordFamily);
 
   const clientConfig = { 
     ...defaultConfig,
@@ -53,9 +53,7 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
       logger.log('info', 'Commit merge successful', response);
       const mergedMainRecordResult = _.get(response, '[0]');
 
-      
-
-      createArchive(username, otherRecord, preferredRecord, mergedRecord, mergedMainRecordResult.recordId).then((res) => {
+      createArchive(username, otherRecord, preferredRecord, mergedRecord, unmodifiedRecord, mergedMainRecordResult.recordId).then((res) => {
         logger.log('info', `Created archive file of the merge action: ${res.filename} (${res.size} bytes)`);
       });
 
