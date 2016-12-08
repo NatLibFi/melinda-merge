@@ -11,23 +11,25 @@ export class SubrecordActionButton extends React.Component {
     changeSubrecordAction: React.PropTypes.func.isRequired,
     selectedAction: React.PropTypes.string,
     isMergeActionAvailable: React.PropTypes.bool,
-    isCopyActionAvailable: React.PropTypes.bool
+    isCopyActionAvailable: React.PropTypes.bool,
+    actionsEnabled: React.PropTypes.bool
   } 
 
   componentDidUpdate() {
-    window.$ && window.$(this._button).closeFAB();
+    window.$ && window.$(this._button).closeFAB();  
   }
 
   selectAction(type) {
     const {rowId, changeSubrecordAction} = this.props;
 
-    return function() {
-      changeSubrecordAction(rowId, type);      
+    return () => {
+      if (this.props.actionsEnabled) {
+        changeSubrecordAction(rowId, type);
+      }
     };
   }
 
   getIcon(actionType) {
-
     if (actionType === SubrecordActionTypes.BLOCK) return 'block';
     if (actionType === SubrecordActionTypes.MERGE) return 'queue';
     if (actionType === SubrecordActionTypes.COPY) return 'forward';
@@ -40,7 +42,6 @@ export class SubrecordActionButton extends React.Component {
     if (actionType === SubrecordActionTypes.COPY) return 'blue';
     return 'yellow'; 
   }
-
 
   renderButton(color, icon, onClickFn) {
     const buttonClasses = classNames('btn-floating', color);
@@ -86,7 +87,7 @@ export class SubrecordActionButton extends React.Component {
 
   render() {
 
-    const {selectedAction} = this.props;
+    const {selectedAction, actionsEnabled} = this.props;
 
     const {UNSET, BLOCK, MERGE, COPY} = SubrecordActionTypes;
 
@@ -96,14 +97,25 @@ export class SubrecordActionButton extends React.Component {
       .map(actionType => <li key={actionType}>{this.renderActionButton(actionType)}</li>);
    
     const color = this.getColor(selectedAction);
-    const selectedIconClasses = classNames('btn-floating', 'btn-small', 'waves-effect', 'waves-light', 'subrecord-action-button', color);
+    const selectedIconClasses = classNames('btn-floating', 'btn-small', 'waves-light', 'subrecord-action-button', color, {
+      'disabled': !actionsEnabled,
+      'waves-effect': actionsEnabled
+    });
+
+    const containerClasses = classNames('subrecord-action-button-container', {
+      'fixed-action-btn': actionsEnabled,
+      'click-to-toggle': actionsEnabled,
+      'horizontal': actionsEnabled
+    });
 
     return (
-      <div className="fixed-action-btn click-to-toggle horizontal subrecord-action-button-container" ref={(c) => this._button = c}>
+      <div className={containerClasses} ref={(c) => this._button = c}>
         <a className={selectedIconClasses}>
           <i className="large material-icons">{this.getIcon(selectedAction)}</i>
         </a>
-        <ul className="open-left">{ buttons }</ul>
+
+        {actionsEnabled ? <ul className="open-left">{ buttons }</ul> : null}
+
       </div>
     );
   }

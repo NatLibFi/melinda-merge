@@ -10,6 +10,7 @@ import { SubrecordActionButtonContainer } from './subrecord-action-button';
 import { DragDropSubrecordMergePanelRow } from './subrecord-merge-panel-row';
 import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
 import { subrecordOrder, subrecords } from '../../selectors/subrecord-selectors';
+import { subrecordActionsEnabled } from '../../selectors/merge-status-selector';
 
 import '../../../styles/components/subrecord-merge-panel.scss';
 
@@ -25,6 +26,7 @@ export class SubrecordMergePanel extends React.Component {
     compressSubrecordRow: React.PropTypes.func.isRequired,
     editMergedSubrecord: React.PropTypes.func.isRequired,
     toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired,
+    subrecordActionsEnabled: React.PropTypes.bool.isRequired
   }
 
   constructor(props) {
@@ -49,6 +51,7 @@ export class SubrecordMergePanel extends React.Component {
         rowIndex={i}
         rowId={rowId}
         isExpanded={isExpanded}
+        actionsEnabled={this.props.subrecordActionsEnabled}
         selectedAction={selectedAction}
         sourceRecord={sourceRecord}
         targetRecord={targetRecord}
@@ -81,12 +84,14 @@ export class SubrecordMergePanel extends React.Component {
   }
 
   renderAddNewRowElement(key) {
-    return <SubrecordMergePanelNewRow key={key} onClick={this.onAddRow(key)} />;
+    return <SubrecordMergePanelNewRow key={key} onClick={this.onAddRow(key)} enabled={this.props.subrecordActionsEnabled} />;
   }
 
   onAddRow(rowIndex) {
     return function() {
-      this.props.insertSubrecordRow(rowIndex);
+      if (this.props.subrecordActionsEnabled) {
+        this.props.insertSubrecordRow(rowIndex);
+      }
     }.bind(this);
   }
 
@@ -138,7 +143,8 @@ export class SubrecordMergePanel extends React.Component {
 function mapStateToProps(state) {
   return {
     subrecordOrder: subrecordOrder(state),
-    subrecords: subrecords(state)
+    subrecords: subrecords(state),
+    subrecordActionsEnabled: subrecordActionsEnabled(state)
   };
 }
 
