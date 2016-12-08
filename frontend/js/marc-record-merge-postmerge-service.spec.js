@@ -63,17 +63,13 @@ describe('marc-record-merge-validate-service', () => {
         expect(notes).to.eql(testCase.notes);
 
       });
-        
     });
-
   });
-
 });
 
 function loadStoriesFromFile(filename) {
   
   const storyText = fs.readFileSync(path.resolve(storiesPath, filename), 'utf8');
-
 
   const fnName = filename.slice(0, -6);
   const functionUnderTest = MarcRecordMergePostmergeService[fnName];
@@ -111,7 +107,6 @@ function parseStories(storyText) {
         .filter(matchResult => matchResult !== null)
         .map(matchResult => matchResult[1])
         .value();
-
 
       return { testName, preferredRecord, otherRecord, mergedRecord, expectedMergedRecord, notes };
     });
