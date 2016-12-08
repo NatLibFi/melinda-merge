@@ -59,7 +59,6 @@ export class SubrecordMergePanelRow extends React.Component {
 
   renderSubrecordPanel(record, type, rowId, isExpanded) {
 
-
     if (record) {
 
       const title = type === ItemTypes.SOURCE_SUBRECORD ? 'Poistuva tietue' : 'Säilyvä tietue';
@@ -74,8 +73,7 @@ export class SubrecordMergePanelRow extends React.Component {
   }
 
   renderMergedSubrecordPanel(mergedSubrecord, rowId, isExpanded, mergeError, opts) {
-    console.log('rendering merged subrecord panel', mergeError, mergedSubrecord);
-
+    
     if (mergeError) {
       return (
         <div className="fill-height">
