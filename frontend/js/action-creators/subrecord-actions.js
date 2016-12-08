@@ -1,14 +1,22 @@
+import HttpStatus from 'http-status-codes';
+import MarcRecord from 'marc-record-js';
+import fetch from 'isomorphic-fetch';
+import { exceptCoreErrors } from '../utils';
+import { FetchNotOkError } from '../errors';
+import uuid from 'node-uuid';
+
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_SUCCESS } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from '../constants';
 import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
 import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
+
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -90,7 +98,6 @@ export function updateMergedSubrecord(rowId) {
       }
       
       const recordToCopy = preferredRecord || otherRecord;
-      // TODO: modify copy record. Remove 001
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }
@@ -126,7 +133,6 @@ export function updateMergedSubrecord(rowId) {
         dispatch(setMergedSubrecordError(rowId, new Error('Cannot merge undefined records')));
       }
     }
-
 
   };
 }
@@ -167,6 +173,76 @@ export function toggleSourceSubrecordFieldSelection(rowId, fieldInSourceRecord) 
   };
 }
 
+export const saveSubrecord = (function() {
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
+  
+  return function(rowId, recordId, record) {
+
+    return function(dispatch) {
+
+      dispatch(saveSubrecordStart(rowId, recordId));
+      
+      const fetchOptions = {
+        method: 'PUT',
+        body: JSON.stringify({ 
+          record: record
+        }),
+        headers: new Headers({
+          'Content-Type': 'application/json'
+        }),
+        credentials: 'include'
+      };
+
+      return fetch(`${APIBasePath}/${recordId}`, fetchOptions)
+        .then(validateResponseStatus)
+        .then(response => response.json())
+        .then(json => {
+
+          const mainRecord = json.record;
+      
+          const marcRecord = new MarcRecord(mainRecord);
+         
+          marcRecord.fields.forEach(field => {
+            field.uuid = uuid.v4();
+          });
+
+          dispatch(saveSubrecordSuccess(rowId, marcRecord));
+   
+        }).catch(exceptCoreErrors((error) => {
+
+          if (error instanceof FetchNotOkError) {
+            switch (error.response.status) {
+              case HttpStatus.BAD_REQUEST: return dispatch(saveSubrecordFailure(rowId, recordId, new Error(error.message)));
+              case HttpStatus.NOT_FOUND: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietuetta ei löytynyt')));
+              case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietueen tallentamisessa tapahtui virhe.')));
+            }
+          }
+
+          dispatch(saveSubrecordFailure(rowId, recordId, new Error('There has been a problem with fetch operation: ' + error.message)));
+
+        }));
+    };
+  };
+})();
+
+export function saveSubrecordStart(rowId, recordId) {
+  return { type: SAVE_SUBRECORD_START, rowId, recordId};
+}
+
 export function saveSubrecordSuccess(rowId, record) {
   return { type: SAVE_SUBRECORD_SUCCESS, rowId, record};
+}
+
+export function saveSubrecordFailure(rowId, recordId, error) {
+  return { type: SAVE_SUBRECORD_FAILURE, rowId, recordId, error };
+}
+
+function validateResponseStatus(response) {
+  if (response.status !== HttpStatus.OK) {
+
+    return response.text().then(errorReason => {
+      throw new FetchNotOkError(response, errorReason);
+    });
+  }
+  return response;
 }
