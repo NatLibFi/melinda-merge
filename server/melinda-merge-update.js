@@ -3,6 +3,9 @@ import _ from 'lodash';
 import { logger } from 'server/logger';
 import uuid from 'uuid';
 
+const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
+
+
 export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) {
 
   const jobId = uuid.v4().slice(0,8);
@@ -155,7 +158,7 @@ function setParentRecordId(id) {
     subrecord.fields = subrecord.fields.map(field => {
       if (field.tag === '773') {
         field.subfields = field.subfields.map(sub => {
-          if (sub.code === 'w') {
+          if (sub.code === 'w' && sub.value === FUTURE_HOST_ID_PLACEHOLDER) {
             return _.assign({}, sub, {value: `(FI-MELINDA)${id}`});
           }
           return sub;
