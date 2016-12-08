@@ -29,9 +29,13 @@ export class SubrecordMergePanelRow extends React.Component {
     connectDropTarget: React.PropTypes.func.isRequired,
     onSourceFieldClick: React.PropTypes.func,
     onMergedFieldClick: React.PropTypes.func,
+    onSaveRecord: React.PropTypes.func.isRequired,
     onMergedRecordUpdate: React.PropTypes.func.isRequired,
     isOver: React.PropTypes.bool.isRequired,
-    mergeError: React.PropTypes.instanceOf(Error)
+    mergeError: React.PropTypes.instanceOf(Error),
+    saveRecordError: React.PropTypes.instanceOf(Error),
+    recordState: React.PropTypes.string,
+    saveButtonVisible: React.PropTypes.bool.isRequired
   }
 
   handleSourceFieldClick(field) {
@@ -39,14 +43,21 @@ export class SubrecordMergePanelRow extends React.Component {
       this.props.onSourceFieldClick(this.props.rowId, field);
     }
   }
+  
   handleMergedFieldClick(field) {
     if (this.props.onMergedFieldClick) {
       this.props.onMergedFieldClick(this.props.rowId, field);
     }
   }
+  
   handleRecordUpdate(record) {
     this.props.onMergedRecordUpdate(this.props.rowId, record);
   }
+  
+  handleRecordSave(recordId, record) {
+    this.props.onSaveRecord(this.props.rowId, recordId, record);
+  }
+
 
   renderSubrecordPanel(record, type, rowId, isExpanded, dragEnabled) {
 
@@ -64,6 +75,7 @@ export class SubrecordMergePanelRow extends React.Component {
   }
 
   renderMergedSubrecordPanel(mergedSubrecord, rowId, isExpanded, mergeError, opts) {
+    
     if (mergeError) {
       return (
         <div className="fill-height">
@@ -73,6 +85,7 @@ export class SubrecordMergePanelRow extends React.Component {
       );
     }
     if (mergedSubrecord) {
+
       return (
         <div className="fill-height">
           <SubrecordActionButtonContainer rowId={rowId} {...opts} />
@@ -82,7 +95,11 @@ export class SubrecordMergePanelRow extends React.Component {
             type="MERGED" 
             onFieldClick={this.handleMergedFieldClick.bind(this)}
             onRecordUpdate={this.handleRecordUpdate.bind(this)}
+            onSaveRecord={this.handleRecordSave.bind(this)}
             error={mergeError}
+            saveRecordError={this.props.saveRecordError}
+            recordState={this.props.recordState}
+            saveButtonVisible={this.props.saveButtonVisible}
             showHeader
             editable
             title="Yhdistetty"
@@ -93,7 +110,7 @@ export class SubrecordMergePanelRow extends React.Component {
       return (<SubrecordActionButtonContainer rowId={rowId} {...opts} />);
     }
   }
- 
+
   renderRemoveRowButton(rowId) {
     return (
       <button onClick={() => this.props.onRemoveRow(rowId)} className="btn-floating btn-hover-opaque btn-small waves-effect waves-light black remove-fab remove-fab-emptyrow">

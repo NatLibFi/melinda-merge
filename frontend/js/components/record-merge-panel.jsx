@@ -10,6 +10,7 @@ import { ErrorMessagePanel } from './error-message-panel';
 import { MergeValidationErrorMessagePanel} from './merge-validation-error-message-panel';
 import { isControlField } from '../utils';
 import { SaveButtonPanel } from './save-button-panel';
+import { recordSaveActionAvailable } from '../selectors/merge-status-selector';
 
 import '../../styles/components/record-merge-panel.scss';
 
@@ -100,8 +101,8 @@ export class RecordMergePanel extends React.Component {
       </RecordPanel>
     );
   }
-  renderSaveButton() {
 
+  renderSaveButton() {
     const statuses = {
       'SAVED': 'UPDATE_SUCCESS',
       'SAVE_ONGOING': 'UPDATE_ONGOING',
@@ -127,7 +128,6 @@ export class RecordMergePanel extends React.Component {
   handleRecordSave() {
     const mergedRecordId = _.chain(this.props.mergedRecord.fields).filter(field => field.tag === '001').map('value').head().value();
     this.props.saveRecord(mergedRecordId, this.props.mergedRecord);
-
   }
 
   render() {
@@ -156,9 +156,6 @@ export class RecordMergePanel extends React.Component {
 
 function mapStateToProps(state) {
 
-
-  const saveButtonVisible = ['SAVE_ONGOING', 'SAVE_FAILED', 'SAVED'].some(okState => okState === state.getIn(['mergedRecord', 'state']));
-
   return {
     mergedRecord: (state.getIn(['mergedRecord', 'record'])),
     mergedRecordError: state.getIn(['mergedRecord', 'errorMessage']),
@@ -170,7 +167,7 @@ function mapStateToProps(state) {
     targetRecord: (state.getIn(['targetRecord', 'record'])),
     targetRecordError: state.getIn(['targetRecord', 'errorMessage']),
     targetRecordState: state.getIn(['targetRecord', 'state']),
-    saveButtonVisible: saveButtonVisible
+    saveButtonVisible: recordSaveActionAvailable(state)
   };
 }
 

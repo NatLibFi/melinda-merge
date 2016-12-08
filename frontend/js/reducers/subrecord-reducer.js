@@ -1,6 +1,7 @@
 import MarcRecord from 'marc-record-js';
 import { Map, List } from 'immutable';
-import { SubrecordActionTypes } from '../constants';
+import { SubrecordActionTypes, RecordSaveStatus } from '../constants';
+import _ from 'lodash';
 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-actions';
@@ -9,7 +10,7 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_SUCCESS } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -58,8 +59,13 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case REMOVE_SOURCE_SUBRECORD_FIELD:
       return removeField(state, action.rowId, action.field);
 
+    case SAVE_SUBRECORD_START:
+      return handleSubrecordSaveStart(state, action.rowId, action.record);
     case SAVE_SUBRECORD_SUCCESS:
       return handleSubrecordSaveSuccess(state, action.rowId, action.record);
+    case SAVE_SUBRECORD_FAILURE:
+      return handleSubrecordSaveFailure(state, action.rowId, action.error);
+
 
     case RESET_WORKSPACE:
       return INITIAL_STATE;
@@ -238,17 +244,14 @@ export function changeSourceSubrecordRow(state, fromRowId, toRowId) {
     return state;
   }
 
-  return state
-    .setIn([toRowId, 'sourceRecord'], state.getIn([fromRowId, 'sourceRecord']))
-    .setIn([toRowId, 'mergedRecord'], undefined)
-    .setIn([toRowId, 'selectedAction'], undefined)
-    .setIn([fromRowId, 'sourceRecord'], undefined)
-    .setIn([fromRowId, 'mergedRecord'], undefined)
-    .setIn([fromRowId, 'selectedAction'], undefined)
-    .setIn([toRowId, 'mergeError'], undefined)
-    .setIn([fromRowId, 'mergeError'], undefined)
-    .setIn([toRowId, 'unmodifiedMergedRecord'], undefined)
-    .setIn([fromRowId, 'unmodifiedMergedRecord'], undefined);
+  const resetFromRow = _.partial(resetRowStatus, _, fromRowId);
+  const resetToRow = _.partial(resetRowStatus, _, toRowId);
+  const moveSourceRecord = (state) => {
+    return state
+      .setIn([toRowId, 'sourceRecord'], state.getIn([fromRowId, 'sourceRecord']))
+      .setIn([fromRowId, 'sourceRecord'], undefined);
+  };
+  return _.flow([moveSourceRecord, resetFromRow, resetToRow])(state);
 }
 
 export function changeTargetSubrecordRow(state, fromRowId, toRowId) {
@@ -256,19 +259,25 @@ export function changeTargetSubrecordRow(state, fromRowId, toRowId) {
   if (state.getIn([toRowId, 'targetRecord']) !== undefined) {
     return state;
   }
-  
-  return state
-    .setIn([toRowId, 'targetRecord'], state.getIn([fromRowId, 'targetRecord']))
-    .setIn([toRowId, 'mergedRecord'], undefined)
-    .setIn([toRowId, 'selectedAction'], undefined)
-    .setIn([fromRowId, 'targetRecord'], undefined)
-    .setIn([fromRowId, 'mergedRecord'], undefined)
-    .setIn([fromRowId, 'selectedAction'], undefined)
-    .setIn([toRowId, 'mergeError'], undefined)
-    .setIn([fromRowId, 'mergeError'], undefined)
-    .setIn([toRowId, 'unmodifiedMergedRecord'], undefined)
-    .setIn([fromRowId, 'unmodifiedMergedRecord'], undefined);
 
+  const resetFromRow = _.partial(resetRowStatus, _, fromRowId);
+  const resetToRow = _.partial(resetRowStatus, _, toRowId);
+  const moveTargetRecord = (state) => {
+    return state
+      .setIn([toRowId, 'targetRecord'], state.getIn([fromRowId, 'targetRecord']))
+      .setIn([fromRowId, 'targetRecord'], undefined);
+  };
+  return _.flow([moveTargetRecord, resetFromRow, resetToRow])(state);
+}
+
+function resetRowStatus(state, rowId) {
+  return state
+    .setIn([rowId, 'selectedAction'], undefined)
+    .setIn([rowId, 'mergedRecord'], undefined)
+    .setIn([rowId, 'mergeError'], undefined)
+    .setIn([rowId, 'saveStatus'], undefined)
+    .setIn([rowId, 'saveError'], undefined)
+    .setIn([rowId, 'unmodifiedMergedRecord'], undefined);
 }
 
 export function changeSubrecordRow(state, fromRowIndex, toRowIndex) {
@@ -283,15 +292,30 @@ export function setSubrecordAction(state, rowId, actionType) {
   } else {
     return state.update(rowId, createEmptyRow(), row => row.set('selectedAction', actionType));  
   }
-  
 }
 
 export function setMergedSubrecord(state, rowId, record) {
   return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record).set('mergeError', undefined));
 }
 
+export function handleSubrecordSaveStart(state, rowId) {
+  return state.update(rowId, createEmptyRow(), row => row.set('saveStatus', RecordSaveStatus.SAVE_ONGOING)); 
+}
+
 export function handleSubrecordSaveSuccess(state, rowId, record) {
-  return state.update(rowId, createEmptyRow(), row => row.set('mergedRecord', record)); 
+  return state.update(rowId, createEmptyRow(), row => {
+    return row
+      .set('mergedRecord', record)
+      .set('saveStatus', RecordSaveStatus.SAVED);
+  });
+}
+
+export function handleSubrecordSaveFailure(state, rowId, error) {  
+  return state.update(rowId, createEmptyRow(), row => {
+    return row
+      .set('saveError', error)
+      .set('saveStatus', RecordSaveStatus.SAVE_FAILED);
+  });
 }
 export function setUnmodifiedMergedRecord(state, rowId, record) {
   return state.update(rowId, createEmptyRow(), row => row.set('unmodifiedMergedRecord', record));
@@ -319,6 +343,7 @@ function moveRow(fromRowIndex, toRowIndex, list) {
 let rowIdSeq = 1;
 function createEmptyRow() {
   return Map({
-    rowId: `row${rowIdSeq++}`
+    rowId: `row${rowIdSeq++}`,
+    saveStatus: RecordSaveStatus.UNSAVED
   });
 }
