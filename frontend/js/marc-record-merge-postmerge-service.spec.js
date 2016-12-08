@@ -12,7 +12,7 @@ const TEST_CASE_SEPARATOR = '\n\n\n\n';
 
 const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge-service');
 
-describe.only('marc-record-merge-validate-service', () => {
+describe('marc-record-merge-validate-service', () => {
 
   before(() => {
   
@@ -21,7 +21,6 @@ describe.only('marc-record-merge-validate-service', () => {
     formatDateStub.returns('2016-11-29T13:25:21+02:00');
 
     RewireAPI.__Rewire__('formatDate', formatDateStub);
-
 
     // Prepare select773 fields with host record ids. The test runner is used to test the prepared function.
     MarcRecordMergePostmergeService.preparedSelect773Fields = MarcRecordMergePostmergeService.select773Fields('00001', '00002');

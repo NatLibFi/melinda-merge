@@ -18,7 +18,7 @@ import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
 import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
 import _ from 'lodash';
-
+import { selectRecordId } from '../record-utils';
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -115,14 +115,15 @@ export function updateMergedSubrecord(rowId) {
     if (selectedActionType === SubrecordActionTypes.MERGE) {
       if (preferredRecord && otherRecord) {
 
-        const preferredHostRecord = selectPreferredHostRecord(getState());
-        const otherHostRecord = selectOtherHostRecord(getState());
+        const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+        const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+
 
         const componentRecordValidationRules = MergeValidation.preset.melinda_component;
         const postMergeFixes = _.clone(PostMerge.preset.defaults);
 
         // insert select773 just before sort
-        postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecord, otherHostRecord));
+        postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
 
         const merge = createRecordMerger(mergeConfiguration);
 

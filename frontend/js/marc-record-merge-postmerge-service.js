@@ -296,18 +296,20 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
   return function(preferredRecord, otherRecord, mergedRecord) {
   
     const linksToPreferredHost = mergedRecord.fields.filter(field => {
-      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === preferredHostRecordId);
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${preferredHostRecordId}`);
     });
     const linksToOtherHost = mergedRecord.fields.filter(field => {
-      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === othterHostRecordId);
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${othterHostRecordId}`);
     });
 
     const fieldsWithoutLinks = _.difference(mergedRecord.fields, _.concat(linksToPreferredHost, linksToOtherHost));
 
     if (linksToPreferredHost.length > 0) {
       mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToPreferredHost.map(resetLinkSubfield));
+      linksToOtherHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(otherRecord, uuid));
     } else {
       mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToOtherHost.map(resetLinkSubfield));
+      linksToPreferredHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(preferredRecord, uuid));
     }
 
     return {
@@ -322,7 +324,7 @@ function resetLinkSubfield(field) {
 
     const updatedSubfields = field.subfields.map(sub => {
       if (sub.code === 'w') {
-        sub.value = '[future-host-id]';
+        sub.value = '(FI-MELINDA)[future-host-id]';
       }
       return sub;
     });
