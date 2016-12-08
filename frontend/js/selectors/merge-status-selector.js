@@ -26,3 +26,9 @@ export const mergeButtonEnabled = createSelector(
     return (mergedRecordState === 'LOADED' && mergeAvailable && allSubrecordActionsAreDefined);
   }
 );
+
+
+export const recordSaveActionAvailable = createSelector([mergedRecordState], (mergedRecordState) => {
+  const enableSaveActionStates = ['SAVE_ONGOING', 'SAVE_FAILED', 'SAVED'];
+  return _.includes(enableSaveActionStates, mergedRecordState);
+});
