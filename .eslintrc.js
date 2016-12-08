@@ -16,7 +16,7 @@ module.exports = {
         "sourceType": "module"
     },
     "plugins": [
-        "react"
+        "react", "mocha"
     ],
     "rules": {
         "indent": ["error", 2, { "SwitchCase": 1 }],
@@ -49,6 +49,8 @@ module.exports = {
         "react/no-set-state": "off",
         "react/prefer-es6-class": "warn",
         "react/self-closing-comp": "warn",
-        "react/sort-comp": "warn"
+        "react/sort-comp": "warn",
+
+        "mocha/no-exclusive-tests": "error"
     }
 };
