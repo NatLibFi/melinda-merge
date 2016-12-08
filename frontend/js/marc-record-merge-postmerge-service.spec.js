@@ -12,7 +12,7 @@ const TEST_CASE_SEPARATOR = '\n\n\n\n';
 
 const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge-service');
 
-describe('marc-record-merge-validate-service', () => {
+describe.only('marc-record-merge-validate-service', () => {
 
   before(() => {
   
@@ -21,10 +21,15 @@ describe('marc-record-merge-validate-service', () => {
     formatDateStub.returns('2016-11-29T13:25:21+02:00');
 
     RewireAPI.__Rewire__('formatDate', formatDateStub);
+
+
+    // Prepare select773 fields with host record ids. The test runner is used to test the prepared function.
+    MarcRecordMergePostmergeService.preparedSelect773Fields = MarcRecordMergePostmergeService.select773Fields('00001', '00002');
     
   });
   after(() => {
     RewireAPI.__ResetDependency__('formatDate');
+    delete(MarcRecordMergePostmergeService.preparedSelect773Fields);
   });
 
   const files = fs.readdirSync(storiesPath);
@@ -38,8 +43,9 @@ describe('marc-record-merge-validate-service', () => {
 
         it(testCase.testName, () => {
           
-          const {mergedRecord, notes} = testSuite.functionUnderTest.call(null, testCase.preferredRecord, testCase.otherRecord, testCase.mergedRecord);
+          const functionUnderTest = prepareTestFunction(testSuite.functionUnderTest);
 
+          const {mergedRecord, notes} = functionUnderTest.call(null, testCase.preferredRecord, testCase.otherRecord, testCase.mergedRecord);
           expect(mergedRecord.toString()).to.eql(testCase.expectedMergedRecord.toString());
           expect(notes || []).to.eql(testCase.notes);
           
@@ -66,6 +72,10 @@ describe('marc-record-merge-validate-service', () => {
     });
   });
 });
+
+function prepareTestFunction(testFn) {
+  return testFn === MarcRecordMergePostmergeService.select773Fields ? MarcRecordMergePostmergeService.select773Fields('00001', '00002') : testFn;
+}
 
 function loadStoriesFromFile(filename) {
   

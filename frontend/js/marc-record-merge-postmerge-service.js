@@ -284,7 +284,6 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
   };
 }
 
-
 export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
@@ -293,6 +292,49 @@ export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecor
   return { mergedRecord };
 }
 
+export function select773Fields(preferredHostRecordId, othterHostRecordId) {
+  return function(preferredRecord, otherRecord, mergedRecord) {
+  
+    const linksToPreferredHost = mergedRecord.fields.filter(field => {
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === preferredHostRecordId);
+    });
+    const linksToOtherHost = mergedRecord.fields.filter(field => {
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === othterHostRecordId);
+    });
+
+    const fieldsWithoutLinks = _.difference(mergedRecord.fields, _.concat(linksToPreferredHost, linksToOtherHost));
+
+    if (linksToPreferredHost.length > 0) {
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToPreferredHost.map(resetLinkSubfield));
+    } else {
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToOtherHost.map(resetLinkSubfield));
+    }
+
+    return {
+      mergedRecord
+    };
+
+  };
+}
+
+function resetLinkSubfield(field) {
+  if (field.subfields) {
+
+    const updatedSubfields = field.subfields.map(sub => {
+      if (sub.code === 'w') {
+        sub.value = '[future-host-id]';
+      }
+      return sub;
+    });
+
+    field.subfields = updatedSubfields;
+
+    return field;
+
+  } else {
+    return field;
+  }
+}
 
 function markAsPostmergeField(field) {
   field.fromPostmerge = true;
