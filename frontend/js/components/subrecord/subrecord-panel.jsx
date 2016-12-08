@@ -1,9 +1,10 @@
 import React from 'react';
 import classNames from 'classnames';
+import _ from 'lodash';
 import '../../../styles/components/subrecord-panel';
 import { MarcRecordPanel } from 'commons/components/marc-record-panel';
-import _ from 'lodash';
 import { RecordPanel } from 'commons/components/record-panel';
+import { SaveButtonPanel } from '../save-button-panel';
 
 export class SubRecordPanel extends React.Component {
 
@@ -17,6 +18,39 @@ export class SubRecordPanel extends React.Component {
     isExpanded: React.PropTypes.bool,
     onFieldClick: React.PropTypes.func,
     onRecordUpdate: React.PropTypes.func,
+    saveButtonVisible: React.PropTypes.bool,
+    saveRecordError: React.PropTypes.instanceOf(Error),
+    recordState: React.PropTypes.string,
+    onSaveRecord: React.PropTypes.func,
+  }
+
+  renderSaveButton() {
+
+    const statuses = {
+      'SAVED': 'UPDATE_SUCCESS',
+      'SAVE_ONGOING': 'UPDATE_ONGOING',
+      'SAVE_FAILED': 'UPDATE_FAILED'
+    };
+
+    const status = statuses[this.props.recordState];
+
+    const enabled = status !== 'UPDATE_ONGOING';
+
+    return (
+      <div className="card-action">
+        <SaveButtonPanel 
+          enabled={enabled}
+          error={this.props.saveRecordError}
+          status={status}
+          onSubmit={() => this.handleRecordSave()}
+        />
+      </div>
+    );
+  }
+  
+  handleRecordSave() {
+    const recordId = _.chain(this.props.record.fields).filter(field => field.tag === '001').map('value').head().value();
+    this.props.onSaveRecord(recordId, this.props.record);
   }
 
   render() {
@@ -53,8 +87,11 @@ export class SubRecordPanel extends React.Component {
             title={this.props.title}
             record={record} 
             onFieldClick={this.props.onFieldClick}
-            onRecordUpdate={(record) => this.props.onRecordUpdate(record)}
-          />
+            onRecordUpdate={(record) => this.props.onRecordUpdate(record)}>
+
+            { this.props.saveButtonVisible ? this.renderSaveButton() : null }
+
+          </RecordPanel>
         </div>
       );
     } else {
@@ -65,9 +102,9 @@ export class SubRecordPanel extends React.Component {
             <MarcRecordPanel record={res} onFieldClick={this.props.onFieldClick} />
           </div>
         </div>
-      );      
-    }
+      );
 
+    }
   }
 }
 
@@ -78,6 +115,5 @@ function toOnlySubfields(tag, subfieldCodes) {
       return _.assign({}, field, {subfields});
     }
     return field;
-    
   };
 }
