@@ -1,6 +1,5 @@
 import _ from 'lodash';
 import { createSelector } from 'reselect';
-import { List } from 'immutable';
 
 export const subrecordOrder = state => state.getIn(['subrecords', 'index']).toJS();
 export const subrecords = state => state.get('subrecords').delete('index').toJS();
