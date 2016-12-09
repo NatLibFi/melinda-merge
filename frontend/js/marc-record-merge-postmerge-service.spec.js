@@ -12,7 +12,7 @@ const TEST_CASE_SEPARATOR = '\n\n\n\n';
 
 const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge-service');
 
-describe.only('marc-record-merge-validate-service', () => {
+describe('marc-record-merge-validate-service', () => {
 
   before(() => {
   
