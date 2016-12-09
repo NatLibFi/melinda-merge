@@ -4,6 +4,8 @@ import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import {hashHistory} from 'react-router';
+import classNames from 'classnames';
+import { hostRecordActionsEnabled } from '../selectors/merge-status-selector';
 
 const RECORD_LOADING_DELAY = 500;
 
@@ -16,7 +18,8 @@ export class RecordSelectionControls extends React.Component {
     swapRecords: React.PropTypes.func.isRequired,
     setSourceRecordId: React.PropTypes.func.isRequired,
     setTargetRecordId: React.PropTypes.func.isRequired,
-    locationDidChange: React.PropTypes.func.isRequired
+    locationDidChange: React.PropTypes.func.isRequired,
+    controlsEnabled: React.PropTypes.bool.isRequired
   }
 
   constructor() {
@@ -54,6 +57,11 @@ export class RecordSelectionControls extends React.Component {
   }
 
   handleChange(event) {
+    const { controlsEnabled } = this.props;
+    if (!controlsEnabled) {
+      return;
+    }
+
     event.persist();
     
     if (event.target.id === 'source_record') {
@@ -66,25 +74,42 @@ export class RecordSelectionControls extends React.Component {
     }
   }
 
+  handleSwap() {
+    const { controlsEnabled } = this.props;
+
+    if (controlsEnabled) {
+      this.props.swapRecords();
+    }
+
+  }
+
   render() {
+
+    const { controlsEnabled } = this.props;
+
+    const swapButtonClasses = classNames('btn-floating', 'blue', {
+      'waves-effect': controlsEnabled,
+      'waves-light': controlsEnabled,
+      'disabled': !controlsEnabled
+    });
 
     return (
       <div className="row row-margin-swap record-selection-controls">
       
         <div className="col s2 offset-s1 input-field">
-          <input id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} />
+          <input id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled} />
           <label htmlFor="source_record">Poistuva tietue</label>
         </div>
         <div className="col s2 control-swap-horizontal input-field">
           <div>
-            <a className="btn-floating waves-effect waves-light blue" onClick={this.props.swapRecords}>
+            <a className={swapButtonClasses} onClick={(e) => this.handleSwap(e)}>
               <i className="material-icons tooltip small" title="Vaihda keskenään">swap_horiz</i>
             </a>
           </div>
         </div>
 
         <div className="col s2 input-field">
-          <input id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} />
+          <input id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled}/>
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
       
@@ -96,7 +121,8 @@ export class RecordSelectionControls extends React.Component {
 function mapStateToProps(state) {
   return {
     sourceRecordId: state.getIn(['sourceRecord', 'id']) || '',
-    targetRecordId: state.getIn(['targetRecord', 'id']) || ''
+    targetRecordId: state.getIn(['targetRecord', 'id']) || '',
+    controlsEnabled: hostRecordActionsEnabled(state)
   };
 }
 

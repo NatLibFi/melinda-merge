@@ -35,3 +35,7 @@ export const recordSaveActionAvailable = createSelector([mergedRecordState], (me
 export const subrecordActionsEnabled = createSelector([commitMergeStatus], (commitMergeStatus) => {
   return commitMergeStatus !== CommitMergeStates.COMMIT_MERGE_COMPLETE;
 });
+
+export const hostRecordActionsEnabled = createSelector([commitMergeStatus], (commitMergeStatus) => {
+  return commitMergeStatus !== CommitMergeStates.COMMIT_MERGE_COMPLETE;
+});
