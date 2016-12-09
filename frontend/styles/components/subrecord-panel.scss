@@ -10,3 +10,14 @@
   }
 }
 
+.is-compacted {
+
+  &> td {
+    padding: 0
+  }
+  .marc-record-subrecord {
+    .card-content {
+      padding: 0
+    }
+  }  
+}

@@ -16,6 +16,7 @@ export class SubRecordPanel extends React.Component {
     showHeader: React.PropTypes.bool,
     editable: React.PropTypes.bool,
     isExpanded: React.PropTypes.bool,
+    isCompacted: React.PropTypes.bool,
     onFieldClick: React.PropTypes.func,
     onRecordUpdate: React.PropTypes.func,
     saveButtonVisible: React.PropTypes.bool,
@@ -55,10 +56,12 @@ export class SubRecordPanel extends React.Component {
   }
 
   render() {
-    const { record, isDragging, isExpanded } = this.props;
+    const { record, isDragging, isExpanded, isCompacted } = this.props;
+
+    const visibleFields = isCompacted ? ['245'] : ['245', '336', '773'];
 
     const selectedFields = record.fields
-      .filter(f => _.includes(['245', '336', '773'], f.tag))
+      .filter(f => _.includes(visibleFields, f.tag))
       .map(toOnlySubfields('773', ['g','q']))
       .filter(f => f.subfields.length !== 0);
 

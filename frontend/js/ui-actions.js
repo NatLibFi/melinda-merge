@@ -458,5 +458,10 @@ export function toggleSourceRecordFieldSelection(fieldInSourceRecord) {
 }
 
 export function setCompactSubrecordView(enabled) {
-  return { 'type': TOGGLE_COMPACT_SUBRECORD_VIEW, enabled};
+  return function(dispatch, getState) {
+
+    const rowsToCompact = rowsWithResultRecord(getState()).map(row => row.rowId);
+
+    dispatch({ 'type': TOGGLE_COMPACT_SUBRECORD_VIEW, enabled, rowsToCompact});
+  };
 }
