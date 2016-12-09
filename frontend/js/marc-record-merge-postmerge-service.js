@@ -24,10 +24,9 @@ import moment from 'moment';
 import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
 
-
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
-  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, sortMergedRecordFields];
+  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
 
 export const preset = {
   defaults: defaultPreset
@@ -294,20 +293,28 @@ export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam)
     .filter(field => field.subfields)
     .filter(field => field.subfields.some(subfield => subfield.code === '6'));
 
-
   const relinked880Fields = _.chain(fieldsWithLinkedContent).flatMap((field, i) => {
+
+    const fieldInPreferred = _.chain(preferredRecord.fields).filter(fieldInPreferred => fieldInPreferred.uuid === field.uuid).value();
+    const fieldInOther = _.chain(otherRecord.fields).filter(otherRecord => otherRecord.uuid === field.uuid).value();
     
-    const linkedFieldsFromPreferred = _.chain(preferredRecord.fields)
-      .filter(fieldInPreferred => fieldInPreferred.uuid === field.uuid)
-      .filter(isLinkedFieldOf(field))
-      .value();
+    const linkedFieldsFromPreferred = _.flatMap(fieldInPreferred, (fieldWithLink) => {
+      return preferredRecord.fields.filter(isLinkedFieldOf(fieldWithLink));
+    });
 
-    const linkedFieldsFromOther = _.chain(otherRecord.fields)
-      .filter(fieldInOther => fieldInOther.uuid === field.uuid)
-      .filter(isLinkedFieldOf(field))
-      .value();
+    const linkedFieldsFromOther = _.flatMap(fieldInOther, (fieldWithLink) => {
+      return otherRecord.fields.filter(isLinkedFieldOf(fieldWithLink));
+    });
 
-    const linkedFields = _.concat(linkedFieldsFromPreferred, linkedFieldsFromOther);
+    linkedFieldsFromPreferred.forEach(field => {
+      markFieldAsUsed(field, {fromOther: false});
+    });
+
+    linkedFieldsFromOther.forEach(field => {
+      markFieldAsUsed(field, {fromOther: true});
+    });
+    
+    const linkedFields = _.concat(_.cloneDeep(linkedFieldsFromPreferred), _.cloneDeep(linkedFieldsFromOther));
 
     updateLinks(i+1, field, linkedFields);
 
@@ -335,7 +342,7 @@ function updateLinks(linkIndex, field, linkedFieldList) {
       sub.value = `880-${linkIndexNormalized}`;
     }
   });
-
+  
   linkedFieldList.forEach(field => {
     field.subfields.forEach(sub => {
       if (sub.code === '6') {
@@ -406,4 +413,11 @@ function markFieldAsUnused(record, fieldUuid) {
       delete(field.wasUsed);
       delete(field.fromOther);
     });
+}
+
+function markFieldAsUsed(field, opts) {
+  field.wasUsed = true;
+  if (opts && opts.fromOther !== undefined) {
+    field.fromOther = opts.fromOther;
+  }
 }
