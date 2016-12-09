@@ -8,21 +8,23 @@
     @include marc-colors();
   }
 
-  .empty-droppable {
-    height: 110px;
-    border: 2px dashed #CCC;
-    border-radius: 5px;
+  tr:not(.is-compacted) {
+    .empty-droppable {
+      height: 110px;
+      border: 2px dashed #CCC;
+      border-radius: 5px;
 
-    &.can-drop {
-      border-color: #c8e6c9;
-      &.is-over {
-        border-color: #66bb6a;
+      &.can-drop {
+        border-color: #c8e6c9;
+        &.is-over {
+          border-color: #66bb6a;
+        }
       }
-    }
 
-    &.cannot-drop {
-      &.is-over {
-        border-color: #ef5350;
+      &.cannot-drop {
+        &.is-over {
+          border-color: #ef5350;
+        }
       }
     }
   }

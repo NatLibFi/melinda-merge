@@ -1,5 +1,5 @@
 import React from 'react';
-import { SubrecordHeader } from './subrecord-header';
+import { SubrecordHeaderContainer } from './subrecord-header';
 import { DraggableSubrecordMergePanelContainer } from './subrecord-merge-panel';
 
 export class SubrecordComponent extends React.Component {
@@ -7,7 +7,7 @@ export class SubrecordComponent extends React.Component {
   render() {
     return (
       <div>
-        <SubrecordHeader />
+        <SubrecordHeaderContainer />
         <DraggableSubrecordMergePanelContainer />
      </div>
     );
