@@ -1,6 +1,9 @@
 import _ from 'lodash';
 import uuid from 'uuid';
 
+const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
+
+
 export function fieldHasSubfield(code, value) {
   const querySubfield = { code, value };
 
@@ -55,4 +58,37 @@ export function decorateFieldsWithUuid(record) {
   record.fields.forEach(field => {
     field.uuid = uuid.v4();
   });
+}
+
+export function resetRecordId(record) {
+
+  record.fields = record.fields.filter(function(field) {
+    return field.tag !== '001';
+  });
+
+  record.fields.unshift({
+    uuid: uuid.v4(),
+    tag: '001',
+    value: '000000000'
+  });
+
+}
+
+export function resetComponentHostLinkSubfield(field) {
+  if (field.subfields) {
+
+    const updatedSubfields = field.subfields.map(sub => {
+      if (sub.code === 'w') {
+        sub.value = FUTURE_HOST_ID_PLACEHOLDER;
+      }
+      return sub;
+    });
+
+    field.subfields = updatedSubfields;
+
+    return field;
+
+  } else {
+    return field;
+  }
 }

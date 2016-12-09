@@ -17,7 +17,7 @@ import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
 import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
 import _ from 'lodash';
-import { decorateFieldsWithUuid, selectRecordId } from '../record-utils';
+import { decorateFieldsWithUuid, selectRecordId, resetRecordId, resetComponentHostLinkSubfield } from '../record-utils';
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -97,8 +97,24 @@ export function updateMergedSubrecord(rowId) {
       if (preferredRecord && otherRecord) {
         throw new Error('Cannot copy both records');
       }
+
+      let hostRecordId;
+      let recordToCopy;
+
+      if (preferredRecord) {
+        hostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+        recordToCopy = new MarcRecord(preferredRecord);
+      } else {
+        hostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+        recordToCopy = new MarcRecord(otherRecord);
+      }
       
-      const recordToCopy = preferredRecord || otherRecord;
+      resetRecordId(recordToCopy);
+
+      recordToCopy.fields.filter(field => {
+        return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
+      }).map(resetComponentHostLinkSubfield);
+
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }

@@ -21,10 +21,9 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield } from './record-utils';
+import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
 
-const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
@@ -307,10 +306,10 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
     const fieldsWithoutLinks = _.difference(mergedRecord.fields, _.concat(linksToPreferredHost, linksToOtherHost));
 
     if (linksToPreferredHost.length > 0) {
-      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToPreferredHost.map(resetLinkSubfield));
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToPreferredHost.map(resetComponentHostLinkSubfield));
       linksToOtherHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(otherRecord, uuid));
     } else {
-      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToOtherHost.map(resetLinkSubfield));
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToOtherHost.map(resetComponentHostLinkSubfield));
       linksToPreferredHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(preferredRecord, uuid));
     }
 
@@ -321,24 +320,6 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
   };
 }
 
-function resetLinkSubfield(field) {
-  if (field.subfields) {
-
-    const updatedSubfields = field.subfields.map(sub => {
-      if (sub.code === 'w') {
-        sub.value = FUTURE_HOST_ID_PLACEHOLDER;
-      }
-      return sub;
-    });
-
-    field.subfields = updatedSubfields;
-
-    return field;
-
-  } else {
-    return field;
-  }
-}
 
 function markAsPostmergeField(field) {
   field.fromPostmerge = true;
