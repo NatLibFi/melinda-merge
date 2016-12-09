@@ -21,7 +21,7 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield } from './record-utils';
+import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
 
 
@@ -283,6 +283,66 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
   return {
     mergedRecord
   };
+}
+
+export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam) {
+  const mergedRecord = new MarcRecord(mergedRecordParam);
+
+  const fieldsWithout880 = mergedRecord.fields.filter(field => field.tag !== '880');
+
+  const fieldsWithLinkedContent = fieldsWithout880
+    .filter(field => field.subfields)
+    .filter(field => field.subfields.some(subfield => subfield.code === '6'));
+
+
+  const relinked880Fields = _.chain(fieldsWithLinkedContent).flatMap((field, i) => {
+    
+    const linkedFieldsFromPreferred = _.chain(preferredRecord.fields)
+      .filter(fieldInPreferred => fieldInPreferred.uuid === field.uuid)
+      .filter(isLinkedFieldOf(field))
+      .value();
+
+    const linkedFieldsFromOther = _.chain(otherRecord.fields)
+      .filter(fieldInOther => fieldInOther.uuid === field.uuid)
+      .filter(isLinkedFieldOf(field))
+      .value();
+
+    const linkedFields = _.concat(linkedFieldsFromPreferred, linkedFieldsFromOther);
+
+    updateLinks(i+1, field, linkedFields);
+
+    return linkedFields;
+    
+  }).value();
+
+  mergedRecord.fields = _.concat(fieldsWithout880, relinked880Fields);
+
+  const dropped880Fields = _.differenceBy(mergedRecordParam.fields, mergedRecord.fields, 'uuid');
+  dropped880Fields.map(field => field.uuid).forEach(uuid => {
+    markFieldAsUnused(preferredRecord, uuid);
+    markFieldAsUnused(otherRecord, uuid);
+  });
+  
+  return { mergedRecord };
+}
+
+function updateLinks(linkIndex, field, linkedFieldList) {
+  const tag = field.tag;
+  const linkIndexNormalized = _.padStart(linkIndex, 2, '0');
+
+  field.subfields.forEach(sub => {
+    if (sub.code === '6') {
+      sub.value = `880-${linkIndexNormalized}`;
+    }
+  });
+
+  linkedFieldList.forEach(field => {
+    field.subfields.forEach(sub => {
+      if (sub.code === '6') {
+        sub.value = `${tag}-${linkIndexNormalized}`;
+      }
+    });
+  });
 }
 
 export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecordParam) {

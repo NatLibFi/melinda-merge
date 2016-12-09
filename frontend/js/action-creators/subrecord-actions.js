@@ -115,6 +115,9 @@ export function updateMergedSubrecord(rowId) {
         return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
       }).map(resetComponentHostLinkSubfield);
 
+      // Note: We don't handle LOW/SID tags when subrecord action=COPY. 
+      // LOW-SYNC will handle that after the record has been added to melinda.
+
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }
