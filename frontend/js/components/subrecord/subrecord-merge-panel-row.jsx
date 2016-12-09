@@ -195,6 +195,11 @@ const rowSource = {
     if (props && props.isExpanded) {
       return false;
     }
+
+    if (props && props.isCompacted) {
+      return false;
+    }
+    
     if (props && props.actionsEnabled !== true) {
       return false;
     }

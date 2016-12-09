@@ -29,7 +29,11 @@ const subrecordSource = {
     return { type, rowId };
   },
   canDrag(props) {
+    console.log(props);
     if (props && props.isExpanded) {
+      return false;
+    }
+    if (props && props.isCompacted) {
       return false;
     }
     if (props && props.dragEnabled !== true) {
