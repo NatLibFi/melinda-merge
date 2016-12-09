@@ -5,6 +5,8 @@ import path from 'path';
 import fs from 'fs';
 import * as MarcRecordMergePostmergeService from './marc-record-merge-postmerge-service';
 import { __RewireAPI__ as RewireAPI } from './marc-record-merge-postmerge-service';
+import { decorateFieldsWithUuid } from './record-utils';
+import uuid from 'uuid';
 
 import MarcRecord from 'marc-record-js';
 
@@ -97,14 +99,25 @@ function parseStories(storyText) {
       const testName = lines[0];
       const preferredRecordRaw = lines.slice(2, lines.indexOf('')).join('\n');
       const preferredRecord = MarcRecord.fromString(preferredRecordRaw);
+      decorateFieldsWithUuid(preferredRecord);
 
       const otherRecordStartIndex = lines.indexOf('Other record:') + 1;
       const otherRecordRaw = lines.slice(otherRecordStartIndex, lines.indexOf('', otherRecordStartIndex)).join('\n');
       const otherRecord = MarcRecord.fromString(otherRecordRaw);
+      decorateFieldsWithUuid(otherRecord);
 
       const mergedRecordStartIndex = lines.indexOf('Merged record before postmerge:') + 1;
       const mergedRecordRaw = lines.slice(mergedRecordStartIndex, lines.indexOf('', mergedRecordStartIndex)).join('\n');
       const mergedRecord = MarcRecord.fromString(mergedRecordRaw);
+
+      // Mark merged record fields with uuids from preferred,other fields if they are identical.
+      mergedRecord.fields.forEach(field => {
+        const equalFieldsInPreferred = preferredRecord.fields.filter(f => fieldsEqual(field, f));
+        const equalFieldsInOther = otherRecord.fields.filter(f => fieldsEqual(field, f));
+
+        const uuidCandidates = _.concat(equalFieldsInPreferred, equalFieldsInOther).map(field => field.uuid);
+        field.uuid = _.get(uuidCandidates, '[0]', uuid.v4());
+      });
 
       const expectedMergedRecordStartIndex = lines.indexOf('Expected record after postmerge:') + 1;
       const expectedMergedRecordEndIndex = lines.indexOf('', expectedMergedRecordStartIndex) === -1 ? lines.length : lines.indexOf('', expectedMergedRecordStartIndex);
@@ -119,5 +132,20 @@ function parseStories(storyText) {
 
       return { testName, preferredRecord, otherRecord, mergedRecord, expectedMergedRecord, notes };
     });
+
+}
+
+function fieldsEqual(fieldA, fieldB) {
+  if (fieldA.tag !== fieldB.tag) return false;
+  if (fieldA.ind1 !== fieldB.ind1) return false;
+  if (fieldA.ind2 !== fieldB.ind2) return false;
+  if (fieldA.subfields && fieldB.subfields) {
+    return _.zip(fieldA.subfields, fieldB.subfields).every(pair => {
+      return pair[0].code === pair[1].code && pair[0].value === pair[1].value;
+    });
+
+  } else {
+    return fieldA.value === fieldB.value;
+  }
 
 }
