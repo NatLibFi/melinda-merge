@@ -98,6 +98,9 @@ export function updateMergedSubrecord(rowId) {
       }
       
       const recordToCopy = preferredRecord || otherRecord;
+
+      // Note: We don't handle LOW/SID tags when subrecord action=COPY. 
+      // LOW-SYNC will handle that after the record has been added to melinda.
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }

@@ -50,3 +50,37 @@ export function selectFirstValue(field, subcode) {
     return field.value;
   }
 }
+
+export function getLink(field) {
+  const links = _.get(field, 'subfields', [])
+    .filter(sub => sub.code === '6')
+    .map(normalizeSub_6)
+    .map(sub => sub.value)
+    .map(link => link.split('-'));
+
+  return _.head(links) || [];
+}
+
+function normalizeSub_6(subfield) {
+  let {code, value} = subfield;
+  if (subfield.code === '6') {
+    value = _.head(value.split('/'));
+  }
+  return {code, value};
+}
+
+export function isLinkedFieldOf(queryField) {
+  const [queryTag, queryLinkNumber] = getLink(queryField);
+
+  return function(field) {
+
+    const linkInLinkedField = getLink(field);
+    const [linkTag, linkNumber] = linkInLinkedField;
+
+    const fieldMatchesQueryLinkTag = field.tag === queryTag;
+    const linkNumberMatchesQueryLinkNumber = linkNumber === queryLinkNumber;
+    const linkTagLinksBackToQueryField = linkTag === queryField.tag;
+
+    return fieldMatchesQueryLinkTag && linkNumberMatchesQueryLinkNumber && linkTagLinksBackToQueryField;
+  };
+}
