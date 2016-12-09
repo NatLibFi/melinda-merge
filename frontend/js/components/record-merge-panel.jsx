@@ -131,6 +131,7 @@ export class RecordMergePanel extends React.Component {
   }
 
   render() {
+
     return (
       <div className="row record-merge-panel">
         <div className="col s4">

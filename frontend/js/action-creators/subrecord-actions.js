@@ -3,7 +3,6 @@ import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
 import { exceptCoreErrors } from '../utils';
 import { FetchNotOkError } from '../errors';
-import uuid from 'node-uuid';
 
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
@@ -16,7 +15,9 @@ import createRecordMerger from 'marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
 import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
-
+import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
+import _ from 'lodash';
+import { decorateFieldsWithUuid, selectRecordId, resetRecordId, resetComponentHostLinkSubfield } from '../record-utils';
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -96,8 +97,24 @@ export function updateMergedSubrecord(rowId) {
       if (preferredRecord && otherRecord) {
         throw new Error('Cannot copy both records');
       }
+
+      let hostRecordId;
+      let recordToCopy;
+
+      if (preferredRecord) {
+        hostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+        recordToCopy = new MarcRecord(preferredRecord);
+      } else {
+        hostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+        recordToCopy = new MarcRecord(otherRecord);
+      }
       
-      const recordToCopy = preferredRecord || otherRecord;
+      resetRecordId(recordToCopy);
+
+      recordToCopy.fields.filter(field => {
+        return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
+      }).map(resetComponentHostLinkSubfield);
+
       return dispatch(setMergedSubrecord(rowId, recordToCopy));
 
     }
@@ -113,9 +130,15 @@ export function updateMergedSubrecord(rowId) {
     if (selectedActionType === SubrecordActionTypes.MERGE) {
       if (preferredRecord && otherRecord) {
 
+        const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+        const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+
 
         const componentRecordValidationRules = MergeValidation.preset.melinda_component;
-        const postMergeFixes = PostMerge.preset.defaults;
+        const postMergeFixes = _.clone(PostMerge.preset.defaults);
+
+        // insert select773 just before sort
+        postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
 
         const merge = createRecordMerger(mergeConfiguration);
 
@@ -198,14 +221,9 @@ export const saveSubrecord = (function() {
         .then(response => response.json())
         .then(json => {
 
-          const mainRecord = json.record;
-      
-          const marcRecord = new MarcRecord(mainRecord);
+          const marcRecord = new MarcRecord(json.record);
+          decorateFieldsWithUuid(marcRecord);
          
-          marcRecord.fields.forEach(field => {
-            field.uuid = uuid.v4();
-          });
-
           dispatch(saveSubrecordSuccess(rowId, marcRecord));
    
         }).catch(exceptCoreErrors((error) => {

@@ -21,8 +21,9 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield } from './record-utils';
+import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
+
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
@@ -284,13 +285,39 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
   };
 }
 
-
 export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
   mergedRecord.fields.sort(fieldOrderComparator);
 
   return { mergedRecord };
+}
+
+export function select773Fields(preferredHostRecordId, othterHostRecordId) {
+  return function(preferredRecord, otherRecord, mergedRecord) {
+  
+    const linksToPreferredHost = mergedRecord.fields.filter(field => {
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${preferredHostRecordId}`);
+    });
+    const linksToOtherHost = mergedRecord.fields.filter(field => {
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${othterHostRecordId}`);
+    });
+
+    const fieldsWithoutLinks = _.difference(mergedRecord.fields, _.concat(linksToPreferredHost, linksToOtherHost));
+
+    if (linksToPreferredHost.length > 0) {
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToPreferredHost.map(resetComponentHostLinkSubfield));
+      linksToOtherHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(otherRecord, uuid));
+    } else {
+      mergedRecord.fields = _.concat(fieldsWithoutLinks, linksToOtherHost.map(resetComponentHostLinkSubfield));
+      linksToPreferredHost.map(field => field.uuid).forEach(uuid => markFieldAsUnused(preferredRecord, uuid));
+    }
+
+    return {
+      mergedRecord
+    };
+
+  };
 }
 
 

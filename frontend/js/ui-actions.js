@@ -1,5 +1,5 @@
 import fetch from 'isomorphic-fetch';
-import MARCRecord from 'marc-record-js';
+import MarcRecord from 'marc-record-js';
 import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
 import createRecordMerger from 'marc-record-merge';
@@ -9,10 +9,10 @@ import {hashHistory} from 'react-router';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
-import uuid from 'node-uuid';
 import { subrecordRows, sourceSubrecords, targetSubrecords, rowsWithResultRecord } from './selectors/subrecord-selectors';
 import { updateSubrecordArrangement, saveSubrecordSuccess } from './action-creators/subrecord-actions';
 import { match } from './component-record-match-service';
+import { decorateFieldsWithUuid } from './record-utils';
 
 import * as MergeValidation from './marc-record-merge-validate-service';
 import * as PostMerge from './marc-record-merge-postmerge-service';
@@ -70,8 +70,8 @@ export function commitMerge() {
 
             const newMergedRecordId = res.recordId;
 
-            const { record, subrecords } = res;
-
+            const { record, subrecords } = marcRecordsFrom(res.record, res.subrecords);
+          
             dispatch(commitMergeSuccess(newMergedRecordId, res));
             dispatch(saveRecordSuccess(record));
 
@@ -81,10 +81,8 @@ export function commitMerge() {
               dispatch(saveSubrecordSuccess(rowId, subrecord));
             });
 
-            
             dispatch(markAsMerged());
          
-
           } else {
             switch (response.status) {
               case HttpStatus.UNAUTHORIZED: return dispatch(commitMergeError('Käyttäjätunnus ja salasana eivät täsmää.'));
@@ -394,24 +392,10 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
 
 
         if (currentRecordId === recordId) {
-          const mainRecord = json.record;
-          const subrecords = json.subrecords;
 
-          const marcRecord = new MARCRecord(mainRecord);
-          const marcSubRecords = subrecords
-            .map(record => new MARCRecord(record));
-         
-          marcSubRecords.forEach(record => {
-            record.fields.forEach(field => {
-              field.uuid = uuid.v4();
-            });
-          });
+          const {record, subrecords} = marcRecordsFrom(json.record, json.subrecords);
 
-          marcRecord.fields.forEach(field => {
-            field.uuid = uuid.v4();
-          });
-
-          dispatch(setRecordAction(marcRecord, marcSubRecords, recordId));
+          dispatch(setRecordAction(record, subrecords, recordId));
           dispatch(updateMergedRecord());
         }
  
@@ -427,8 +411,19 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
         dispatch(setRecordErrorAction('There has been a problem with fetch operation: ' + error.message));
       }));
   };
+}
 
-  
+function marcRecordsFrom(record, subrecords) {
+  const marcRecord = new MarcRecord(record);
+  const marcSubrecords = subrecords.map(record => new MarcRecord(record));
+         
+  decorateFieldsWithUuid(marcRecord);
+  marcSubrecords.forEach(decorateFieldsWithUuid);
+
+  return {
+    record: marcRecord,
+    subrecords: marcSubrecords
+  };
 }
 
 function validateResponseStatus(response) {

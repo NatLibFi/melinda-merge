@@ -27,6 +27,7 @@ export class SubRecordPanel extends React.Component {
   renderSaveButton() {
 
     const statuses = {
+      'UNSAVED': 'UPDATE_NOT_STARTED',
       'SAVED': 'UPDATE_SUCCESS',
       'SAVE_ONGOING': 'UPDATE_ONGOING',
       'SAVE_FAILED': 'UPDATE_FAILED'
