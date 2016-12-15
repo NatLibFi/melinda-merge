@@ -10,7 +10,8 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE,
+  TOGGLE_COMPACT_SUBRECORD_VIEW } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -66,6 +67,8 @@ export default function subrecords(state = INITIAL_STATE, action) {
     case SAVE_SUBRECORD_FAILURE:
       return handleSubrecordSaveFailure(state, action.rowId, action.error);
 
+    case TOGGLE_COMPACT_SUBRECORD_VIEW:
+      return compactItemsWithActionSelected(state);
 
     case RESET_WORKSPACE:
       return INITIAL_STATE;
@@ -136,6 +139,15 @@ function expandRow(state, rowId) {
 
 function compressRow(state, rowId) {
   return state.update(rowId, createEmptyRow(), row => row.set('isExpanded', false));
+}
+
+function compactItemsWithActionSelected(state) {
+  const rowsToCompact = state.get('index').filter(rowId => {
+    const row = state.get(rowId);
+    return row.get('mergedRecord') !== undefined;
+  });
+
+  return rowsToCompact.reduce((state, rowId) => compressRow(state, rowId), state);
 }
 
 export function setSourceSubrecords(state, record, subrecords) {
