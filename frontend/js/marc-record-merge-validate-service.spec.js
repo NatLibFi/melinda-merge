@@ -70,7 +70,6 @@ function loadStoriesFromFile(filename) {
   
   const storyText = fs.readFileSync(path.resolve(storiesPath, filename), 'utf8');
 
-
   const fnName = filename.slice(0, -6);
   const functionUnderTest = MarcRecordMergeValidateService[fnName];
   const suiteName = fnName;

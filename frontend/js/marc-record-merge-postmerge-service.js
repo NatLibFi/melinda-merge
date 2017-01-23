@@ -21,13 +21,12 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield } from './record-utils';
+import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
-
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
-  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, sortMergedRecordFields];
+  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
 
 export const preset = {
   defaults: defaultPreset
@@ -285,6 +284,74 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
   };
 }
 
+export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam) {
+  const mergedRecord = new MarcRecord(mergedRecordParam);
+
+  const fieldsWithout880 = mergedRecord.fields.filter(field => field.tag !== '880');
+
+  const fieldsWithLinkedContent = fieldsWithout880
+    .filter(field => field.subfields)
+    .filter(field => field.subfields.some(subfield => subfield.code === '6'));
+
+  const relinked880Fields = _.chain(fieldsWithLinkedContent).flatMap((field, i) => {
+
+    const fieldInPreferred = _.chain(preferredRecord.fields).filter(fieldInPreferred => fieldInPreferred.uuid === field.uuid).value();
+    const fieldInOther = _.chain(otherRecord.fields).filter(otherRecord => otherRecord.uuid === field.uuid).value();
+    
+    const linkedFieldsFromPreferred = _.flatMap(fieldInPreferred, (fieldWithLink) => {
+      return preferredRecord.fields.filter(isLinkedFieldOf(fieldWithLink));
+    });
+
+    const linkedFieldsFromOther = _.flatMap(fieldInOther, (fieldWithLink) => {
+      return otherRecord.fields.filter(isLinkedFieldOf(fieldWithLink));
+    });
+
+    linkedFieldsFromPreferred.forEach(field => {
+      markFieldAsUsed(field, {fromOther: false});
+    });
+
+    linkedFieldsFromOther.forEach(field => {
+      markFieldAsUsed(field, {fromOther: true});
+    });
+    
+    const linkedFields = _.concat(_.cloneDeep(linkedFieldsFromPreferred), _.cloneDeep(linkedFieldsFromOther));
+
+    updateLinks(i+1, field, linkedFields);
+
+    return linkedFields;
+    
+  }).value();
+
+  mergedRecord.fields = _.concat(fieldsWithout880, relinked880Fields);
+
+  const dropped880Fields = _.differenceBy(mergedRecordParam.fields, mergedRecord.fields, 'uuid');
+  dropped880Fields.map(field => field.uuid).forEach(uuid => {
+    markFieldAsUnused(preferredRecord, uuid);
+    markFieldAsUnused(otherRecord, uuid);
+  });
+  
+  return { mergedRecord };
+}
+
+function updateLinks(linkIndex, field, linkedFieldList) {
+  const tag = field.tag;
+  const linkIndexNormalized = _.padStart(linkIndex, 2, '0');
+
+  field.subfields.forEach(sub => {
+    if (sub.code === '6') {
+      sub.value = `880-${linkIndexNormalized}`;
+    }
+  });
+  
+  linkedFieldList.forEach(field => {
+    field.subfields.forEach(sub => {
+      if (sub.code === '6') {
+        sub.value = `${tag}-${linkIndexNormalized}`;
+      }
+    });
+  });
+}
+
 export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
@@ -346,4 +413,11 @@ function markFieldAsUnused(record, fieldUuid) {
       delete(field.wasUsed);
       delete(field.fromOther);
     });
+}
+
+function markFieldAsUsed(field, opts) {
+  field.wasUsed = true;
+  if (opts && opts.fromOther !== undefined) {
+    field.fromOther = opts.fromOther;
+  }
 }
