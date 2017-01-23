@@ -15,6 +15,7 @@ import { SubrecordMergePanelNewRow } from './subrecord-merge-panel-new-row';
 import { subrecordOrder, subrecords } from '../../selectors/subrecord-selectors';
 import { recordSaveActionAvailable } from '../../selectors/merge-status-selector';
 import { subrecordActionsEnabled } from '../../selectors/merge-status-selector';
+import { compactRowsMap } from '../../selectors/ui-selectors';
 
 import '../../../styles/components/subrecord-merge-panel.scss';
 
@@ -23,6 +24,7 @@ export class SubrecordMergePanel extends React.Component {
   static propTypes = {
     subrecordOrder: React.PropTypes.array.isRequired,
     subrecords: React.PropTypes.object.isRequired,
+    compactRowIdMap: React.PropTypes.object.isRequired,
     insertSubrecordRow: React.PropTypes.func.isRequired,
     removeSubrecordRow: React.PropTypes.func.isRequired,
     changeSubrecordRow: React.PropTypes.func.isRequired,
@@ -46,11 +48,12 @@ export class SubrecordMergePanel extends React.Component {
 
   renderSubrecordList() {
    
-    const { subrecordOrder, subrecords } = this.props;
+    const { subrecordOrder, subrecords, compactRowIdMap } = this.props;
 
     const items = subrecordOrder.map((rowId, i) => {
       
       const {sourceRecord, targetRecord, mergedRecord, selectedAction, isExpanded, mergeError, saveStatus, saveRecordError} = subrecords[rowId];
+      const isCompacted = compactRowIdMap[rowId] === true;
 
       return (<DragDropSubrecordMergePanelRow
         key={rowId}
@@ -74,6 +77,7 @@ export class SubrecordMergePanel extends React.Component {
         recordState={saveStatus}
         saveRecordError={saveRecordError}
         mergeError={mergeError}
+        isCompacted={isCompacted}
       />);
     });
 
@@ -155,7 +159,8 @@ function mapStateToProps(state) {
     subrecordOrder: subrecordOrder(state),
     subrecords: subrecords(state),
     saveButtonVisible: recordSaveActionAvailable(state),
-    subrecordActionsEnabled: subrecordActionsEnabled(state)
+    subrecordActionsEnabled: subrecordActionsEnabled(state),
+    compactRowIdMap: compactRowsMap(state)
   };
 }
 

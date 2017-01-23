@@ -7,7 +7,7 @@ import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
 import {hashHistory} from 'react-router';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
-import { RESET_WORKSPACE } from './constants/action-type-constants';
+import { RESET_WORKSPACE, TOGGLE_COMPACT_SUBRECORD_VIEW } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
 import { subrecordRows, sourceSubrecords, targetSubrecords, rowsWithResultRecord } from './selectors/subrecord-selectors';
 import { updateSubrecordArrangement, saveSubrecordSuccess } from './action-creators/subrecord-actions';
@@ -457,3 +457,11 @@ export function toggleSourceRecordFieldSelection(fieldInSourceRecord) {
   };
 }
 
+export function setCompactSubrecordView(enabled) {
+  return function(dispatch, getState) {
+
+    const rowsToCompact = rowsWithResultRecord(getState()).map(row => row.rowId);
+
+    dispatch({ 'type': TOGGLE_COMPACT_SUBRECORD_VIEW, enabled, rowsToCompact});
+  };
+}

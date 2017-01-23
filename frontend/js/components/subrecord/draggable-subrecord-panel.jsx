@@ -32,6 +32,9 @@ const subrecordSource = {
     if (props && props.isExpanded) {
       return false;
     }
+    if (props && props.isCompacted) {
+      return false;
+    }
     if (props && props.dragEnabled !== true) {
       return false;
     }
