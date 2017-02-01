@@ -66,7 +66,7 @@ const similarityDefinition = {
       "options": {
         "truncate": 1000,
         "replace": {
-          "pattern": "[.,/;:-= ]",
+          "pattern": "[.,/;:-= ?!]",
           "replacement": "",
           "flags": "gi"
         },
@@ -105,6 +105,22 @@ const similarityDefinition = {
         "trim": {
           "chars": ",.:_\\-/= "
         }
+      }
+    },
+    {
+      "name": "Uniform title",
+      "description": "Field 240",
+      "disabled": false,
+      "true": 20,
+      "false": -20,
+      "path": "$.fields[?(@.tag === '240')].subfields[?(@.code === '*')].value",
+      "options": {
+        "truncate": 10,
+        "trim": {
+          "chars": ",.:_\\-/= "
+        },
+        "skipMissing": true,
+        "caseSensitive": false
       }
     },
     {

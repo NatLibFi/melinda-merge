@@ -71,6 +71,7 @@ module.exports = {
     "024": { "action": "copy", "options": { "compareWithout": ["z", "c", "q", "9"], "combine": ["c"] } },
     "027": { "action": "copy", "options": { "compareWithout": ["z", "c", "q", "9"], "combine": ["c"] } },
     "028": { "action": "copy", "options": { "compareWithout": ["q", "9"], "compareWithoutIndicators": true } },
+    "031": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "033": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "035": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "039": { "action": "copy", "options": { "compareWithout": ["9"] } },
