@@ -40,7 +40,7 @@ export class NavBar extends React.Component {
   render() {
 
     return (
-      <div className="navbar-fixed">
+  
         <nav> 
           <div className="nav-wrapper">
             
@@ -56,7 +56,7 @@ export class NavBar extends React.Component {
           <li className="divider" />
           <li><a href="#" onClick={this.props.removeSession}>Kirjaudu ulos</a></li>
         </ul>
-      </div>
+      
     );
   }
 } 
