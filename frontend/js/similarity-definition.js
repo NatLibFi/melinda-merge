@@ -107,7 +107,7 @@ const similarityDefinition = {
         }
       }
     },
-{
+    {
       "name": "Uniform title",
       "description": "Field 240",
       "disabled": false,
@@ -123,7 +123,6 @@ const similarityDefinition = {
         "caseSensitive": false
       }
     },
-
     {
       "name": "f100a",
       "description": "f100a main entry",
