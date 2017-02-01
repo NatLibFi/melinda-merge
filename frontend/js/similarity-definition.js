@@ -66,7 +66,7 @@ const similarityDefinition = {
       "options": {
         "truncate": 1000,
         "replace": {
-          "pattern": "[.,/;:-= ]",
+          "pattern": "[.,/;:-= ?!]",
           "replacement": "",
           "flags": "gi"
         },
