@@ -107,6 +107,23 @@ const similarityDefinition = {
         }
       }
     },
+{
+      "name": "Uniform title",
+      "description": "Field 240",
+      "disabled": false,
+      "true": 20,
+      "false": -20,
+      "path": "$.fields[?(@.tag === '240')].subfields[?(@.code === '*')].value",
+      "options": {
+        "truncate": 10,
+        "trim": {
+          "chars": ",.:_\\-/= "
+        },
+        "skipMissing": true,
+        "caseSensitive": false
+      }
+    },
+
     {
       "name": "f100a",
       "description": "f100a main entry",
