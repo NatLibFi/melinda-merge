@@ -99,6 +99,9 @@ function sortByIndexterms(fieldA, fieldB) {
     if (valueA > valueB) return 1;
     if (valueA < valueB) return -1;
 
+    // This sorts also with subfield 2 that includes thesaurus source code, should not do that
+    return sortAlphabetically(fieldA, fieldB);
+    
   }
   return 0;
 }
