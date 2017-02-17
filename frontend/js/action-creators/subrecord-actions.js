@@ -72,6 +72,26 @@ export function setEverySubrecordAction() {
   };
 }
 
+
+export function setEveryMatchedSubrecordAction() {
+  return function(dispatch, getState) {
+    getState().getIn(['subrecords', 'index']).forEach(rowId => {
+      
+      const subrecordRow = getState().getIn(['subrecords', rowId]).toJS();  
+      const hasSource = subrecordRow.sourceRecord !== undefined;
+      const hasTarget = subrecordRow.targetRecord !== undefined;
+
+      if (hasSource && hasTarget) {
+        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.MERGE));
+        dispatch(updateMergedSubrecord(rowId));
+      }
+     
+        
+    });
+  };
+}
+
+
 export function updateSubrecordArrangement(pairs) {
   return { 'type': UPDATE_SUBRECORD_ARRANGEMENT, pairs };
 }
