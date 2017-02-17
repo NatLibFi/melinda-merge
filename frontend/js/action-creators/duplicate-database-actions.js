@@ -76,8 +76,8 @@ export function fetchNextPair() {
 
             dispatch(fetchNextPairSuccess(res));
 
-            dispatch(fetchRecord(res.preferredRecordId, 'SOURCE'));
-            dispatch(fetchRecord(res.otherRecordId, 'TARGET'));
+            dispatch(fetchRecord(res.preferredRecordId, 'TARGET'));
+            dispatch(fetchRecord(res.otherRecordId, 'SOURCE'));
             dispatch(fetchCount());
 
           });
