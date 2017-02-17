@@ -1,4 +1,4 @@
-import { setEverySubrecordAction } from './action-creators/subrecord-actions';
+import { setEverySubrecordAction, setEveryMatchedSubrecordAction } from './action-creators/subrecord-actions';
 
 export function initKeyboardListener(el, store) {
 
@@ -7,6 +7,11 @@ export function initKeyboardListener(el, store) {
     if (keyEvent.keyCode == 77 && keyEvent.ctrlKey) {
       store.dispatch(setEverySubrecordAction());
     }
+    
+    if (keyEvent.keyCode == 77 && keyEvent.ctrlKey && keyEvent.shiftKey) {
+      store.dispatch(setEveryMatchedSubrecordAction());
+    }
+    
   }
 
   el.addEventListener('keydown', onKeyDown);
