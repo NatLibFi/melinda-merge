@@ -62,7 +62,9 @@ const dictionarySortIndex = {
   'ysa': '0',
   'allars': '1',
   'musa': '2',
-  'cilla': '3'
+  'cilla': '3',
+  'kaunokki': '4',
+  'bella': '5'
 };
 
 function sortByIndexterms(fieldA, fieldB) {
