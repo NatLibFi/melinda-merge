@@ -32,7 +32,7 @@ export class MergeDialog extends React.Component {
   renderResponseMessages(response) {
     
     if (_.isEmpty(response)) {
-       return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
+      return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
     }
     
     if (response.name === 'RollbackError') {
