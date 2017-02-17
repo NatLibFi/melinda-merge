@@ -8,7 +8,7 @@ export function initKeyboardListener(el, store) {
       store.dispatch(setEverySubrecordAction());
     }
     
-    if (keyEvent.keyCode == 77 && keyEvent.AltKey) {
+    if (keyEvent.keyCode == 77 && keyEvent.altKey) {
       store.dispatch(setEveryMatchedSubrecordAction());
     }
     
