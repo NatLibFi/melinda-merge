@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import { CommitMergeStates } from '../constants';
 import '../../styles/components/merge-dialog.scss';
