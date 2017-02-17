@@ -1,4 +1,5 @@
 import React from 'react';
+import _ from 'lodash';
 import classNames from 'classnames';
 import { CommitMergeStates } from '../constants';
 import '../../styles/components/merge-dialog.scss';
@@ -29,6 +30,11 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
+    
+    if (_.isEmpty(response)) {
+      return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
+    }
+    
     if (response.name === 'RollbackError') {
       return <div className="response-container"><div className="red lighten-5">{response.message}</div></div>;
     }
