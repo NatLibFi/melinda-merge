@@ -83,11 +83,10 @@ export function setEveryMatchedSubrecordAction() {
 
       if (hasSource && hasTarget) {
         dispatch(setSubrecordAction(rowId, SubrecordActionTypes.MERGE));
-      } else {
-        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.UNSET));
+        dispatch(updateMergedSubrecord(rowId));
       }
      
-      dispatch(updateMergedSubrecord(rowId));  
+        
     });
   };
 }
