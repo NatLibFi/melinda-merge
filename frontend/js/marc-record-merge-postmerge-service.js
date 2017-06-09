@@ -7,6 +7,7 @@ Actions:
 
 Adds LOW tags from source & target
 Adds sid fields from source & target (if low is also there). So if source has extra sids, they are dropped.
+Adds extra SID volsi for VOLTE (Todo: make these pairs configurable)
 Adds FCC SID fields if no other sids exist
 
 Adds 035z with (FI-MELINDA)' + other_id },
@@ -103,6 +104,22 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
     }
   });
 
+    otherRecordLibraryIdList.forEach(libraryId => {
+    /* TODO: Add here config -table for extra SID $b value / libraryID pairs */
+    
+    if (libraryId == 'VOLTE') {
+      const otherRecordSIDExtraFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', 'volsi');
+
+      if (otherRecordSIDExtraFieldList.length > 0) {
+
+        mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDExtraFieldList.map(markAsPostmergeField));
+
+    }   
+    }
+  });
+
+  
+  
   return {
     mergedRecord
   };
@@ -129,7 +146,7 @@ export function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, merge
       }));
     }
   });
-
+  
   return {
     mergedRecord
   };
