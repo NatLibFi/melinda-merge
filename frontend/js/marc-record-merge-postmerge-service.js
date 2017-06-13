@@ -103,9 +103,9 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
       }));
     }
   });
-
-    otherRecordLibraryIdList.forEach(libraryId => {
-    /* TODO: Add here config -table for extra SID $b value / libraryID pairs */
+  
+  otherRecordLibraryIdList.forEach(libraryId => {
+  /* TODO: Add here config -table for extra SID $b value / libraryID pairs */
     
     if (libraryId == 'VOLTE') {
       const otherRecordSIDExtraFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', 'volsi');
@@ -114,7 +114,7 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
 
         mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDExtraFieldList.map(markAsPostmergeField));
 
-    }   
+      }   
     }
   });
 
