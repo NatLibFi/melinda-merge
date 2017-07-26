@@ -62,7 +62,9 @@ const dictionarySortIndex = {
   'ysa': '0',
   'allars': '1',
   'musa': '2',
-  'cilla': '3'
+  'cilla': '3',
+  'kaunokki': '4',
+  'bella': '5'
 };
 
 function sortByIndexterms(fieldA, fieldB) {
@@ -97,6 +99,23 @@ function sortByIndexterms(fieldA, fieldB) {
     if (valueA > valueB) return 1;
     if (valueA < valueB) return -1;
 
+    const valueAX = selectFirstValue(fieldA, 'x');
+    const valueBX = selectFirstValue(fieldB, 'x');
+
+    if (valueAX > valueBX) return 1;
+    if (valueAX < valueBX) return -1;
+    
+    const valueAZ = selectFirstValue(fieldA, 'z');
+    const valueBZ = selectFirstValue(fieldB, 'z');
+
+    if (valueAZ > valueBZ) return 1;
+    if (valueAZ < valueBZ) return -1;
+    
+    const valueAY = selectFirstValue(fieldA, 'y');
+    const valueBY = selectFirstValue(fieldB, 'y');
+    if (valueAY > valueBY) return 1;
+    if (valueAY < valueBY) return -1;
+    
   }
   return 0;
 }
