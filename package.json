@@ -49,7 +49,7 @@
     "lodash": "^4.15.0",
     "marc-record-js": "^0.3.1",
     "marc-record-merge": "https://github.com/NatLibFi/marc-record-merge.git#a5b89493632ea3b44969d31a8d8313f4e7660dce",
-    "melinda-api-client": "^1.1.0",
+    "melinda-api-client": "1.1.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.15.1",
     "object-assign": "^4.1.0",
