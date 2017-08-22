@@ -95,7 +95,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
   function createRecord(record) {
     logger.log('info', `${jobId}] Creating new record`);
-    return client.createRecord(record, {bypass_low_validation: 1}).then(res => {
+    return client.createRecord(record, {bypass_low_validation: 1, bypass_index_check: 1}).then(res => {
       logger.log('info', `${jobId}] Create record ok for ${res.recordId}`, res.messages);
       return _.assign({}, res, {operation: 'CREATE'});
     }).catch(err => {
@@ -109,7 +109,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return client.loadRecord(recordId, {handle_deleted:1, no_rerouting: 1}).then(function(record) {
       record.fields = record.fields.filter(field => field.tag !== 'STA');
       updateRecordLeader(record, 5, 'c');
-      return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1}).then(function(res) {
+      return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1, bypass_index_check: 1}).then(function(res) {
         logger.log('info', `${jobId}] Undelete ok for ${recordId}`, res.messages);
         return _.assign({}, res, {operation: 'UNDELETE'});
       });
@@ -126,7 +126,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     record.appendField(['STA', '', '', 'a', 'DELETED']);
     updateRecordLeader(record, 5, 'd');
 
-    return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1}).then(function(res) {
+    return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1, bypass_index_check: 1}).then(function(res) {
       logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
       return _.assign({}, res, {operation: 'DELETE'});
     }).catch(err => {
@@ -140,7 +140,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
     return client.loadRecord(recordId, {handle_deleted: 1, no_rerouting: 1}).then(function(record) {
       record.appendField(['STA', '', '', 'a', 'DELETED']);
       updateRecordLeader(record, 5, 'd');
-      return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1}).then(function(res) {
+      return client.updateRecord(record, {bypass_low_validation: 1, handle_deleted: 1, no_rerouting: 1, bypass_index_check: 1}).then(function(res) {
         logger.log('info', `${jobId}] Delete ok for ${recordId}`, res.messages);
         return _.assign({}, res, {operation: 'DELETE'});
       });
