@@ -38,7 +38,7 @@
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
     "watch:server": "NODE_ENV=debug nodemon --watch server --exec babel-node --presets=es2015 server/index.js",
     "cli": "babel-node ./bin/cli.js",
-    "publish-to-npm": "npm run publish --access=public"
+    "publish-to-npm": "npm install && npm publish --access=public"
   },
   "license": "AGPL-3.0+",
   "dependencies": {
