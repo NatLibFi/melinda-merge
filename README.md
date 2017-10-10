@@ -30,3 +30,8 @@ node index.js
 
 This will start webpack-dev-server for frontend codebase and nodemon for the backend.
 
+## License and copyright
+
+Copyright (c) 2015-2017 **University Of Helsinki (The National Library Of Finland)**
+
+This project's source code is licensed under the terms of **MIT License**.

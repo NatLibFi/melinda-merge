@@ -40,7 +40,7 @@ export class NavBar extends React.Component {
   render() {
 
     return (
-      <div className="navbar-fixed">
+    <div className="navbar-fixed">
         <nav> 
           <div className="nav-wrapper">
             

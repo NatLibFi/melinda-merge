@@ -27,7 +27,7 @@ logger.log('info', `merge-controller endpoint: ${defaultConfig.endpoint}`);
 export const mergeController = express();
 
 mergeController.use(cookieParser());
-mergeController.use(bodyParser.json({limit: '5mb'}));
+mergeController.use(bodyParser.json({limit: '15mb'}));
 mergeController.use(readSessionMiddleware);
 mergeController.set('etag', false);
 
