@@ -86,19 +86,19 @@ module.exports = {
           },
           {
             "formats": ["BK", "CF", "MU", "VM"],
-            "range": [22],
+            "range": [22, 22],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
           {
             "formats": ["BK", "CF", "CR", "MU", "MX"],
-            "range": [23],
+            "range": [23, 23],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
           {
             "formats": ["MP"],
-            "range": [29],
+            "range": [29, 29],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },           
@@ -110,31 +110,31 @@ module.exports = {
           },          
           {
             "formats": ["BK", "CF", "CR", "MP", "VM"],
-            "range": [28],
+            "range": [28, 28],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
           {
             "formats": ["BK", "CR", "VM"],
-            "range": [29],
+            "range": [29, 29],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },                  
           {
             "formats": ["BK"],
-            "range": [30],
+            "range": [30, 30],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },           
           {
             "formats": ["BK", "MP"],
-            "range": [31],
+            "range": [31, 31],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },           
           {
             "formats": ["BK"],
-            "range": [33],
+            "range": [33, 33],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },               
@@ -146,37 +146,37 @@ module.exports = {
           },      
           {
             "formats": ["BK"],
-            "range": [34],
+            "range": [34, 34],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },    
           {
             "formats": ["CR"],
-            "range": [18],
+            "range": [18, 18],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
           {
             "formats": ["CR"],
-            "range": [19],
+            "range": [19, 19],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
           {
             "formats": ["CR"],
-            "range": [21],
+            "range": [21, 21],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
           {
             "formats": ["CR"],
-            "range": [22],
+            "range": [22, 22],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
           {
             "formats": ["CR"],
-            "range": [24],
+            "range": [24, 24],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
@@ -188,13 +188,13 @@ module.exports = {
           }, 
           {
             "formats": ["CR"],
-            "range": [33],
+            "range": [33, 33],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
           {
             "formats": ["CR"],
-            "range": [34],
+            "range": [34, 34],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },          
@@ -206,7 +206,7 @@ module.exports = {
           },  
           {
             "formats": ["MP"],
-            "range": [25],
+            "range": [25, 25],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },  
@@ -224,13 +224,13 @@ module.exports = {
           },
           {
             "formats": ["MU"],
-            "range": [20],
+            "range": [20, 20],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
           {
             "formats": ["MU"],
-            "range": [21],
+            "range": [21, 21],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
@@ -242,7 +242,7 @@ module.exports = {
           },
           {
             "formats": ["MU"],
-            "range": [33],
+            "range": [33, 33],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
@@ -254,13 +254,13 @@ module.exports = {
           },
           {
             "formats": ["VM"],
-            "range": [33],
+            "range": [33, 33],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },          
           {
             "formats": ["VM"],
-            "range": [34],
+            "range": [34, 34],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },          
