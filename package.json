@@ -5,7 +5,10 @@
   "author": {
     "name": "The National Library of Finland"
   },
-  "keywords": ["marc", "merge"],
+  "keywords": [
+    "marc",
+    "merge"
+  ],
   "homepage": "https://github.com/natlibfi/marc-merge-ui",
   "bugs": {
     "url": "https://github.com/natlibfi/marc-merge-ui/issues"
