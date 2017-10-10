@@ -90,13 +90,13 @@ module.exports = {
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
-         {
+          {
             "formats": ["BK", "CF", "CR", "MU", "MX"],
             "range": [23],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
-         {
+          {
             "formats": ["MP"],
             "range": [29],
             "significantCaret": true,
@@ -108,157 +108,157 @@ module.exports = {
             "significantCaret": false,
             "type": "combine"
           },          
-         {
+          {
             "formats": ["BK", "CF", "CR", "MP", "VM"],
             "range": [28],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
-         {
+          {
             "formats": ["BK", "CR", "VM"],
             "range": [29],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },                  
-         {
+          {
             "formats": ["BK"],
             "range": [30],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },           
-         {
+          {
             "formats": ["BK", "MP"],
             "range": [31],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },           
-         {
+          {
             "formats": ["BK"],
             "range": [33],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },               
-         {
+          {
             "formats": ["MU"],
             "range": [30, 31],
             "significantCaret": true,
             "type": "combine"
           },      
-        {
+          {
             "formats": ["BK"],
             "range": [34],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },    
-        {
+          {
             "formats": ["CR"],
             "range": [18],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["CR"],
             "range": [19],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["CR"],
             "range": [21],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
-        {
+          {
             "formats": ["CR"],
             "range": [22],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
-        {
+          {
             "formats": ["CR"],
             "range": [24],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
-         {
+          {
             "formats": ["CR"],
             "range": [25, 27],
             "significantCaret": true,
             "type": "combine"
           }, 
-        {
+          {
             "formats": ["CR"],
             "range": [33],
             "significantCaret": true,
             "type": "selectNonEmpty"
           }, 
-        {
+          {
             "formats": ["CR"],
             "range": [34],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },          
-        {
+          {
             "formats": ["MP"],
             "range": [18, 21],
             "significantCaret": true,
             "type": "combine"
           },  
-        {
+          {
             "formats": ["MP"],
             "range": [25],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },  
-        {
+          {
             "formats": ["MP"],
             "range": [33, 34],
             "significantCaret": true,
             "type": "combine"
           },
-        {
+          {
             "formats": ["MU"],
             "range": [18, 19],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["MU"],
             "range": [20],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["MU"],
             "range": [21],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },          
-        {
+          {
             "formats": ["MU"],
             "range": [24, 29],
             "significantCaret": true,
             "type": "combine"
           },
-        {
+          {
             "formats": ["MU"],
             "range": [33],
             "significantCaret": true,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["VM"],
             "range": [18, 20],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },
-        {
+          {
             "formats": ["VM"],
             "range": [33],
             "significantCaret": false,
             "type": "selectNonEmpty"
           },          
-        {
+          {
             "formats": ["VM"],
             "range": [34],
             "significantCaret": false,
