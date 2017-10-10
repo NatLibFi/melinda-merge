@@ -1,7 +1,19 @@
 {
-  "name": "merge2",
-  "version": "0.0.1",
-  "description": "Application for merging MARC records",
+  "name": "@natlibfi/marc-merge-ui",
+  "description": "UI for merging MARC records",
+  "version": "1.0.0",
+  "author": {
+    "name": "The National Library of Finland"
+  },
+  "keywords": ["marc", "merge"],
+  "homepage": "https://github.com/natlibfi/marc-merge-ui",
+  "bugs": {
+    "url": "https://github.com/natlibfi/marc-merge-ui/issues"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git@github.com:natlibfi/marc-merge-ui.git"
+  },
   "main": "index.js",
   "scripts": {
     "clean:build": "node ./bin/clean.js createdir",
@@ -22,14 +34,10 @@
     "watch": "npm run watch:ui & npm run watch:server",
     "watch:ui": "DEBUG=1 webpack-dev-server --config ./config/webpack.config.dev.js --hot --inline --progres",
     "watch:server": "NODE_ENV=debug nodemon --watch server --exec babel-node --presets=es2015 server/index.js",
-    "cli": "babel-node ./bin/cli.js"
+    "cli": "babel-node ./bin/cli.js",
+    "publish-to-npm": "npm run publish --access=public"
   },
-  "keywords": [
-    "MARC",
-    "merge"
-  ],
-  "author": "Pasi Tuominen <pasi.tuominen@gmail.com>",
-  "license": "MIT",
+  "license": "AGPL-3.0+",
   "dependencies": {
     "archiver": "^1.1.0",
     "babel-eslint": "^7.1.0",
@@ -48,7 +56,7 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.15.0",
     "marc-record-js": "^0.3.1",
-    "marc-record-merge": "https://github.com/NatLibFi/marc-record-merge.git#a5b89493632ea3b44969d31a8d8313f4e7660dce",
+    "@natlibfi/marc-record-merge": "^3.3.0",
     "melinda-api-client": "1.1.0",
     "mkdirp": "^0.5.1",
     "moment": "^2.15.1",
