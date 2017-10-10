@@ -30,7 +30,7 @@ import fetch from 'isomorphic-fetch';
 import MarcRecord from 'marc-record-js';
 import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
-import createRecordMerger from 'marc-record-merge';
+import createRecordMerger from '@natlibfi/marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
 import {hashHistory} from 'react-router';
