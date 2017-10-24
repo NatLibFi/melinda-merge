@@ -19,6 +19,7 @@
   },
   "main": "index.js",
   "scripts": {
+    "postinstall": "cd melinda-ui-commons && npm install",
     "clean:build": "node ./bin/clean.js createdir",
     "build:html": "node ./bin/buildHtml.js",
     "start": "NODE_PATH=build/commons node build/index.js",
