@@ -28,7 +28,7 @@
 
 /* eslint no-console:0 */
 import { readEnvironmentVariable } from '../melinda-ui-commons/server/utils';
-import MelindaClient from 'melinda-api-client';
+import MelindaClient from '@natlibfi/melinda-api-client';
 import _ from 'lodash';
 import { stdin } from 'process';
 import MarcRecord from 'marc-record-js';
