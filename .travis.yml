@@ -3,7 +3,7 @@ language: node_js
 node_js:
   - "6.9.1"
   - "node"
-before_script
+before_script:
   - npm install && cd melinda-ui-commons && npm install
 after_script:
   - if test "$TRAVIS_NODE_VERSION" != "6.9.1";then exit 0;fi
