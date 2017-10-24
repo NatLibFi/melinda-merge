@@ -39,7 +39,7 @@ import { readSessionMiddleware } from 'server/session-controller';
 import _ from 'lodash';
 import { createArchive } from './archive-service';
 
-const MelindaClient = require('melinda-api-client');
+const MelindaClient = require('@natlibfi/melinda-api-client');
 const alephUrl = readEnvironmentVariable('ALEPH_URL');
 const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
 const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
