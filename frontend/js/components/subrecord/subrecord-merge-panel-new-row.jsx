@@ -27,13 +27,14 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 
 export class SubrecordMergePanelNewRow extends React.Component {
 
   static propTypes = {
-    onClick: React.PropTypes.func.isRequired,
-    enabled: React.PropTypes.bool.isRequired
+    onClick: PropTypes.func.isRequired,
+    enabled: PropTypes.bool.isRequired
   }
 
   render() {

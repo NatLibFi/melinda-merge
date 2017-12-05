@@ -27,14 +27,15 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { setCompactSubrecordView } from '../../ui-actions';
 import {connect} from 'react-redux';
 
 export class SubrecordHeader extends React.Component {
 
   static propTypes = {
-    setCompactSubrecordView: React.PropTypes.func.isRequired,
-    compactSubrecordView: React.PropTypes.bool.isRequired
+    setCompactSubrecordView: PropTypes.func.isRequired,
+    compactSubrecordView: PropTypes.bool.isRequired
   }
   
   toggleCompactView(event) {

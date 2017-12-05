@@ -27,14 +27,15 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/error-message-panel.scss';
 
 export class ErrorMessagePanel extends React.Component {
 
   static propTypes = {
-    title: React.PropTypes.string,
-    message: React.PropTypes.string,
-    messageList: React.PropTypes.array
+    title: PropTypes.string,
+    message: PropTypes.string,
+    messageList: PropTypes.array
   }
 
   renderTitle() {

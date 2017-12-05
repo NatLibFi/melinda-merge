@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { ItemTypes } from '../../constants';
 import { DropTarget } from 'react-dnd';
 import { EmptySubRecordPanelContainer } from './subrecord-empty-panel';
@@ -37,13 +38,13 @@ import compose from 'lodash/flowRight';
 export class DroppableEmptySubRecordPanel extends React.Component {
 
   static propTypes = {
-    connectDropTarget: React.PropTypes.func.isRequired,
-    isOver: React.PropTypes.bool.isRequired,
-    canDrop: React.PropTypes.bool.isRequired,
-    type: React.PropTypes.string.isRequired,
-    rowId: React.PropTypes.string.isRequired,
-    changeSourceSubrecordRow: React.PropTypes.func.isRequired,
-    changeTargetSubrecordRow: React.PropTypes.func.isRequired
+    connectDropTarget: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired,
+    canDrop: PropTypes.bool.isRequired,
+    type: PropTypes.string.isRequired,
+    rowId: PropTypes.string.isRequired,
+    changeSourceSubrecordRow: PropTypes.func.isRequired,
+    changeTargetSubrecordRow: PropTypes.func.isRequired
   }
 
   render() {

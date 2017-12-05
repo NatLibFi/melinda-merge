@@ -104,6 +104,7 @@
     "node-uuid": "^1.4.7",
     "nodemon": "^1.10.2",
     "postcss-loader": "^0.10.1",
+    "proptypes": "^1.1.0",
     "q": "^1.4.1",
     "react": "^15.3.1",
     "react-dnd": "^2.1.4",

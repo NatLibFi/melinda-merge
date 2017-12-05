@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { 
   insertSubrecordRow, removeSubrecordRow, changeSubrecordRow, expandSubrecordRow, 
   compressSubrecordRow, toggleSourceSubrecordFieldSelection, editMergedSubrecord,
@@ -50,19 +51,19 @@ import '../../../styles/components/subrecord-merge-panel.scss';
 export class SubrecordMergePanel extends React.Component {
 
   static propTypes = {
-    subrecordOrder: React.PropTypes.array.isRequired,
-    subrecords: React.PropTypes.object.isRequired,
-    compactRowIdMap: React.PropTypes.object.isRequired,
-    insertSubrecordRow: React.PropTypes.func.isRequired,
-    removeSubrecordRow: React.PropTypes.func.isRequired,
-    changeSubrecordRow: React.PropTypes.func.isRequired,
-    expandSubrecordRow: React.PropTypes.func.isRequired,
-    compressSubrecordRow: React.PropTypes.func.isRequired,
-    editMergedSubrecord: React.PropTypes.func.isRequired,
-    toggleSourceSubrecordFieldSelection: React.PropTypes.func.isRequired,
-    saveSubrecord: React.PropTypes.func.isRequired,
-    saveButtonVisible: React.PropTypes.bool.isRequired,
-    subrecordActionsEnabled: React.PropTypes.bool.isRequired
+    subrecordOrder: PropTypes.array.isRequired,
+    subrecords: PropTypes.object.isRequired,
+    compactRowIdMap: PropTypes.object.isRequired,
+    insertSubrecordRow: PropTypes.func.isRequired,
+    removeSubrecordRow: PropTypes.func.isRequired,
+    changeSubrecordRow: PropTypes.func.isRequired,
+    expandSubrecordRow: PropTypes.func.isRequired,
+    compressSubrecordRow: PropTypes.func.isRequired,
+    editMergedSubrecord: PropTypes.func.isRequired,
+    toggleSourceSubrecordFieldSelection: PropTypes.func.isRequired,
+    saveSubrecord: PropTypes.func.isRequired,
+    saveButtonVisible: PropTypes.bool.isRequired,
+    subrecordActionsEnabled: PropTypes.bool.isRequired
   }
 
   constructor(props) {

@@ -27,18 +27,19 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { DuplicateDatabaseStates } from '../constants';
 import classNames from 'classnames';
 
 export class DuplicateDatabaseControls extends React.Component {
 
   static propTypes = {
-    loadNextPair: React.PropTypes.func.isRequired,
-    skipPair: React.PropTypes.func.isRequired,
-    notDuplicate: React.PropTypes.func.isRequired,
-    duplicatePairCount: React.PropTypes.number.isRequired,
-    currentStatus: React.PropTypes.string.isRequired,
-    recordsAreFromDuplicateDatabase: React.PropTypes.bool.isRequired
+    loadNextPair: PropTypes.func.isRequired,
+    skipPair: PropTypes.func.isRequired,
+    notDuplicate: PropTypes.func.isRequired,
+    duplicatePairCount: PropTypes.number.isRequired,
+    currentStatus: PropTypes.string.isRequired,
+    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
   }
 
   loadNextDuplicatePair(event) {

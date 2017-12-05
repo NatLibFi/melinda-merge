@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import _ from 'lodash';
 import '../../../styles/components/subrecord-panel';
@@ -37,20 +38,20 @@ import { SaveButtonPanel } from '../save-button-panel';
 export class SubRecordPanel extends React.Component {
 
   static propTypes = {
-    record: React.PropTypes.object.isRequired,
-    type: React.PropTypes.string.isRequired,
-    title: React.PropTypes.string,
-    isDragging: React.PropTypes.bool,
-    showHeader: React.PropTypes.bool,
-    editable: React.PropTypes.bool,
-    isExpanded: React.PropTypes.bool,
-    isCompacted: React.PropTypes.bool,
-    onFieldClick: React.PropTypes.func,
-    onRecordUpdate: React.PropTypes.func,
-    saveButtonVisible: React.PropTypes.bool,
-    saveRecordError: React.PropTypes.instanceOf(Error),
-    recordState: React.PropTypes.string,
-    onSaveRecord: React.PropTypes.func,
+    record: PropTypes.object.isRequired,
+    type: PropTypes.string.isRequired,
+    title: PropTypes.string,
+    isDragging: PropTypes.bool,
+    showHeader: PropTypes.bool,
+    editable: PropTypes.bool,
+    isExpanded: PropTypes.bool,
+    isCompacted: PropTypes.bool,
+    onFieldClick: PropTypes.func,
+    onRecordUpdate: PropTypes.func,
+    saveButtonVisible: PropTypes.bool,
+    saveRecordError: PropTypes.instanceOf(Error),
+    recordState: PropTypes.string,
+    onSaveRecord: PropTypes.func,
   }
 
   renderSaveButton() {

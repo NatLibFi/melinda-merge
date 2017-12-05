@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/record-selection-controls';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
@@ -40,14 +41,14 @@ const RECORD_LOADING_DELAY = 500;
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
-    sourceRecordId: React.PropTypes.string.isRequired,
-    targetRecordId: React.PropTypes.string.isRequired,
-    fetchRecord: React.PropTypes.func.isRequired,
-    swapRecords: React.PropTypes.func.isRequired,
-    setSourceRecordId: React.PropTypes.func.isRequired,
-    setTargetRecordId: React.PropTypes.func.isRequired,
-    locationDidChange: React.PropTypes.func.isRequired,
-    controlsEnabled: React.PropTypes.bool.isRequired
+    sourceRecordId: PropTypes.string.isRequired,
+    targetRecordId: PropTypes.string.isRequired,
+    fetchRecord: PropTypes.func.isRequired,
+    swapRecords: PropTypes.func.isRequired,
+    setSourceRecordId: PropTypes.func.isRequired,
+    setTargetRecordId: PropTypes.func.isRequired,
+    locationDidChange: PropTypes.func.isRequired,
+    controlsEnabled: PropTypes.bool.isRequired
   }
 
   constructor() {

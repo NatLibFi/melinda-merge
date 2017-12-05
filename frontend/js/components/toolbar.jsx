@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/toolbar.scss';
 import { DuplicateDatabaseControls } from './duplicate-database-controls';
 import {connect} from 'react-redux';
@@ -37,14 +38,14 @@ import _ from 'lodash';
 export class ToolBar extends React.Component {
 
   static propTypes = {
-    resetWorkspace: React.PropTypes.func.isRequired,
-    fetchCount: React.PropTypes.func.isRequired,
-    fetchNextPair: React.PropTypes.func.isRequired,
-    skipPair: React.PropTypes.func.isRequired,
-    markAsNotDuplicate: React.PropTypes.func.isRequired,
-    duplicatePairCount: React.PropTypes.number.isRequired,
-    duplicateDatabaseStatus: React.PropTypes.string.isRequired,
-    recordsAreFromDuplicateDatabase: React.PropTypes.bool.isRequired
+    resetWorkspace: PropTypes.func.isRequired,
+    fetchCount: PropTypes.func.isRequired,
+    fetchNextPair: PropTypes.func.isRequired,
+    skipPair: PropTypes.func.isRequired,
+    markAsNotDuplicate: PropTypes.func.isRequired,
+    duplicatePairCount: PropTypes.number.isRequired,
+    duplicateDatabaseStatus: PropTypes.string.isRequired,
+    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
   }
 
   componentWillMount() {
