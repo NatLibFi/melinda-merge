@@ -32,7 +32,6 @@ import sinonChai from 'sinon-chai';
 import * as actions from '../js/ui-actions';
 import { __RewireAPI__ as ActionsRewireAPI } from '../js/ui-actions';
 import Immutable from 'immutable';
-require('sinon-as-promised');
 
 chai.use(sinonChai);
 const expect = chai.expect;

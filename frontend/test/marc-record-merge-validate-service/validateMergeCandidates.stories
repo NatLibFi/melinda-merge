@@ -49,7 +49,7 @@ STA    ‡aSUPPRESSED
 LOW    ‡aFENNI
 
 Expected to be valid: false
-Expected failure message: Both records have the same record id
 Expected failure message: Other record is suppressed
 Expected failure message: Records are of different type (leader/6): a - b
+Expected failure message: Both records have the same record id
 Expected failure message: The record with FENNI LOW tag should usually be the preferred record
