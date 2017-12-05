@@ -32,7 +32,7 @@ import '../../styles/components/record-selection-controls';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {hashHistory} from 'react-router';
+import { withRouter } from 'react-router';
 import classNames from 'classnames';
 import { hostRecordActionsEnabled } from '../selectors/merge-status-selector';
 
@@ -48,7 +48,8 @@ export class RecordSelectionControls extends React.Component {
     setSourceRecordId: PropTypes.func.isRequired,
     setTargetRecordId: PropTypes.func.isRequired,
     locationDidChange: PropTypes.func.isRequired,
-    controlsEnabled: PropTypes.bool.isRequired
+    controlsEnabled: PropTypes.bool.isRequired,
+    history: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -63,14 +64,15 @@ export class RecordSelectionControls extends React.Component {
   }
 
   componentWillMount() {
-    const unlisten = hashHistory.listen(location => this.props.locationDidChange(location));
-    this.setState({ unlisten });
+    this.unlisten = this.props.history.listen(location => this.props.locationDidChange(location));
+    this.props.locationDidChange(this.props.history.location);
   }
 
   componentWillReceiveProps(next) {
+    if (next.targetRecordId === this.props.targetRecordId && next.sourceRecordId === this.props.sourceRecordId) return;
 
     if (_.identity(next.targetRecordId) || _.identity(next.sourceRecordId)) {
-      hashHistory.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
+      this.props.history.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
     }
   }
 
@@ -80,8 +82,8 @@ export class RecordSelectionControls extends React.Component {
   }
 
   componentWillUnmount() {
-    if (typeof this.state.unlisten == 'function') {
-      this.state.unlisten();
+    if (typeof this.unlisten == 'function') {
+      this.unlisten();
     }
   }
 
@@ -155,7 +157,7 @@ function mapStateToProps(state) {
   };
 }
 
-export const RecordSelectionControlsContainer = connect(
+export const RecordSelectionControlsContainer = withRouter(connect(
   mapStateToProps,
   uiActionCreators
-)(RecordSelectionControls);
+)(RecordSelectionControls));
