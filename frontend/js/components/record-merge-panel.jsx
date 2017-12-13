@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
@@ -45,20 +46,20 @@ import '../../styles/components/record-merge-panel.scss';
 export class RecordMergePanel extends React.Component {
 
   static propTypes = {
-    mergedRecord: React.PropTypes.object,
-    mergedRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
-    mergedRecordSaveError: React.PropTypes.instanceOf(Error),
-    mergedRecordState: React.PropTypes.string.isRequired,
-    sourceRecord: React.PropTypes.object,
-    sourceRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
-    sourceRecordState: React.PropTypes.string.isRequired,
-    targetRecord: React.PropTypes.object,
-    targetRecordError: React.PropTypes.oneOfType([React.PropTypes.string, React.PropTypes.instanceOf(Error)]),
-    targetRecordState: React.PropTypes.string.isRequired,
-    toggleSourceRecordFieldSelection: React.PropTypes.func.isRequired,
-    saveRecord: React.PropTypes.func.isRequired,
-    editMergedRecord: React.PropTypes.func.isRequired,
-    saveButtonVisible: React.PropTypes.bool.isRequired
+    mergedRecord: PropTypes.object,
+    mergedRecordError: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Error)]),
+    mergedRecordSaveError: PropTypes.instanceOf(Error),
+    mergedRecordState: PropTypes.string.isRequired,
+    sourceRecord: PropTypes.object,
+    sourceRecordError: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Error)]),
+    sourceRecordState: PropTypes.string.isRequired,
+    targetRecord: PropTypes.object,
+    targetRecordError: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Error)]),
+    targetRecordState: PropTypes.string.isRequired,
+    toggleSourceRecordFieldSelection: PropTypes.func.isRequired,
+    saveRecord: PropTypes.func.isRequired,
+    editMergedRecord: PropTypes.func.isRequired,
+    saveButtonVisible: PropTypes.bool.isRequired
   }
 
   toggleSourceRecordField(field) {

@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { CommitMergeStates } from '../constants';
@@ -34,11 +35,11 @@ import '../../styles/components/merge-dialog.scss';
 
 export class MergeDialog extends React.Component {
   static propTypes = {
-    closable: React.PropTypes.bool.isRequired,
-    onClose: React.PropTypes.func.isRequired,
-    status: React.PropTypes.string.isRequired,
-    message: React.PropTypes.string.isRequired,
-    response: React.PropTypes.object
+    closable: PropTypes.bool.isRequired,
+    onClose: PropTypes.func.isRequired,
+    status: PropTypes.string.isRequired,
+    message: PropTypes.string.isRequired,
+    response: PropTypes.object
   }
 
   close(event) {

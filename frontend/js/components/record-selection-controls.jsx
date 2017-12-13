@@ -27,11 +27,12 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import '../../styles/components/record-selection-controls';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
-import {hashHistory} from 'react-router';
+import { withRouter } from 'react-router';
 import classNames from 'classnames';
 import { hostRecordActionsEnabled } from '../selectors/merge-status-selector';
 
@@ -40,14 +41,15 @@ const RECORD_LOADING_DELAY = 500;
 export class RecordSelectionControls extends React.Component {
 
   static propTypes = {
-    sourceRecordId: React.PropTypes.string.isRequired,
-    targetRecordId: React.PropTypes.string.isRequired,
-    fetchRecord: React.PropTypes.func.isRequired,
-    swapRecords: React.PropTypes.func.isRequired,
-    setSourceRecordId: React.PropTypes.func.isRequired,
-    setTargetRecordId: React.PropTypes.func.isRequired,
-    locationDidChange: React.PropTypes.func.isRequired,
-    controlsEnabled: React.PropTypes.bool.isRequired
+    sourceRecordId: PropTypes.string.isRequired,
+    targetRecordId: PropTypes.string.isRequired,
+    fetchRecord: PropTypes.func.isRequired,
+    swapRecords: PropTypes.func.isRequired,
+    setSourceRecordId: PropTypes.func.isRequired,
+    setTargetRecordId: PropTypes.func.isRequired,
+    locationDidChange: PropTypes.func.isRequired,
+    controlsEnabled: PropTypes.bool.isRequired,
+    history: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -62,14 +64,17 @@ export class RecordSelectionControls extends React.Component {
   }
 
   componentWillMount() {
-    const unlisten = hashHistory.listen(location => this.props.locationDidChange(location));
-    this.setState({ unlisten });
+    this.unlisten = this.props.history.listen(location => this.props.locationDidChange(location));
+    this.props.locationDidChange(this.props.history.location);
   }
 
   componentWillReceiveProps(next) {
+    console.log('sourceRecordId', next.sourceRecordId, this.props.sourceRecordId);
+    console.log('targetRecordId', next.targetRecordId, this.props.targetRecordId);
+    if (next.targetRecordId === this.props.targetRecordId && next.sourceRecordId === this.props.sourceRecordId) return;
 
-    if (_.identity(next.targetRecordId) || _.identity(next.sourceRecordId)) {
-      hashHistory.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
+    if (_.identity(next.targetRecordId) && _.identity(next.sourceRecordId)) {
+      this.props.history.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
     }
   }
 
@@ -79,8 +84,8 @@ export class RecordSelectionControls extends React.Component {
   }
 
   componentWillUnmount() {
-    if (typeof this.state.unlisten == 'function') {
-      this.state.unlisten();
+    if (typeof this.unlisten == 'function') {
+      this.unlisten();
     }
   }
 
@@ -154,7 +159,7 @@ function mapStateToProps(state) {
   };
 }
 
-export const RecordSelectionControlsContainer = connect(
+export const RecordSelectionControlsContainer = withRouter(connect(
   mapStateToProps,
   uiActionCreators
-)(RecordSelectionControls);
+)(RecordSelectionControls));

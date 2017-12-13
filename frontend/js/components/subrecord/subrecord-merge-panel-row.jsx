@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import classNames from 'classnames';
 import { SubrecordActionTypes, ItemTypes } from '../../constants';
 import { DropTargetEmptySubRecordPanel } from './droppable-subrecord-empty-panel';
@@ -41,30 +42,30 @@ import '../../../styles/components/subrecord-merge-panel-row.scss';
 export class SubrecordMergePanelRow extends React.Component {
 
   static propTypes = {
-    rowId: React.PropTypes.string.isRequired,
-    sourceRecord: React.PropTypes.object,
-    targetRecord: React.PropTypes.object,
-    mergedRecord: React.PropTypes.object,
-    selectedAction: React.PropTypes.string,
-    rowIndex: React.PropTypes.number.isRequired,
-    isExpanded: React.PropTypes.bool,
-    actionsEnabled: React.PropTypes.bool,
-    onRemoveRow: React.PropTypes.func.isRequired,
-    onExpandRow: React.PropTypes.func.isRequired,
-    onCompressRow: React.PropTypes.func.isRequired,
+    rowId: PropTypes.string.isRequired,
+    sourceRecord: PropTypes.object,
+    targetRecord: PropTypes.object,
+    mergedRecord: PropTypes.object,
+    selectedAction: PropTypes.string,
+    rowIndex: PropTypes.number.isRequired,
+    isExpanded: PropTypes.bool,
+    actionsEnabled: PropTypes.bool,
+    onRemoveRow: PropTypes.func.isRequired,
+    onExpandRow: PropTypes.func.isRequired,
+    onCompressRow: PropTypes.func.isRequired,
 
-    connectDragSource: React.PropTypes.func.isRequired,
-    connectDropTarget: React.PropTypes.func.isRequired,
-    onSourceFieldClick: React.PropTypes.func,
-    onMergedFieldClick: React.PropTypes.func,
-    onSaveRecord: React.PropTypes.func.isRequired,
-    onMergedRecordUpdate: React.PropTypes.func.isRequired,
-    isOver: React.PropTypes.bool.isRequired,
-    mergeError: React.PropTypes.instanceOf(Error),
-    saveRecordError: React.PropTypes.instanceOf(Error),
-    recordState: React.PropTypes.string,
-    saveButtonVisible: React.PropTypes.bool.isRequired,
-    isCompacted: React.PropTypes.bool.isRequired
+    connectDragSource: PropTypes.func.isRequired,
+    connectDropTarget: PropTypes.func.isRequired,
+    onSourceFieldClick: PropTypes.func,
+    onMergedFieldClick: PropTypes.func,
+    onSaveRecord: PropTypes.func.isRequired,
+    onMergedRecordUpdate: PropTypes.func.isRequired,
+    isOver: PropTypes.bool.isRequired,
+    mergeError: PropTypes.instanceOf(Error),
+    saveRecordError: PropTypes.instanceOf(Error),
+    recordState: PropTypes.string,
+    saveButtonVisible: PropTypes.bool.isRequired,
+    isCompacted: PropTypes.bool.isRequired
   }
 
   handleSourceFieldClick(field) {

@@ -29,7 +29,6 @@
 import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import request from 'supertest';
 import HttpStatus from 'http-status-codes';
 import { __RewireAPI__ as RewireAPI } from '../merge-controller';

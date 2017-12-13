@@ -31,7 +31,6 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import archiver from 'archiver';
-import sinonAsPromised from 'sinon-as-promised'; // eslint-disable-line
 import { __RewireAPI__ as RewireAPI } from '../archive-service';
 import { createArchive } from '../archive-service';
 import MarcRecord from 'marc-record-js';
@@ -99,19 +98,19 @@ describe('Archive service', () => {
     });
 
     it('adds removed record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.include({data: removedRecord.record.toString(), name: 'removed.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: removedRecord.record.toString(), name: 'removed.txt'});
     });
 
     it('adds preferred record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.include({data: preferredRecord.record.toString(), name: 'preferred.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: preferredRecord.record.toString(), name: 'preferred.txt'});
     });
     
     it('adds merged record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.include({data: mergedRecord.record.toString(), name: 'merged.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: mergedRecord.record.toString(), name: 'merged.txt'});
     });
 
     it('adds unmodified merged record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.include({data: unmodifiedMergedRecord.record.toString(), name: 'merged-unmodified.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: unmodifiedMergedRecord.record.toString(), name: 'merged-unmodified.txt'});
     });
 
     it('does not add subrecords of removed record to the archive', () => {

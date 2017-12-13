@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { DragSource } from 'react-dnd';
 import { ItemTypes } from '../../constants';
 import { SubRecordPanel } from './subrecord-panel';
@@ -34,12 +35,12 @@ import { SubRecordPanel } from './subrecord-panel';
 class SubRecordPanelDragSource extends React.Component {
 
   static propTypes = {
-    type: React.PropTypes.string.isRequired,
-    record: React.PropTypes.object.isRequired,
-    rowId: React.PropTypes.string.isRequired,
-    connectDragSource: React.PropTypes.func.isRequired,
-    isDragging: React.PropTypes.bool.isRequired,
-    dragEnabled: React.PropTypes.bool.isRequired
+    type: PropTypes.string.isRequired,
+    record: PropTypes.object.isRequired,
+    rowId: PropTypes.string.isRequired,
+    connectDragSource: PropTypes.func.isRequired,
+    isDragging: PropTypes.bool.isRequired,
+    dragEnabled: PropTypes.bool.isRequired
   }
 
   render() {

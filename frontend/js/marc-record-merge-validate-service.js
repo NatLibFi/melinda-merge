@@ -45,11 +45,11 @@ B warn: Other record has LOW: FENNI, but preferred does not.
 
  */
 
-const defaultPreset = [recordsHaveDifferentIds, preferredRecordIsNotDeleted, otherRecordIsNotDeleted, preferredRecordIsNotSuppressed, otherRecordIsNotSuppressed, recordsHaveSameType];
+const defaultPreset = [preferredRecordIsNotDeleted, otherRecordIsNotDeleted, preferredRecordIsNotSuppressed, otherRecordIsNotSuppressed, recordsHaveSameType];
 
 export const preset = {
   defaults: defaultPreset,
-  melinda_host: _.concat(defaultPreset, [recordsHaveDifferentLOWTags, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
+  melinda_host: _.concat(defaultPreset, [recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
   melinda_component: _.concat(defaultPreset, [recordsHaveDifferentLOWTags]),
   melinda_warnings: [preferredRecordFromFENNI, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
 };

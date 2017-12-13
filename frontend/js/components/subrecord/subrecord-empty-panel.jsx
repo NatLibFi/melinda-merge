@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import * as subrecordActions from '../../action-creators/subrecord-actions';
 import {connect} from 'react-redux';
 import classNames from 'classnames';
@@ -34,12 +35,12 @@ import classNames from 'classnames';
 export class EmptySubRecordPanel extends React.Component {
 
   static propTypes = {
-    isOver: React.PropTypes.bool.isRequired,
-    canDrop: React.PropTypes.bool.isRequired,
-    type: React.PropTypes.string.isRequired,
-    rowId: React.PropTypes.string.isRequired,
-    changeSourceSubrecordRow: React.PropTypes.func.isRequired,
-    changeTargetSubrecordRow: React.PropTypes.func.isRequired
+    isOver: PropTypes.bool.isRequired,
+    canDrop: PropTypes.bool.isRequired,
+    type: PropTypes.string.isRequired,
+    rowId: PropTypes.string.isRequired,
+    changeSourceSubrecordRow: PropTypes.func.isRequired,
+    changeTargetSubrecordRow: PropTypes.func.isRequired
   }
 
   render() {

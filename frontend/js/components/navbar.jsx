@@ -27,6 +27,7 @@
 */
 
 import React from 'react';
+import PropTypes from 'prop-types';
 import { commitMerge} from '../ui-actions';
 import {connect} from 'react-redux';
 import { mergeButtonEnabled } from '../selectors/merge-status-selector';
@@ -36,11 +37,11 @@ import { removeSession } from 'commons/action-creators/session-actions';
 export class NavBar extends React.Component {
 
   static propTypes = {
-    commitMerge: React.PropTypes.func.isRequired,
-    mergeStatus: React.PropTypes.string,
-    statusInfo: React.PropTypes.string,
-    mergeButtonEnabled: React.PropTypes.bool.isRequired,
-    removeSession: React.PropTypes.func.isRequired,
+    commitMerge: PropTypes.func.isRequired,
+    mergeStatus: PropTypes.string,
+    statusInfo: PropTypes.string,
+    mergeButtonEnabled: PropTypes.bool.isRequired,
+    removeSession: PropTypes.func.isRequired,
   }
 
   componentDidMount() {
@@ -87,7 +88,7 @@ export class NavBar extends React.Component {
       </div>
     );
   }
-} 
+}
 
 function mapStateToProps(state) {
   return {

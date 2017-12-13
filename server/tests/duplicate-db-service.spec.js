@@ -31,7 +31,6 @@ import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import { getDuplicateCount, getNextDuplicatePair, markDuplicatePairAsMerged, skipPair, markPairAsNotDuplicates } from '../duplicate-db-service';
 import { __RewireAPI__ as ComponentRewireAPI } from '../duplicate-db-service';
-require('sinon-as-promised');
 
 chai.use(sinonChai);
 const expect = chai.expect;
