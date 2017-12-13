@@ -69,9 +69,11 @@ export class RecordSelectionControls extends React.Component {
   }
 
   componentWillReceiveProps(next) {
+    console.log('sourceRecordId', next.sourceRecordId, this.props.sourceRecordId);
+    console.log('targetRecordId', next.targetRecordId, this.props.targetRecordId);
     if (next.targetRecordId === this.props.targetRecordId && next.sourceRecordId === this.props.sourceRecordId) return;
 
-    if (_.identity(next.targetRecordId) || _.identity(next.sourceRecordId)) {
+    if (_.identity(next.targetRecordId) && _.identity(next.sourceRecordId)) {
       this.props.history.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
     }
   }
