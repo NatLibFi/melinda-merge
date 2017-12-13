@@ -28,6 +28,7 @@
 
 import { Map } from 'immutable';
 import { combineReducers } from 'redux-immutable';
+import { reducer as notifications } from 'react-notification-system-redux';
 
 import { RESET_STATE } from './ui-actions';
 
@@ -63,7 +64,8 @@ export const combinedRootReducer = combineReducers({
   targetRecord,
   mergedRecord,
   mergeStatus,
-  subrecords
+  subrecords,
+  notifications
 });
 
 function normalizeMergedRecord(state) {

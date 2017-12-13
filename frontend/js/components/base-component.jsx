@@ -29,6 +29,7 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
+import Notifications from 'react-notification-system-redux';
 import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
 import { ToolBarContainer } from './toolbar';
@@ -90,6 +91,9 @@ export class BaseComponent extends React.Component {
   
     return (
       <div>
+        <Notifications
+          notifications={this.props.notifications}
+        />
         <NavBarContainer />
         { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
@@ -121,7 +125,8 @@ function mapStateToProps(state) {
     mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
     mergeResponse: state.getIn(['mergeStatus', 'response']),
     mergeDialog: state.getIn(['mergeStatus', 'dialog']).toJS(),
-    shouldRenderSubrecordComponent: eitherHasSubrecords(state)
+    shouldRenderSubrecordComponent: eitherHasSubrecords(state),
+    notifications: state.get('notifications')
   };
 }
 
