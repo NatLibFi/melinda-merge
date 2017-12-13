@@ -29,6 +29,7 @@
 import fetch from 'isomorphic-fetch';
 import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
+import Notifications from 'react-notification-system-redux';
 
 import { fetchRecord, resetWorkspace } from '../ui-actions';
 
@@ -112,13 +113,32 @@ export function fetchNextPair() {
 
         } else {
           switch (response.status) {
-            case HttpStatus.UNAUTHORIZED: return dispatch(fetchNextPairError('Käyttäjätunnus ja salasana eivät täsmää.'));
+            case HttpStatus.UNAUTHORIZED: 
+              dispatch(Notifications.error({
+                title: 'Virhe',
+                message: 'Käyttäjätunnus ja salasana eivät täsmää.',
+                position: 'tl'
+              }));
+
+              return dispatch(fetchNextPairError('Käyttäjätunnus ja salasana eivät täsmää.'));
           }
+
+          dispatch(Notifications.error({
+            title: 'Virhe',
+            message: 'Seuraavan tietueparin hakemisessa tapahtui virhe.',
+            position: 'tl'
+          }));
 
           dispatch(fetchNextPairError('Seuraavan tietueparin hakemisessa tapahtui virhe.'));
         }
 
       }).catch((error) => {
+        dispatch(Notifications.error({
+          title: 'Virhe',
+          message: 'There has been a problem with operation: ' + error.message,
+          position: 'tl'
+        }));
+
         dispatch(fetchNextPairError('There has been a problem with operation: ' + error.message));
       });
   };

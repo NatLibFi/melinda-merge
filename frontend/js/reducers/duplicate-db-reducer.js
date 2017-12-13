@@ -113,7 +113,9 @@ export function setDuplicateDatabaseControlsStatus(state, status) {
 }
 
 export function setCurrentDuplicatePairError(state, error) {
-  return state.setIn(['currentPairError'], error);
+  return state
+    .setIn(['currentPairError'], error)
+    .set('status', DuplicateDatabaseStates.READY);
 }
 
 function normalizeCurrentPair(state, recordId) {
