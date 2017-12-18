@@ -34,9 +34,9 @@ import { FetchNotOkError } from '../errors';
 
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
-  CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
+  CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, MERGE_SUBRECORD, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from 'commons/constants';
 import createRecordMerger from '@natlibfi/marc-record-merge';
@@ -81,41 +81,51 @@ export function setSubrecordAction(rowId, actionType) {
 
 export function setEverySubrecordAction() {
   return function(dispatch, getState) {
-    getState().getIn(['subrecords', 'index']).forEach(rowId => {
-      
-      const subrecordRow = getState().getIn(['subrecords', rowId]).toJS();  
-      const hasSource = subrecordRow.sourceRecord !== undefined;
-      const hasTarget = subrecordRow.targetRecord !== undefined;
 
-      if (hasSource && hasTarget) {
-        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.MERGE));
-      } else if (hasSource || hasTarget) {
-        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.COPY));
+    const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+    const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+      const subrecordRow = getState().getIn(['subrecords', rowId]);
+
+      const preferredRecord = subrecordRow.get('targetRecord');
+      const otherRecord = subrecordRow.get('sourceRecord');
+
+      let selectedActionType;
+
+      if (preferredRecord && otherRecord) {
+        selectedActionType = SubrecordActionTypes.MERGE;
+      } else if (preferredRecord || otherRecord) {
+        selectedActionType = SubrecordActionTypes.COPY;
       } else {
-        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.UNSET));
+        selectedActionType = SubrecordActionTypes.UNSET;
       }
-     
-      dispatch(updateMergedSubrecord(rowId));  
-    });
+
+      return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
+        .then(record => ({ rowId, record, selectedAction: selectedActionType }))
+        .catch(error => ({ rowId, error, selectedAction: selectedActionType }));
+    })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))))
   };
 }
 
 
 export function setEveryMatchedSubrecordAction() {
   return function(dispatch, getState) {
-    getState().getIn(['subrecords', 'index']).forEach(rowId => {
-      
-      const subrecordRow = getState().getIn(['subrecords', rowId]).toJS();  
-      const hasSource = subrecordRow.sourceRecord !== undefined;
-      const hasTarget = subrecordRow.targetRecord !== undefined;
+    const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+    const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-      if (hasSource && hasTarget) {
-        dispatch(setSubrecordAction(rowId, SubrecordActionTypes.MERGE));
-        dispatch(updateMergedSubrecord(rowId));
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+      const subrecordRow = getState().getIn(['subrecords', rowId]);
+
+      const preferredRecord = subrecordRow.get('targetRecord');
+      const otherRecord = subrecordRow.get('sourceRecord');
+
+      if (preferredRecord && otherRecord) {
+        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType: SubrecordActionTypes.MERGE })
+          .then(record => ({ rowId, record }))
+          .catch(error => ({ rowId, error }));
       }
-     
-        
-    });
+    })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined), SubrecordActionTypes.MERGE)));
   };
 }
 
@@ -132,88 +142,91 @@ export function changeSubrecordAction(rowId, actionType) {
 }
 
 export function updateMergedSubrecord(rowId) {
-
   return function(dispatch, getState) {
-
     const row = getState().getIn(['subrecords', rowId]);
 
     const selectedActionType = row.get('selectedAction');
     const preferredRecord = row.get('targetRecord');
     const otherRecord = row.get('sourceRecord');
 
-    if (selectedActionType === SubrecordActionTypes.COPY) {
-      if (preferredRecord && otherRecord) {
-        throw new Error('Cannot copy both records');
-      }
+    const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+    const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-      let hostRecordId;
-      let recordToCopy;
-
-      if (preferredRecord) {
-        hostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
-        recordToCopy = new MarcRecord(preferredRecord);
-      } else {
-        hostRecordId = selectRecordId(selectOtherHostRecord(getState()));
-        recordToCopy = new MarcRecord(otherRecord);
-      }
-
-      // reset 001      
-      resetRecordId(recordToCopy);
-
-      // reset 773w
-      recordToCopy.fields.filter(field => {
-        return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
-      }).map(resetComponentHostLinkSubfield);
-
-      // Note: We don't handle LOW/SID tags when subrecord action=COPY. 
-      // LOW-SYNC will handle that after the record has been added to melinda.
-      return dispatch(setMergedSubrecord(rowId, recordToCopy));
-
-    }
-
-    if (selectedActionType === SubrecordActionTypes.BLOCK) {
-      return dispatch(setMergedSubrecord(rowId, undefined));
-    }
-
-    if (selectedActionType === SubrecordActionTypes.UNSET || selectedActionType === undefined) {
-      return dispatch(setMergedSubrecord(rowId, undefined));
-    }
-
-    if (selectedActionType === SubrecordActionTypes.MERGE) {
-      if (preferredRecord && otherRecord) {
-
-        const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
-        const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
-
-
-        const componentRecordValidationRules = MergeValidation.preset.melinda_component;
-        const postMergeFixes = _.clone(PostMerge.preset.defaults);
-
-        // insert select773 just before sort
-        postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
-
-        const merge = createRecordMerger(mergeConfiguration);
-
-        MergeValidation.validateMergeCandidates(componentRecordValidationRules, preferredRecord, otherRecord)
-          .then(() => merge(preferredRecord, otherRecord))
-          .then(mergedRecord => PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, otherRecord, mergedRecord))
-          .then(result => {
-            const fixedMergedRecord = result.record;
-            dispatch(setMergedSubrecord(rowId, fixedMergedRecord));
-          }).catch(error => {
-            dispatch(setMergedSubrecordError(rowId, error));
-          });
-
-      } else {
-        dispatch(setMergedSubrecordError(rowId, new Error('Cannot merge undefined records')));
-      }
-    }
-
+    return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
+      .then(record => dispatch(setMergedSubrecord(rowId, record)))
+      .catch(error => dispatch(setMergedSubrecordError(rowId, error)));
   };
+}
+
+function mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType }) {
+  if (selectedActionType === SubrecordActionTypes.COPY) {
+    if (preferredRecord && otherRecord) {
+      return Promise.reject(new Error('Cannot copy both records'));
+    }
+
+    let hostRecordId;
+    let recordToCopy;
+
+    if (preferredRecord) {
+      hostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+      recordToCopy = new MarcRecord(preferredRecord);
+    } else {
+      hostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+      recordToCopy = new MarcRecord(otherRecord);
+    }
+
+    // reset 001      
+    resetRecordId(recordToCopy);
+
+    // reset 773w
+    recordToCopy.fields.filter(field => {
+      return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
+    }).map(resetComponentHostLinkSubfield);
+
+    // Note: We don't handle LOW/SID tags when subrecord action=COPY. 
+    // LOW-SYNC will handle that after the record has been added to melinda.
+    return Promise.resolve(recordToCopy);
+
+  }
+
+  if (selectedActionType === SubrecordActionTypes.BLOCK) {
+    return Promise.resolve();
+  }
+
+  if (selectedActionType === SubrecordActionTypes.UNSET || selectedActionType === undefined) {
+    return Promise.resolve();
+  }
+
+  if (selectedActionType === SubrecordActionTypes.MERGE) {
+    if (preferredRecord && otherRecord) {
+      const componentRecordValidationRules = MergeValidation.preset.melinda_component;
+      const postMergeFixes = _.clone(PostMerge.preset.defaults);
+
+      // insert select773 just before sort
+      postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
+
+      const merge = createRecordMerger(mergeConfiguration);
+
+      return MergeValidation.validateMergeCandidates(componentRecordValidationRules, preferredRecord, otherRecord)
+        .then(() => merge(preferredRecord, otherRecord))
+        .then(mergedRecord => PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, otherRecord, mergedRecord))
+        .then(result => {
+          return result.record;
+        }).catch(error => {
+          return Promise.reject(error);
+        });
+    } else {
+      return Promise.reject(new Error('Cannot merge undefined records'));
+    }
+  }
 }
 
 export function editMergedSubrecord(rowId, record) {
   return { 'type': EDIT_MERGED_SUBRECORD, rowId, record };
+}
+
+export function setEveryMergedSubrecord(rows, actionType) {
+  return { 'type': SET_EVERY_MERGED_SUBRECORD, rows, actionType };
 }
 
 export function setMergedSubrecord(rowId, record) {

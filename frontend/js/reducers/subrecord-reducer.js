@@ -36,7 +36,7 @@ import {SET_SOURCE_RECORD, SET_TARGET_RECORD, SET_MERGED_RECORD } from '../ui-ac
 
 import { 
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
-  SET_SUBRECORD_ACTION, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
+  SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
   UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE,
   TOGGLE_COMPACT_SUBRECORD_VIEW } from '../constants/action-type-constants';
@@ -68,6 +68,19 @@ export default function subrecords(state = INITIAL_STATE, action) {
       return setMergedSubrecordError(state, action.rowId, action.error);
     case EDIT_MERGED_SUBRECORD:
       return setMergedSubrecord(state, action.rowId, action.record);
+
+    case SET_EVERY_MERGED_SUBRECORD:
+      return action.rows.reduce((state, row) => {
+        if (row.error) {
+          state = setMergedSubrecordError(state, row.rowId, row.error);
+        }
+        else {
+          state = setUnmodifiedMergedRecord(state, row.rowId, row.record);
+          state = nsetMergedSubrecord(state, row.rowId, row.record);
+        }
+        
+        return setSubrecordAction(state, row.rowId, row.actionType || action.actionType);
+      }, state);
 
     case SET_SOURCE_RECORD:
       return setSourceSubrecords(state, action.record, action.subrecords || []);
