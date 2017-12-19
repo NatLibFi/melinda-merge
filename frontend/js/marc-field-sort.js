@@ -86,15 +86,6 @@ function sortBySID(fieldA, fieldB) {
   return 0;
 }
 
-const dictionarySortIndex = {
-  'ysa': '0',
-  'allars': '1',
-  'musa': '2',
-  'cilla': '3',
-  'kaunokki': '4',
-  'bella': '5'
-};
-
 function sortByIndexterms(fieldA, fieldB) {
   const indexTermFields = [
     '600','610','611','630','648','650','651','652',

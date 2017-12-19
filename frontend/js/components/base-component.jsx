@@ -52,6 +52,7 @@ export class BaseComponent extends React.Component {
     mergeResponseMessage: PropTypes.string,
     mergeStatus: PropTypes.string.isRequired,
     mergeResponse: PropTypes.object,
+    notifications: PropTypes.array
   }
 
   renderValidationIndicator() {
