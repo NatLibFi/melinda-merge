@@ -1,8 +1,0 @@
-@import 'marc-record-panel-colors';
-
-.record-merge-panel {
-  .marc-record {
-    min-height: 400px;
-    @include marc-colors();
-  }
-}

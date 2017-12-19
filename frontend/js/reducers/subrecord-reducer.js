@@ -28,7 +28,7 @@
 
 import MarcRecord from 'marc-record-js';
 import { Map, List } from 'immutable';
-import { SubrecordActionTypes, RecordSaveStatus } from '../constants';
+import { SubrecordActionTypes, RecordSaveStatus } from 'commons/constants';
 import _ from 'lodash';
 
 import {RESET_WORKSPACE} from '../constants/action-type-constants';

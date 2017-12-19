@@ -10,15 +10,15 @@ const PATHS = {
   commons_frontend: path.resolve(__dirname, '../melinda-ui-commons/frontend'),
   commons_styles: path.resolve(__dirname, '../melinda-ui-commons/frontend/styles'),
   commons_server: path.resolve(__dirname, '../melinda-ui-commons/server'),
+  commons_images: path.resolve(__dirname, '../melinda-ui-commons/frontend/images'),
   styles: path.resolve(__dirname, '../frontend/styles'),
-  images: path.resolve(__dirname, '../frontend/images'),
   build: path.resolve(__dirname, '../build/public')
 };
 
 const plugins = [
   new CopyWebpackPlugin([
     {
-      from: PATHS.images,
+      from: PATHS.commons_images,
       to: 'images'
     }
   ]),

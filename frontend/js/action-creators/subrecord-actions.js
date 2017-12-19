@@ -38,7 +38,7 @@ import {
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
   UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
 
-import { SubrecordActionTypes } from '../constants';
+import { SubrecordActionTypes } from 'commons/constants';
 import createRecordMerger from '@natlibfi/marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
 import * as MergeValidation from '../marc-record-merge-validate-service';
