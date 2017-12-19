@@ -104,15 +104,6 @@ function sortByIndexterms(fieldA, fieldB) {
     if (fieldA.ind2 > fieldB.ind2) return 1;
     if (fieldA.ind2 < fieldB.ind2) return -1;
 
-    const dictionaryA = selectFirstValue(fieldA, '2');
-    const dictionaryB = selectFirstValue(fieldB, '2');
-    
-    const orderByDictionaryA = _.get(dictionarySortIndex, dictionaryA, dictionaryA);
-    const orderByDictionaryB = _.get(dictionarySortIndex, dictionaryB, dictionaryB);
-
-    if (orderByDictionaryA > orderByDictionaryB) return 1;
-    if (orderByDictionaryA < orderByDictionaryB) return -1;
-
     const fenniKeepSelector = fieldHasSubfield('9', 'FENNI<KEEP>');
     const fenniDropSelector = fieldHasSubfield('9', 'FENNI<DROP>');
     const hasFENNI9A = fenniKeepSelector(fieldA) || fenniDropSelector(fieldA);
@@ -130,18 +121,19 @@ function sortByIndexterms(fieldA, fieldB) {
     const valueAX = selectFirstValue(fieldA, 'x');
     const valueBX = selectFirstValue(fieldB, 'x');
 
-    if (valueAX > valueBX) return 1;
+    if (valueBX === undefined || valueAX > valueBX) return 1;
     if (valueAX < valueBX) return -1;
     
     const valueAZ = selectFirstValue(fieldA, 'z');
     const valueBZ = selectFirstValue(fieldB, 'z');
 
-    if (valueAZ > valueBZ) return 1;
+    if (valueBZ === undefined || valueAZ > valueBZ) return 1;
     if (valueAZ < valueBZ) return -1;
     
     const valueAY = selectFirstValue(fieldA, 'y');
     const valueBY = selectFirstValue(fieldB, 'y');
-    if (valueAY > valueBY) return 1;
+
+    if (valueBY === undefined || valueAY > valueBY) return 1;
     if (valueAY < valueBY) return -1;
     
   }
