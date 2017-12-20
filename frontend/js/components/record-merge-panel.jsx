@@ -35,13 +35,13 @@ import { editMergedRecord, toggleSourceRecordFieldSelection } from '../ui-action
 import { saveRecord } from '../action-creators/record-actions';
 import { RecordPanel } from 'commons/components/record-panel';
 import { Preloader } from 'commons/components/preloader';
-import { ErrorMessagePanel } from './error-message-panel';
-import { MergeValidationErrorMessagePanel} from './merge-validation-error-message-panel';
+import { ErrorMessagePanel } from 'commons/components/error-message-panel';
+import { MergeValidationErrorMessagePanel} from 'commons/components/merge-validation-error-message-panel';
 import { isControlField } from '../utils';
-import { SaveButtonPanel } from './save-button-panel';
+import { SaveButtonPanel } from 'commons/components/save-button-panel';
 import { recordSaveActionAvailable } from '../selectors/merge-status-selector';
 
-import '../../styles/components/record-merge-panel.scss';
+import 'styles/components/record-merge-panel.scss';
 
 export class RecordMergePanel extends React.Component {
 
