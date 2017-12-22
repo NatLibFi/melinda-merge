@@ -142,7 +142,7 @@ module.exports = {
             "formats": ["MU"],
             "range": [30, 31],
             "significantCaret": true,
-            "type": "combine"
+            "type": "selectNonEmpty"
           },      
           {
             "formats": ["BK"],
@@ -184,7 +184,7 @@ module.exports = {
             "formats": ["CR"],
             "range": [25, 27],
             "significantCaret": true,
-            "type": "combine"
+            "type": "selectNonEmpty"
           }, 
           {
             "formats": ["CR"],
@@ -214,7 +214,7 @@ module.exports = {
             "formats": ["MP"],
             "range": [33, 34],
             "significantCaret": true,
-            "type": "combine"
+            "type": "selectNonEmpty"
           },
           {
             "formats": ["MU"],
@@ -238,7 +238,7 @@ module.exports = {
             "formats": ["MU"],
             "range": [24, 29],
             "significantCaret": true,
-            "type": "combine"
+            "type": "selectNonEmpty"
           },
           {
             "formats": ["MU"],
