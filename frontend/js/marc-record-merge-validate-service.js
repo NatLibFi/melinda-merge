@@ -49,7 +49,7 @@ const defaultPreset = [preferredRecordIsNotDeleted, otherRecordIsNotDeleted, pre
 
 export const preset = {
   defaults: defaultPreset,
-  melinda_host: _.concat(defaultPreset, [recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
+  melinda_host: _.concat(defaultPreset, [recordsHaveDifferentLOWTags, recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
   melinda_component: _.concat(defaultPreset, [recordsHaveDifferentLOWTags]),
   melinda_warnings: [preferredRecordFromFENNI, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
 };
