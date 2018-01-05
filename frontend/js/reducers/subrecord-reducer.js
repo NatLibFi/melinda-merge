@@ -76,7 +76,7 @@ export default function subrecords(state = INITIAL_STATE, action) {
         }
         else {
           state = setUnmodifiedMergedRecord(state, row.rowId, row.record);
-          state = nsetMergedSubrecord(state, row.rowId, row.record);
+          state = setMergedSubrecord(state, row.rowId, row.record);
         }
         
         return setSubrecordAction(state, row.rowId, row.actionType || action.actionType);
