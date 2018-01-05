@@ -102,8 +102,8 @@ export function setEverySubrecordAction() {
       }
 
       return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
-        .then(record => ({ rowId, record, selectedAction: selectedActionType }))
-        .catch(error => ({ rowId, error, selectedAction: selectedActionType }));
+        .then(record => ({ rowId, record, actionType: selectedActionType }))
+        .catch(error => ({ rowId, error, actionType: selectedActionType }));
     })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
   };
 }
