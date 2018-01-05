@@ -33,7 +33,6 @@ import _ from 'lodash';
 import createRecordMerger from '@natlibfi/marc-record-merge';
 import mergeConfiguration from './config/merge-config';
 import { exceptCoreErrors } from './utils';
-import {hashHistory} from 'react-router';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE, TOGGLE_COMPACT_SUBRECORD_VIEW } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
@@ -41,6 +40,7 @@ import { subrecordRows, sourceSubrecords, targetSubrecords, rowsWithResultRecord
 import { updateSubrecordArrangement, saveSubrecordSuccess } from './action-creators/subrecord-actions';
 import { match } from './component-record-match-service';
 import { decorateFieldsWithUuid } from './record-utils';
+import history from './history';
 
 import * as MergeValidation from './marc-record-merge-validate-service';
 import * as PostMerge from './marc-record-merge-postmerge-service';
@@ -174,7 +174,7 @@ export function resetState() {
 
 export function resetWorkspace() {
   
-  hashHistory.push('/');
+  history.push('/');
 
   return {
     type: RESET_WORKSPACE,
