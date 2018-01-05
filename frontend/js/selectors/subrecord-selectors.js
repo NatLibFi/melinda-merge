@@ -55,7 +55,7 @@ export const subrecordRowsDisplay = createSelector(
 
       const isCompacted = compactRowsMap[key] === true;
       const isMergeActionAvailable = subrecords[key].sourceRecord !== undefined && subrecords[key].targetRecord !== undefined;
-      const isCopyActionAvailable = !isMergeActionAvailable && !subrecords[key].sourceRecord === undefined && subrecords[key].targetRecord === undefined;
+      const isCopyActionAvailable = !isMergeActionAvailable && !(subrecords[key].sourceRecord === undefined && subrecords[key].targetRecord === undefined);
 
       return {
         key,
