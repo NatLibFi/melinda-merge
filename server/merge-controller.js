@@ -154,6 +154,8 @@ function transformToMarcRecordFamily(json) {
 }
 
 function transformToMarcRecord(json) {
+  json.fields = json.fields.filter((field) => field.tag !== '');
+
   return new MarcRecord(json);
 }
 
