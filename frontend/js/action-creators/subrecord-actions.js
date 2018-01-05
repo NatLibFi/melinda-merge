@@ -36,7 +36,7 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, MERGE_SUBRECORD, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from 'commons/constants';
 import createRecordMerger from '@natlibfi/marc-record-merge';
@@ -104,7 +104,7 @@ export function setEverySubrecordAction() {
       return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
         .then(record => ({ rowId, record, selectedAction: selectedActionType }))
         .catch(error => ({ rowId, error, selectedAction: selectedActionType }));
-    })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))))
+    })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
   };
 }
 
@@ -168,10 +168,10 @@ function mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, ot
     let recordToCopy;
 
     if (preferredRecord) {
-      hostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+      hostRecordId = preferredHostRecordId;
       recordToCopy = new MarcRecord(preferredRecord);
     } else {
-      hostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+      hostRecordId = otherHostRecordId;
       recordToCopy = new MarcRecord(otherRecord);
     }
 
