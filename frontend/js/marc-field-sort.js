@@ -86,6 +86,15 @@ function sortBySID(fieldA, fieldB) {
   return 0;
 }
 
+const dictionarySortIndex = {
+  'ysa': '0',
+  'allars': '1',
+  'musa': '2',
+  'cilla': '3',
+  'kaunokki': '4',
+  'bella': '5'
+};
+
 function sortByIndexterms(fieldA, fieldB) {
   const indexTermFields = [
     '600','610','611','630','648','650','651','652',
@@ -94,6 +103,15 @@ function sortByIndexterms(fieldA, fieldB) {
   if (fieldA.tag === fieldB.tag && _.includes(indexTermFields, fieldA.tag)) {
     if (fieldA.ind2 > fieldB.ind2) return 1;
     if (fieldA.ind2 < fieldB.ind2) return -1;
+
+    const dictionaryA = selectFirstValue(fieldA, '2');
+    const dictionaryB = selectFirstValue(fieldB, '2');
+
+    const orderByDictionaryA = _.get(dictionarySortIndex, dictionaryA, dictionaryA);
+    const orderByDictionaryB = _.get(dictionarySortIndex, dictionaryB, dictionaryB);
+
+    if (orderByDictionaryA > orderByDictionaryB) return 1;
+    if (orderByDictionaryA < orderByDictionaryB) return -1;
 
     const fenniKeepSelector = fieldHasSubfield('9', 'FENNI<KEEP>');
     const fenniDropSelector = fieldHasSubfield('9', 'FENNI<DROP>');

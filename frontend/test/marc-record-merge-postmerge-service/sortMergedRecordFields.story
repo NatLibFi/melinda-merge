@@ -69,11 +69,11 @@ STA    ‡aTEST-STA
 650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
 650  7 ‡akeittokirjat‡2ysa
 650  7 ‡aruoanvalmistus‡2ysa
-650  7 ‡aruoanvalmistus‡2bbb
-650  7 ‡aruoanvalmistus‡2musa
 650  7 ‡aruoanvalmistus‡2allars
-650  7 ‡aruoanvalmistus‡2aaa
+650  7 ‡aruoanvalmistus‡2musa
 650  7 ‡aruoanvalmistus‡2cilla
+650  7 ‡aruoanvalmistus‡2aaa
+650  7 ‡aruoanvalmistus‡2bbb
 655  7 ‡akeittokirjat‡2ysa‡9FENNI<KEEP>
 700 1  ‡aLindholm, Johanna,‡ekirjoittaja,‡evalokuvaaja.
 901    ‡aMU20150707‡5FENNI
