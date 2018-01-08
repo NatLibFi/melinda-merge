@@ -41,7 +41,6 @@ const plugins = [
 ];
 
 const sassLoaders = [
-  'style-loader',
   'css-loader?sourceMap',
   'postcss-loader',
   'sass-loader?outputStyle=compressed'
@@ -69,28 +68,29 @@ module.exports = {
     extensions: ['.js', '.jsx', '.scss']
   },
   module: {
-    loaders: [
+    rules: [
       {
         test: /\.jsx?$/,
-        loaders: ['babel-loader'],
+        use: ['babel-loader'],
         include: [PATHS.app, PATHS.commons_frontend, PATHS.commons_server]
       },
       {
         test: /\.scss$/,
-        loader: sassLoaders.join('!')
+        use: ExtractTextPlugin.extract(sassLoaders)
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader'
+        include: [PATHS.styles, PATHS.commons_styles],
+        use: ExtractTextPlugin.extract(['css-loader', 'postcss-loader'])
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
       {
         test: /\.(png|jpg|jpeg|gif|svg)$/,
-        loader: 'url-loader?limit=8192&name=images/[name].[ext]?[hash]'
+        use: 'url-loader?limit=8192&name=images/[name].[ext]?[hash]'
       },
       {
         test: /\.(woff|woff2|eot|ttf)$/,
-        loader: 'url-loader?limit=8192&name=fonts/[name].[ext]?[hash]'
+        use: 'url-loader?limit=8192&name=fonts/[name].[ext]?[hash]'
       }
     ]
   },
