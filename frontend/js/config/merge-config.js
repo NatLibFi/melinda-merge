@@ -355,7 +355,7 @@ module.exports = {
     "65.": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },
     "662": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },
 
-    "700": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
+    "700": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"] } },
     "710": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
     "711": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
     "720": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
