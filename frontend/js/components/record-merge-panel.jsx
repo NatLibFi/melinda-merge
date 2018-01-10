@@ -31,7 +31,7 @@ import PropTypes from 'prop-types';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 
-import { editMergedRecord, toggleSourceRecordFieldSelection } from '../ui-actions';
+import { editMergedRecord, toggleSourceRecordFieldSelection, dismissMergeWarning } from '../ui-actions';
 import { saveRecord } from '../action-creators/record-actions';
 import { RecordPanel } from 'commons/components/record-panel';
 import { Preloader } from 'commons/components/preloader';
@@ -59,6 +59,7 @@ export class RecordMergePanel extends React.Component {
     toggleSourceRecordFieldSelection: PropTypes.func.isRequired,
     saveRecord: PropTypes.func.isRequired,
     editMergedRecord: PropTypes.func.isRequired,
+    dismissMergeWarning: PropTypes.func.isRequired,
     saveButtonVisible: PropTypes.bool.isRequired
   }
 
@@ -72,6 +73,10 @@ export class RecordMergePanel extends React.Component {
     if (field.fromOther && !isControlField(field)) {
       this.props.toggleSourceRecordFieldSelection(field);
     }
+  }
+
+  dismissWarning = () => {
+    this.props.dismissMergeWarning();
   }
 
   renderSourceRecordPanel(recordState, errorMessage, record) {
@@ -115,19 +120,22 @@ export class RecordMergePanel extends React.Component {
     }
 
     return (
-      <RecordPanel 
-        showHeader
-        editable
-        title="Yhdistetty"
-        record={record} 
-        onFieldClick={(field) => this.toggleMergedRecordField(field)}
-        onRecordUpdate={(record) => this.props.editMergedRecord(record)}>
+      <React.Fragment>
+        {recordState === 'WARNING' ? <MergeValidationErrorMessagePanel warning error={errorMessage} onDismiss={this.dismissWarning}/> : null}
+        <RecordPanel
+          showHeader
+          editable
+          title="Yhdistetty"
+          record={record}
+          onFieldClick={(field) => this.toggleMergedRecordField(field)}
+          onRecordUpdate={(record) => this.props.editMergedRecord(record)}>
 
-        { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
+          { recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null }
 
-        { this.props.saveButtonVisible ? this.renderSaveButton() : null }
-        
-      </RecordPanel>
+          { this.props.saveButtonVisible ? this.renderSaveButton() : null }
+
+        </RecordPanel>
+      </React.Fragment>
     );
   }
 
@@ -203,5 +211,5 @@ function mapStateToProps(state) {
 
 export const RecordMergePanelContainer = connect(
   mapStateToProps,
-  { editMergedRecord, toggleSourceRecordFieldSelection, saveRecord }
+  { editMergedRecord, toggleSourceRecordFieldSelection, saveRecord, dismissMergeWarning }
 )(RecordMergePanel);
