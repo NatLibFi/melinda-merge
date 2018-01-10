@@ -54,7 +54,7 @@ export const preset = {
   melinda_warnings: [preferredRecordFromFENNI, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
 };
 
-export function validateMergeCandidates(validationFunctions, preferredRecord, otherRecord) {
+export function validateMergeCandidates(validationFunctions, preferredRecord, otherRecord, warning = false) {
 
   const validationResults = validationFunctions.map(fn => fn(preferredRecord, otherRecord));
 
@@ -64,7 +64,10 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
     
     if (failures.length > 0) {
       const failureMessages = failures.map(failure => failure.validationFailureMessage);
-      throw new MergeValidationError('Merge validation failed', failureMessages);
+      if (warning)
+        throw new MergeValidationWarning('Merge validation warning', failureMessages);
+      else
+        throw new MergeValidationError('Merge validation failed', failureMessages);
     }
     
     return {
@@ -258,6 +261,22 @@ export function MergeValidationError(message, failureMessages) {
 MergeValidationError.prototype = Object.create(Error.prototype, {
   constructor: {
     value: MergeValidationError,
+    writable: true,
+    configurable: true
+  }
+});
+
+export function MergeValidationWarning(message, failureMessages) {
+  var temp = Error.call(this, message);
+  temp.name = this.name = 'MergeValidationWarning';
+  this.stack = temp.stack;
+  this.message = temp.message;
+  this.failureMessages = failureMessages;
+}
+
+MergeValidationWarning.prototype = Object.create(Error.prototype, {
+  constructor: {
+    value: MergeValidationWarning,
     writable: true,
     configurable: true
   }

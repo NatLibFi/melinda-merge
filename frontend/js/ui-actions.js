@@ -32,7 +32,7 @@ import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
 import createRecordMerger from '@natlibfi/marc-record-merge';
 import mergeConfiguration from './config/merge-config';
-import { exceptCoreErrors } from './utils';
+import { exceptCoreErrors, filterError } from './utils';
 import { markAsMerged } from './action-creators/duplicate-database-actions';
 import { RESET_WORKSPACE, TOGGLE_COMPACT_SUBRECORD_VIEW } from './constants/action-type-constants';
 import { FetchNotOkError } from './errors';
@@ -316,6 +316,7 @@ export function updateMergedRecord() {
     if (preferredRecord && otherRecord) {
 
       const validationRules = MergeValidation.preset.melinda_host;
+      const validationRulesWarning = MergeValidation.preset.melinda_warnings;
       const postMergeFixes = PostMerge.preset.defaults;
 
       const merge = createRecordMerger(mergeConfiguration);
@@ -326,6 +327,10 @@ export function updateMergedRecord() {
         .then(result => {
           dispatch(setMergedRecord(result.record));
         })
+        .then(() => MergeValidation.validateMergeCandidates(validationRulesWarning, preferredRecord, otherRecord, true))
+        .catch(filterError(MergeValidation.MergeValidationWarning, (error) => {
+          dispatch(setMergedRecordWarning(error));
+        }))
         .catch(exceptCoreErrors(error => {
           dispatch(setMergedRecordError(error));
         }));
@@ -369,12 +374,30 @@ export function setMergedRecordError(error) {
   };
 }
 
+export const SET_MERGED_RECORD_WARNING = 'SET_MERGED_RECORD_WARNING';
+
+export function setMergedRecordWarning(error) {
+  return {
+    'type': SET_MERGED_RECORD_WARNING,
+    'error': error
+  };
+}
+
 
 export const CLEAR_MERGED_RECORD = 'CLEAR_MERGED_RECORD';
 
 export function clearMergedRecord() {
   return {
     'type': CLEAR_MERGED_RECORD
+  };
+}
+
+
+export const DISMISS_MERGE_WARNING = 'DISMISS_MERGE_WARNING';
+
+export function dismissMergeWarning() {
+  return {
+    'type': DISMISS_MERGE_WARNING
   };
 }
 

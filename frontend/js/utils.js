@@ -26,6 +26,16 @@
 *
 */
 
+export function filterError(errorType, fn) {
+  return (error) => {
+    if (error instanceof errorType) {
+      return fn(error);
+    }
+    else {
+      throw error;
+    }
+  };
+}
 
 export function exceptCoreErrors(fn) {
 

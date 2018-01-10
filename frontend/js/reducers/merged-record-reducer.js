@@ -27,7 +27,7 @@
 */
 
 import { Map } from 'immutable'; 
-import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD } from '../ui-actions';
+import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD_WARNING, SET_MERGED_RECORD, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD, EDIT_MERGED_RECORD, DISMISS_MERGE_WARNING } from '../ui-actions';
 import { SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE } from '../constants/action-type-constants';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import { DEFAULT_MERGED_RECORD } from '../root-reducer';
@@ -43,6 +43,8 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
       return clearMergedRecord(state);
     case SET_MERGED_RECORD_ERROR:
       return setMergedRecordError(state, action.error);
+    case SET_MERGED_RECORD_WARNING:
+      return setMergedRecordWarning(state, action.error);
     case SET_MERGED_RECORD:
       state = setUnmodifiedMergedRecord(state, action.record);
       return setMergedRecord(state, action.record);
@@ -58,6 +60,8 @@ export default function mergedRecord(state = INITIAL_STATE, action) {
       return addField(state, action.field);
     case REMOVE_SOURCE_RECORD_FIELD:
       return removeField(state, action.field);
+    case DISMISS_MERGE_WARNING:
+      return dismissMergeWarning(state);
     case RESET_WORKSPACE:
       return INITIAL_STATE;
   }
@@ -110,6 +114,18 @@ export function setMergedRecordError(state, errorMessage) {
     .updateIn(['state'], () => 'ERROR')
     .updateIn(['errorMessage'], () => errorMessage);
 }
+
+export function setMergedRecordWarning(state, errorMessage) {
+  return state
+    .updateIn(['state'], () => 'WARNING')
+    .updateIn(['errorMessage'], () => errorMessage);
+}
+
+export function dismissMergeWarning(state) {
+  return state
+    .updateIn(['state'], () => 'LOADED');
+}
+
 
 export function addField(state, field) {
   const record = state.get('record');
