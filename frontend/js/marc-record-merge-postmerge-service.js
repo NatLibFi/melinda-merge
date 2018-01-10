@@ -50,7 +50,7 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf } from './record-utils';
+import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
 
 const defaultPreset = [
@@ -293,7 +293,7 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
   otherRecord.fields
     .filter(field => field.tag === '250')
     .filter(field => {
-      return !mergedRecord.fields.some(fieldInMerged => _.isEqual(fieldInMerged, field));
+      return !mergedRecord.fields.some(fieldInMerged => fieldIsEqual(fieldInMerged, field));
     }).map(function(field) {
       return field.subfields
         .filter(sub => sub.code === 'a')
