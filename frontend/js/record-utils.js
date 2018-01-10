@@ -31,6 +31,9 @@ import uuid from 'uuid';
 
 const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
 
+export function fieldIsEqual(field1, field2) {
+  return field1.tag === field2.tag && field1.ind1 === field2.ind1 && field1.ind2 === field2.ind2 && _.isEqual(field1.subfields, field2.subfields);
+}
 
 export function fieldHasSubfield(code, value) {
   const querySubfield = { code, value };
