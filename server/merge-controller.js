@@ -109,8 +109,10 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
         });
 
         res.send(response);
+      }).catch(error => {
+        logger.log('error', 'Commit merge error', error);
+        res.status(500).send(error);
       });
-
       
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
