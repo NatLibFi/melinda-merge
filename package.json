@@ -42,6 +42,9 @@
   },
   "license": "AGPL-3.0+",
   "dependencies": {
+    "@natlibfi/marc-record-merge": "^3.6.0",
+    "@natlibfi/melinda-api-client": "^1.1.6",
+    "@natlibfi/melinda-ui-commons": "file:melinda-ui-commons",
     "archiver": "^2.1.0",
     "babel-eslint": "^7.1.0",
     "body-parser": "^1.18.2",
@@ -59,8 +62,6 @@
     "isomorphic-fetch": "^2.2.1",
     "lodash": "^4.17.4",
     "marc-record-js": "^0.3.2",
-    "@natlibfi/marc-record-merge": "^3.6.0",
-    "@natlibfi/melinda-api-client": "^1.1.6",
     "mkdirp": "^0.5.1",
     "moment": "^2.19.3",
     "object-assign": "^4.1.1",
