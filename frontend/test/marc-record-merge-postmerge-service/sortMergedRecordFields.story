@@ -26,7 +26,7 @@ STA    ‡aTEST-STA
 500    ‡aEtukannessa tasku.
 650  7 ‡akeittokirjat‡2ysa
 650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
-650  7 ‡aruoanvalmistus‡2ysa
+650  7 ‡aRUOANVALMISTUS‡2ysa
 901    ‡aMU20150707‡5FENNI
 LOW    ‡aFENNI
 LOW    ‡aOULA
@@ -68,7 +68,7 @@ STA    ‡aTEST-STA
 650  7 ‡aruoanvalmistus‡2ysa‡9FENNI<KEEP>
 650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
 650  7 ‡akeittokirjat‡2ysa
-650  7 ‡aruoanvalmistus‡2ysa
+650  7 ‡aRUOANVALMISTUS‡2ysa
 650  7 ‡aruoanvalmistus‡2allars
 650  7 ‡aruoanvalmistus‡2musa
 650  7 ‡aruoanvalmistus‡2cilla
