@@ -29,7 +29,7 @@
 import _ from 'lodash';
 import { selectFirstValue, fieldHasSubfield } from './record-utils';
 
-const sorterFunctions = [sortByTag, sortByLOW, sortBySID, sortByIndexterms, sortAlphabetically];
+const sorterFunctions = [sortByTag, sortByLOW, sortBySID, sortByIndexterms, sortBy264, sortAlphabetically];
 
 export function fieldOrderComparator(fieldA, fieldB) {
   for (let sortFn of sorterFunctions) {
@@ -68,8 +68,8 @@ function sortByTag(fieldA, fieldB) {
 
 function sortByLOW(fieldA, fieldB) {
   if (fieldA.tag === 'LOW' && fieldB.tag === 'LOW') {
-    const lowA = selectFirstValue(fieldA, 'a');
-    const lowB = selectFirstValue(fieldB, 'a');
+    const lowA = _.lowerCase(selectFirstValue(fieldA, 'a'));
+    const lowB = _.lowerCase(selectFirstValue(fieldB, 'a'));
     if (lowA > lowB) return 1;
     if (lowA < lowB) return -1;
   }
@@ -78,8 +78,8 @@ function sortByLOW(fieldA, fieldB) {
 
 function sortBySID(fieldA, fieldB) {
   if (fieldA.tag === 'SID' && fieldB.tag === 'SID') {
-    const sidA = selectFirstValue(fieldA, 'b');
-    const sidB = selectFirstValue(fieldB, 'b');
+    const sidA = _.lowerCase(selectFirstValue(fieldA, 'b'));
+    const sidB = _.lowerCase(selectFirstValue(fieldB, 'b'));
     if (sidA > sidB) return 1;
     if (sidA < sidB) return -1;
   }
@@ -121,26 +121,26 @@ function sortByIndexterms(fieldA, fieldB) {
     if (hasFENNI9A && !hasFENNI9B) return -1;
     if (!hasFENNI9A && hasFENNI9B) return 1;
 
-    const valueA = selectFirstValue(fieldA, 'a');
-    const valueB = selectFirstValue(fieldB, 'a');
+    const valueA = _.lowerCase(selectFirstValue(fieldA, 'a'));
+    const valueB = _.lowerCase(selectFirstValue(fieldB, 'a'));
 
     if (valueA > valueB) return 1;
     if (valueA < valueB) return -1;
 
-    const valueAX = selectFirstValue(fieldA, 'x');
-    const valueBX = selectFirstValue(fieldB, 'x');
+    const valueAX = _.lowerCase(selectFirstValue(fieldA, 'x'));
+    const valueBX = _.lowerCase(selectFirstValue(fieldB, 'x'));
 
     if (valueBX === undefined || valueAX > valueBX) return 1;
     if (valueAX < valueBX) return -1;
     
-    const valueAZ = selectFirstValue(fieldA, 'z');
-    const valueBZ = selectFirstValue(fieldB, 'z');
+    const valueAZ = _.lowerCase(selectFirstValue(fieldA, 'z'));
+    const valueBZ = _.lowerCase(selectFirstValue(fieldB, 'z'));
 
     if (valueBZ === undefined || valueAZ > valueBZ) return 1;
     if (valueAZ < valueBZ) return -1;
     
-    const valueAY = selectFirstValue(fieldA, 'y');
-    const valueBY = selectFirstValue(fieldB, 'y');
+    const valueAY = _.lowerCase(selectFirstValue(fieldA, 'y'));
+    const valueBY = _.lowerCase(selectFirstValue(fieldB, 'y'));
 
     if (valueBY === undefined || valueAY > valueBY) return 1;
     if (valueAY < valueBY) return -1;
@@ -149,12 +149,47 @@ function sortByIndexterms(fieldA, fieldB) {
   return 0;
 }
 
+function sortBy264 (fieldA, fieldB) {
+  if (fieldA.tag === '264' && fieldB.tag === '264') {
+    if (fieldA.ind2 > fieldB.ind2) return 1;
+    if (fieldA.ind2 < fieldB.ind2) return -1;
+
+    if (fieldA.ind1 > fieldB.ind1) return 1;
+    if (fieldA.ind1 < fieldB.ind1) return -1;
+
+    const value3A = _.lowerCase(selectFirstValue(fieldA, '3'));
+    const value3B = _.lowerCase(selectFirstValue(fieldB, '3'));
+
+    if (value3A === undefined || value3A < value3B) return -1;
+    if (value3B === undefined || value3A > value3B) return 1;
+
+    const valueCA = _.lowerCase(selectFirstValue(fieldA, 'c'));
+    const valueCB = _.lowerCase(selectFirstValue(fieldB, 'c'));
+
+    if (valueCA === undefined || valueCA < valueCB) return -1;
+    if (valueCB === undefined || valueCA > valueCB) return 1;
+
+    const valueAA = _.lowerCase(selectFirstValue(fieldA, 'a'));
+    const valueAB = _.lowerCase(selectFirstValue(fieldB, 'a'));
+
+    if (valueAA === undefined || valueAA < valueAB) return -1;
+    if (valueAB === undefined || valueAA > valueAB) return 1;
+
+    const valueBA = _.lowerCase(selectFirstValue(fieldA, 'b'));
+    const valueBB = _.lowerCase(selectFirstValue(fieldB, 'b'));
+
+    if (valueBA === undefined || valueBA < valueBB) return -1;
+    if (valueBB === undefined || valueBA > valueBB) return 1;
+  }
+  return 0;
+}
+
 
 function sortAlphabetically(fieldA, fieldB) {
   if (fieldA.tag === fieldB.tag) {
-    
-    const valueA = selectFirstValue(fieldA, anySelector);
-    const valueB = selectFirstValue(fieldB, anySelector);
+
+    const valueA = _.lowerCase(selectFirstValue(fieldA, anySelector));
+    const valueB = _.lowerCase(selectFirstValue(fieldB, anySelector));
 
     if (valueA > valueB) return 1;
     if (valueA < valueB) return -1;

@@ -21,12 +21,23 @@ HLI    ‡aTEST-HLI
 SID    ‡c(ANDL100013)1452028‡bander
 LOW    ‡aANDER
 STA    ‡aTEST-STA
+264 11 ‡aHelsinki‡312
+264 11 ‡aHelsinki‡3ab‡c2345678
+264  3 ‡aHelsinki
+264 11 ‡aEspoo‡btesti‡3ab‡c2345678
+264 11 ‡aEspoo‡3ab‡c2345678
+264 11 ‡aHelsinki
+264 11 ‡aHelsinki‡3ab
+264 11 ‡aEspoo‡bauto‡3ab‡c2345678
+264 11 ‡aHelsinki‡3ab‡c1234567
+264  1 ‡aHelsinki
+264 31 ‡aHelsinki
 500    ‡aTakakannessa tasku.
 500    ‡aXylofoni takakannessa.
 500    ‡aEtukannessa tasku.
 650  7 ‡akeittokirjat‡2ysa
 650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
-650  7 ‡aruoanvalmistus‡2ysa
+650  7 ‡aRUOANVALMISTUS‡2ysa
 901    ‡aMU20150707‡5FENNI
 LOW    ‡aFENNI
 LOW    ‡aOULA
@@ -59,6 +70,17 @@ STA    ‡aTEST-STA
 035    ‡z(FI-MELINDA)009346890
 100    ‡aTest Author
 245    ‡aSome content
+264  1 ‡aHelsinki
+264 11 ‡aHelsinki
+264 11 ‡aHelsinki‡312
+264 11 ‡aHelsinki‡3ab
+264 11 ‡aHelsinki‡3ab‡c1234567
+264 11 ‡aEspoo‡3ab‡c2345678
+264 11 ‡aEspoo‡bauto‡3ab‡c2345678
+264 11 ‡aEspoo‡btesti‡3ab‡c2345678
+264 11 ‡aHelsinki‡3ab‡c2345678
+264 31 ‡aHelsinki
+264  3 ‡aHelsinki
 500    ‡aEtukannessa tasku.
 500    ‡aTakakannessa tasku.
 500    ‡aXylofoni takakannessa.
@@ -68,7 +90,7 @@ STA    ‡aTEST-STA
 650  7 ‡aruoanvalmistus‡2ysa‡9FENNI<KEEP>
 650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
 650  7 ‡akeittokirjat‡2ysa
-650  7 ‡aruoanvalmistus‡2ysa
+650  7 ‡aRUOANVALMISTUS‡2ysa
 650  7 ‡aruoanvalmistus‡2allars
 650  7 ‡aruoanvalmistus‡2musa
 650  7 ‡aruoanvalmistus‡2cilla
