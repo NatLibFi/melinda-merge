@@ -347,17 +347,17 @@ module.exports = {
 
     "5..": { "action": "copy", "options": { "compareWithout": ["9"] } },
 
-    "600": { "action": "copy", "options": { "compareWithout": ["9","e","4"], "mustBeIdentical": true } },
-    "610": { "action": "copy", "options": { "compareWithout": ["9","e","4"], "mustBeIdentical": true } },
-    "611": { "action": "copy", "options": { "compareWithout": ["9","e","4"], "mustBeIdentical": true } },
+    "600": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"], "mustBeIdentical": true } },
+    "610": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"], "mustBeIdentical": true } },
+    "611": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"], "mustBeIdentical": true } },
     "630": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },
     "648": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },    
     "65.": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },
     "662": { "action": "copy", "options": { "compareWithout": ["9"], "mustBeIdentical": true } },
 
     "700": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"] } },
-    "710": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
-    "711": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
+    "710": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"] } },
+    "711": { "action": "copy", "options": { "compareWithout": ["9","e","4","0"] } },
     "720": { "action": "copy", "options": { "compareWithout": ["9","e","4"] } },
     "730": { "action": "copy", "options": { "compareWithout": ["9"] } },
     "751": { "action": "copy", "options": { "compareWithout": ["9"] } },
