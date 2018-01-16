@@ -29,7 +29,7 @@
 import _ from 'lodash';
 import { selectFirstValue, fieldHasSubfield } from './record-utils';
 
-const sorterFunctions = [sortByTag, sortByLOW, sortBySID, sortByIndexterms, sortAlphabetically];
+const sorterFunctions = [sortByTag, sortByLOW, sortBySID, sortByIndexterms, sortBy264, sortAlphabetically];
 
 export function fieldOrderComparator(fieldA, fieldB) {
   for (let sortFn of sorterFunctions) {
@@ -149,10 +149,45 @@ function sortByIndexterms(fieldA, fieldB) {
   return 0;
 }
 
+function sortBy264 (fieldA, fieldB) {
+  if (fieldA.tag === '264' && fieldB.tag === '264') {
+    if (fieldA.ind2 > fieldB.ind2) return 1;
+    if (fieldA.ind2 < fieldB.ind2) return -1;
+
+    if (fieldA.ind1 > fieldB.ind1) return 1;
+    if (fieldA.ind1 < fieldB.ind1) return -1;
+
+    const value3A = _.lowerCase(selectFirstValue(fieldA, '3'));
+    const value3B = _.lowerCase(selectFirstValue(fieldB, '3'));
+
+    if (value3A === undefined || value3A < value3B) return -1;
+    if (value3B === undefined || value3A > value3B) return 1;
+
+    const valueCA = _.lowerCase(selectFirstValue(fieldA, 'c'));
+    const valueCB = _.lowerCase(selectFirstValue(fieldB, 'c'));
+
+    if (valueCA === undefined || valueCA < valueCB) return -1;
+    if (valueCB === undefined || valueCA > valueCB) return 1;
+
+    const valueAA = _.lowerCase(selectFirstValue(fieldA, 'a'));
+    const valueAB = _.lowerCase(selectFirstValue(fieldB, 'a'));
+
+    if (valueAA === undefined || valueAA < valueAB) return -1;
+    if (valueAB === undefined || valueAA > valueAB) return 1;
+
+    const valueBA = _.lowerCase(selectFirstValue(fieldA, 'b'));
+    const valueBB = _.lowerCase(selectFirstValue(fieldB, 'b'));
+
+    if (valueBA === undefined || valueBA < valueBB) return -1;
+    if (valueBB === undefined || valueBA > valueBB) return 1;
+  }
+  return 0;
+}
+
 
 function sortAlphabetically(fieldA, fieldB) {
   if (fieldA.tag === fieldB.tag) {
-    
+
     const valueA = _.lowerCase(selectFirstValue(fieldA, anySelector));
     const valueB = _.lowerCase(selectFirstValue(fieldB, anySelector));
 

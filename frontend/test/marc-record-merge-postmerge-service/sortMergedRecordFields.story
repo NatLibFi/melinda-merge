@@ -21,6 +21,17 @@ HLI    ‡aTEST-HLI
 SID    ‡c(ANDL100013)1452028‡bander
 LOW    ‡aANDER
 STA    ‡aTEST-STA
+264 11 ‡aHelsinki‡312
+264 11 ‡aHelsinki‡3ab‡c2345678
+264  3 ‡aHelsinki
+264 11 ‡aEspoo‡btesti‡3ab‡c2345678
+264 11 ‡aEspoo‡3ab‡c2345678
+264 11 ‡aHelsinki
+264 11 ‡aHelsinki‡3ab
+264 11 ‡aEspoo‡bauto‡3ab‡c2345678
+264 11 ‡aHelsinki‡3ab‡c1234567
+264  1 ‡aHelsinki
+264 31 ‡aHelsinki
 500    ‡aTakakannessa tasku.
 500    ‡aXylofoni takakannessa.
 500    ‡aEtukannessa tasku.
@@ -59,6 +70,17 @@ STA    ‡aTEST-STA
 035    ‡z(FI-MELINDA)009346890
 100    ‡aTest Author
 245    ‡aSome content
+264  1 ‡aHelsinki
+264 11 ‡aHelsinki
+264 11 ‡aHelsinki‡312
+264 11 ‡aHelsinki‡3ab
+264 11 ‡aHelsinki‡3ab‡c1234567
+264 11 ‡aEspoo‡3ab‡c2345678
+264 11 ‡aEspoo‡bauto‡3ab‡c2345678
+264 11 ‡aEspoo‡btesti‡3ab‡c2345678
+264 11 ‡aHelsinki‡3ab‡c2345678
+264 31 ‡aHelsinki
+264  3 ‡aHelsinki
 500    ‡aEtukannessa tasku.
 500    ‡aTakakannessa tasku.
 500    ‡aXylofoni takakannessa.
