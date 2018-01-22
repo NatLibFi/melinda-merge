@@ -33,7 +33,7 @@ const similarityDefinition = {
     {
       "name": "LDR/007",
       "description": "Bibliographic level, should be automatic mismatch if does not match",
-      "disabled": false,
+      "disabled": true,
       "false": -1150,
       "path": "$.leader",
       "options": {
