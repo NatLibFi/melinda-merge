@@ -39,7 +39,7 @@ import {
   SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, CHANGE_SUBRECORD_ROW, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
   UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE,
-  TOGGLE_COMPACT_SUBRECORD_VIEW } from '../constants/action-type-constants';
+  TOGGLE_COMPACT_SUBRECORD_VIEW, SWAP_SUBRECORD_ROW, SWAP_EVERY_SUBRECORD_ROWS } from '../constants/action-type-constants';
 
 const INITIAL_STATE = Map({
   index: List()
@@ -110,6 +110,12 @@ export default function subrecords(state = INITIAL_STATE, action) {
 
     case TOGGLE_COMPACT_SUBRECORD_VIEW:
       return compactItemsWithActionSelected(state);
+
+    case SWAP_SUBRECORD_ROW:
+      return swapSubrecordRow(state, action.rowId);
+
+    case SWAP_EVERY_SUBRECORD_ROWS:
+      return swapEverySubrecordRows(state);
 
     case RESET_WORKSPACE:
       return INITIAL_STATE;
@@ -378,6 +384,14 @@ export function setMergedSubrecordError(state, rowId, error) {
   return state.update(rowId, createEmptyRow(), row => row.set('mergeError', error));
 }
 
+export function swapSubrecordRow(state, rowId) {
+  return state.update(rowId, row => row.set('isSwapped', !row.get('isSwapped')));
+}
+
+export function swapEverySubrecordRows(state) {
+  return state.get('index').reduce(swapSubrecordRow, state);
+}
+
 function moveRow(fromRowIndex, toRowIndex, list) {
   
   const rowToMove = list.get(fromRowIndex);
@@ -397,6 +411,7 @@ let rowIdSeq = 1;
 function createEmptyRow() {
   return Map({
     rowId: `row${rowIdSeq++}`,
-    saveStatus: RecordSaveStatus.UNSAVED
+    saveStatus: RecordSaveStatus.UNSAVED,
+    isSwapped: false
   });
 }
