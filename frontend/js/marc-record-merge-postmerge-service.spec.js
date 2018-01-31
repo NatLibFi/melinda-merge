@@ -42,6 +42,8 @@ const TEST_CASE_SEPARATOR = '\n\n\n\n';
 
 const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge-service');
 
+RewireAPI.__Rewire__('PunctuationBibRules', 'testi');
+
 describe('marc-record-merge-validate-service', () => {
 
   before(() => {

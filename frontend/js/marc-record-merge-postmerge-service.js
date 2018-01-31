@@ -52,14 +52,18 @@ import uuid from 'node-uuid';
 import moment from 'moment';
 import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual } from './record-utils';
 import { fieldOrderComparator } from './marc-field-sort';
+import * as Punctuation from '@natlibfi/melinda-marc-record-utils/dist/punctuation';
+import PunctuationBibRules from '@natlibfi/melinda-marc-record-utils/dist/punctuation/bib-punctuation.json';
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
-  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
+  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields, fixFieldsPunctuation];
 
 export const preset = {
   defaults: defaultPreset
 };
+
+const PunctuationFixer = Punctuation.createRecordFixer(Punctuation.readPunctuationRulesFromJSON(PunctuationBibRules));
 
 export function applyPostMergeModifications(postMergeFunctions, preferredRecord, otherRecord, originalMergedRecord) {
 
@@ -405,6 +409,14 @@ export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecor
   return { mergedRecord };
 }
 
+export function fixFieldsPunctuation(preferredRecord, otherRecord, mergedRecordParam) {
+  const mergedRecord = new MarcRecord(mergedRecordParam);
+
+  mergedRecord.fields.forEach((field) => PunctuationFixer(field));
+
+  return { mergedRecord };
+}
+
 export function select773Fields(preferredHostRecordId, othterHostRecordId) {
   return function(preferredRecord, otherRecord, mergedRecord) {
   
@@ -431,6 +443,7 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
 
   };
 }
+
 
 
 function markAsPostmergeField(field) {
