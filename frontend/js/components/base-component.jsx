@@ -71,7 +71,9 @@ export class BaseComponent extends React.Component {
     toggleSourceSubrecordFieldSelection: PropTypes.func.isRequired,
     editMergedSubrecord: PropTypes.func.isRequired,
     saveSubrecord: PropTypes.func.isRequired,
-    notifications: PropTypes.array
+    notifications: PropTypes.array,
+    swapEverySubrecordRow: PropTypes.func.isRequired,
+    swapSubrecordRow: PropTypes.func.isRequired
   }
 
   renderValidationIndicator() {
@@ -94,6 +96,8 @@ export class BaseComponent extends React.Component {
           actionsEnabled={this.props.subrecordActionsEnabled}
           onInsertSubrecordRow={this.props.insertSubrecordRow}
           onRemoveSubrecordRow={this.props.removeSubrecordRow}
+          onSwapEverySubrecordRow={this.props.swapEverySubrecordRow}
+          onSwapSubrecordRow={this.props.swapSubrecordRow}
           onChangeSubrecordAction={this.props.changeSubrecordAction}
           onChangeSubrecordRow={this.props.changeSubrecordRow}
           onChangeSourceSubrecordRow={this.props.changeSourceSubrecordRow}
@@ -103,6 +107,7 @@ export class BaseComponent extends React.Component {
           onToggleSourceSubrecordFieldSelection={this.props.toggleSourceSubrecordFieldSelection}
           onEditMergedSubrecord={this.props.editMergedSubrecord}
           onSaveSubrecord={this.props.saveSubrecord}
+          swappingEnabled
         />
       </div>
     );

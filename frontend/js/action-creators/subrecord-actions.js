@@ -36,7 +36,7 @@ import {
   INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
   CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE, SWAP_SUBRECORD_ROW, SWAP_EVERY_SUBRECORD_ROWS } from '../constants/action-type-constants';
 
 import { SubrecordActionTypes } from 'commons/constants';
 import createRecordMerger from '@natlibfi/marc-record-merge';
@@ -46,6 +46,22 @@ import * as PostMerge from '../marc-record-merge-postmerge-service';
 import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
 import _ from 'lodash';
 import { decorateFieldsWithUuid, selectRecordId, resetRecordId, resetComponentHostLinkSubfield } from '../record-utils';
+
+export function swapEverySubrecordRow() {
+  return function(dispatch) {
+    dispatch({ type: SWAP_EVERY_SUBRECORD_ROWS });
+
+    dispatch(updateEveryMergedSubrecord());
+  };
+}
+
+export function swapSubrecordRow(rowId) {
+  return function(dispatch) {
+    dispatch({ type: SWAP_SUBRECORD_ROW, rowId });
+
+    dispatch(updateMergedSubrecord(rowId));
+  };
+}
 
 export function expandSubrecordRow(rowId) {
   return { type: EXPAND_SUBRECORD_ROW, rowId };
@@ -90,6 +106,7 @@ export function setEverySubrecordAction() {
 
       const preferredRecord = subrecordRow.get('targetRecord');
       const otherRecord = subrecordRow.get('sourceRecord');
+      const isSwapped = subrecordRow.get('isSwapped');
 
       let selectedActionType;
 
@@ -101,7 +118,7 @@ export function setEverySubrecordAction() {
         selectedActionType = SubrecordActionTypes.UNSET;
       }
 
-      return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
+      return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
         .then(record => ({ rowId, record, actionType: selectedActionType }))
         .catch(error => ({ rowId, error, actionType: selectedActionType }));
     })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
@@ -119,9 +136,10 @@ export function setEveryMatchedSubrecordAction() {
 
       const preferredRecord = subrecordRow.get('targetRecord');
       const otherRecord = subrecordRow.get('sourceRecord');
+      const isSwapped = subrecordRow.get('isSwapped');
 
       if (preferredRecord && otherRecord) {
-        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType: SubrecordActionTypes.MERGE })
+        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType: SubrecordActionTypes.MERGE, isSwapped })
           .then(record => ({ rowId, record }))
           .catch(error => ({ rowId, error }));
       }
@@ -141,6 +159,29 @@ export function changeSubrecordAction(rowId, actionType) {
   };
 }
 
+export function updateEveryMergedSubrecord() {
+  return function(dispatch, getState) {
+    const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
+    const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
+
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+      const subrecordRow = getState().getIn(['subrecords', rowId]);
+
+      const selectedActionType = subrecordRow.get('selectedAction');
+      const preferredRecord = subrecordRow.get('targetRecord');
+      const otherRecord = subrecordRow.get('sourceRecord');
+      const isSwapped = subrecordRow.get('isSwapped');
+
+      if (preferredRecord && otherRecord) {
+        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
+          .then(record => ({ rowId, record, actionType: selectedActionType }))
+          .catch(error => ({ rowId, error, actionType: selectedActionType }));
+      }
+    })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
+  };
+}
+
+
 export function updateMergedSubrecord(rowId) {
   return function(dispatch, getState) {
     const row = getState().getIn(['subrecords', rowId]);
@@ -148,17 +189,26 @@ export function updateMergedSubrecord(rowId) {
     const selectedActionType = row.get('selectedAction');
     const preferredRecord = row.get('targetRecord');
     const otherRecord = row.get('sourceRecord');
+    const isSwapped = row.get('isSwapped');
 
     const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
     const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-    return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType })
+    return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
       .then(record => dispatch(setMergedSubrecord(rowId, record)))
       .catch(error => dispatch(setMergedSubrecordError(rowId, error)));
   };
 }
 
-function mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType }) {
+function mergeSubrecord(options) {
+  const { selectedActionType, isSwapped } = options;
+
+  const otherRecord = isSwapped ? options.preferredRecord : options.otherRecord;
+  const preferredRecord = isSwapped ? options.otherRecord : options.preferredRecord;
+
+  const preferredHostRecordId = isSwapped ? options.otherHostRecordId : options.preferredHostRecordId;
+  const otherHostRecordId = isSwapped ? options.preferredHostRecordId : options.otherHostRecordId;
+  
   if (selectedActionType === SubrecordActionTypes.COPY) {
     if (preferredRecord && otherRecord) {
       return Promise.reject(new Error('Cannot copy both records'));
