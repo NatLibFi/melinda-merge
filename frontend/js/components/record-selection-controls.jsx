@@ -81,6 +81,11 @@ export class RecordSelectionControls extends React.Component {
     window.Materialize && window.Materialize.updateTextFields();
   }
 
+  componentDidMount() {
+    // update text fields if they are prefilled.
+    window.Materialize && window.Materialize.updateTextFields();
+  }
+
   componentWillUnmount() {
     if (typeof this.unlisten == 'function') {
       this.unlisten();
@@ -144,7 +149,8 @@ export class RecordSelectionControls extends React.Component {
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
       
-    </div>);
+      </div>
+    );
   }
 
 }
