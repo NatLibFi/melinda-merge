@@ -31,7 +31,6 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import Notifications from 'react-notification-system-redux';
 import _ from 'lodash';
-import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
 import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
@@ -40,7 +39,6 @@ import { SubrecordComponent } from 'commons/components/subrecord/subrecord-compo
 import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
-import { MergeDialog } from './merge-dialog';
 import { eitherHasSubrecords, sourceSubrecords, targetSubrecords, subrecordRowsDisplay } from '../selectors/subrecord-selectors';
 import { recordSaveActionAvailable, subrecordActionsEnabled } from '../selectors/merge-status-selector';
 import { compactRowsMap } from '../selectors/ui-selectors';
@@ -50,11 +48,6 @@ export class BaseComponent extends React.Component {
   static propTypes = {
     sessionState: PropTypes.string,
     shouldRenderSubrecordComponent: PropTypes.bool.isRequired,
-    mergeDialog: PropTypes.object.isRequired,
-    closeMergeDialog: PropTypes.func.isRequired,
-    mergeResponseMessage: PropTypes.string,
-    mergeStatus: PropTypes.string.isRequired,
-    mergeResponse: PropTypes.object,
     setCompactSubrecordView: PropTypes.func.isRequired,
     compactSubrecordView: PropTypes.bool.isRequired,
     subrecords: PropTypes.array.isRequired,
@@ -80,7 +73,7 @@ export class BaseComponent extends React.Component {
     return null;
   }
 
-  renderSignin() {   
+  renderSignin() {
     return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer title='Merge' />;
   }
 
@@ -88,8 +81,8 @@ export class BaseComponent extends React.Component {
     return (
       <div>
         <div className='divider' />
-        <SubrecordComponent 
-          setCompactSubrecordView={this.props.setCompactSubrecordView} 
+        <SubrecordComponent
+          setCompactSubrecordView={this.props.setCompactSubrecordView}
           compactSubrecordView={this.props.compactSubrecordView}
           subrecords={this.props.subrecords}
           saveButtonVisible={this.props.saveButtonVisible}
@@ -113,36 +106,19 @@ export class BaseComponent extends React.Component {
     );
   }
 
-  closeDialog() {
-    this.props.closeMergeDialog();
-  }
-
-  renderMergeDialog() {
-    return (
-      <MergeDialog 
-        status={this.props.mergeStatus}
-        message={this.props.mergeResponseMessage} 
-        closable={this.props.mergeDialog.closable}
-        response={this.props.mergeResponse}
-        onClose={this.closeDialog.bind(this)}
-      />
-    );
-  }
-
   renderMainPanel() {
-  
+
     return (
-      <div>
+      <React.Fragment>
         <Notifications
           notifications={this.props.notifications}
         />
-        <NavBarContainer />
-        { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
+        <NavBarContainer/>
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
         { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
-      </div>
+      </React.Fragment>
     );
   }
 
@@ -163,10 +139,7 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
-    mergeStatus: state.getIn(['mergeStatus', 'status']),
-    mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
-    mergeResponse: state.getIn(['mergeStatus', 'response']),
-    mergeDialog: state.getIn(['mergeStatus', 'dialog']).toJS(),
+
     shouldRenderSubrecordComponent: eitherHasSubrecords(state),
     notifications: state.get('notifications'),
 

@@ -31,22 +31,61 @@ import PropTypes from 'prop-types';
 import _ from 'lodash';
 import classNames from 'classnames';
 import { CommitMergeStates } from '../constants';
-import '../../styles/components/merge-dialog.scss';
+// import '../../styles/components/merge-dialog.scss';
+import Popover from 'material-ui/Popover';
+import Button from 'material-ui/Button';
+import { withStyles } from 'material-ui/styles';
+import { CardHeader, CardContent, CardActions } from 'material-ui/Card';
+import { Preloader } from 'commons/components/preloader';
+import { green, red, lime, lightBlue } from 'material-ui/colors';
+const styles = (theme) => ({
+  root: {
+    width: '33.3333%',
+    marginTop: theme.spacing.unit
+  },
+  code: {
+    padding: 2,
+    marginRight: 3
+  },
+  message: {
+    marginBottom: '3px',
+    border: '1px solid #9F9F9F',
+    borderRadius: '5px',
+    padding: '5px',
+    maxHeight: '700px',
+    overflowY: 'auto'
+  },
+  green: {
+    backgroundColor: green[100]
+  },
+  red: {
+    backgroundColor: red[50]
+  },
+  lime: {
+    backgroundColor: lime[100]
+  },
+  lightBlue: {
+    backgroundColor: lightBlue[50]
+  }
+});
 
-export class MergeDialog extends React.Component {
+class MergeDialog extends React.Component {
   static propTypes = {
     closable: PropTypes.bool.isRequired,
     onClose: PropTypes.func.isRequired,
     status: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
-    response: PropTypes.object
+    response: PropTypes.object,
+    classes: PropTypes.object.isRequired
   }
 
-  close(event) {
-    event.preventDefault();
-    if (this.props.closable) {
-      this.props.onClose();
-    }
+  close = (onClose) =>  {
+    return (e) => {
+      e.preventDefault();
+      if (this.props.closable) {
+        onClose();
+      }
+    };
   }
 
   title() {
@@ -59,27 +98,28 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
-    
+    const { classes } = this.props;
+
     if (_.isEmpty(response)) {
-      return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
+      return <div className={classNames(classes.message, classes.red)}>Tuntematon virhe</div>;
     }
     
     if (response.name === 'RollbackError') {
-      return <div className="response-container"><div className="red lighten-5">{response.message}</div></div>;
+      return <div className={classNames(classes.message, classes.red)}>{response.message}</div>;
     }
 
-    const triggers = response.triggers.filter(usefulMessage).map(this.renderSingleMessage);
-    const warnings = response.warnings.filter(usefulMessage).map(this.renderSingleMessage);
-    const errors = response.errors.map(this.renderSingleMessage);
-    const messages = response.messages.map(this.renderSingleMessage);
+    const triggers = response.triggers.filter(usefulMessage).map((item, i) => this.renderSingleMessage(item, i));
+    const warnings = response.warnings.filter(usefulMessage).map((item, i) => this.renderSingleMessage(item, i));
+    const errors = response.errors.map((item, i) => this.renderSingleMessage(item, i));
+    const messages = response.messages.map((item, i) => this.renderSingleMessage(item, i));
 
     return (
-      <div className="response-container">
-        {messages.length ? <div className="green lighten-4">{messages}</div> : null}
-        {errors.length   ? <div className="red lighten-5">{errors}</div> : null}
-        {warnings.length ? <div className="lime lighten-4">{warnings}</div> : null}
-        {triggers.length ? <div className="light-blue lighten-5">{triggers}</div> : null}
-      </div>
+      <React.Fragment>
+        {messages.length ? <div className={classNames(classes.message, classes.green)}>{messages}</div> : null}
+        {errors.length   ? <div className={classNames(classes.message, classes.red)}>{errors}</div> : null}
+        {warnings.length ? <div className={classNames(classes.message, classes.lime)}>{warnings}</div> : null}
+        {triggers.length ? <div className={classNames(classes.message, classes.lightBlue)}>{triggers}</div> : null}
+      </React.Fragment>
     );
 
     function usefulMessage(message) {
@@ -88,60 +128,44 @@ export class MergeDialog extends React.Component {
   }
 
   renderSingleMessage(item, i) {
+    const { classes } = this.props;
+
     return (
-      <div key={`${item.message}-${i}`} className="message-container"><span className="code">{item.code}</span><span className="message">{item.message}</span></div>
+      <div key={`${item.message}-${i}`}><span className={classes.code}>{item.code}</span><span>{item.message}</span></div>
     );
   }
 
-  renderContent() {
+  renderContent(status, message, response) {
 
-    if (this.props.response) {
-      return this.renderResponseMessages(this.props.response);
-    } else if (this.props.status === CommitMergeStates.COMMIT_MERGE_ONGOING) {
+    if (response) {
+      return this.renderResponseMessages(response);
+    } else if (status === CommitMergeStates.COMMIT_MERGE_ONGOING) {
       return <div>{this.renderSpinner()}</div>;
     } else {
-      return <p>{this.props.message}</p>;
+      return <p>{message}</p>;
     }
   }
 
   renderSpinner() {
-    return (
-      <div className="preloader-wrapper small active">
-        <div className="spinner-layer spinner-blue-only">
-          <div className="circle-clipper left">
-            <div className="circle" />
-          </div>
-          <div className="gap-patch">
-            <div className="circle" />
-          </div>
-          <div className="circle-clipper right">
-            <div className="circle" />
-          </div>
-        </div>
-      </div>
-    );
+    return <Preloader/>;
   }
 
   render() {
-
-    const buttonClasses = classNames({
-      disabled: !this.props.closable
-    });
+    const { classes, status, message, closable, response, onClose, ...other } = this.props; 
 
     return (
-      <div className="row modal-merge-dialog">
-        <div className="col offset-s8 s4">
-          <div className="card">
-            <div className="card-content">
-              <span className="card-title">{this.title()}</span>
-              {this.renderContent()}
-            </div>
-            <div className="card-action right-align">
-              <a className={buttonClasses} href="#" onClick={(e) => this.close(e)}>Sulje</a>
-            </div>
-          </div>
-        </div>
-      </div>
+      <Popover {...other} classes={{paper: classes.root}} open>
+        <CardHeader title={this.title()} />
+
+        <CardContent>
+          {this.renderContent(status, message, response)}
+        </CardContent>
+
+        <CardActions>
+          <Button disabled={!closable} onClick={this.close(onClose)}>Sulje</Button>
+        </CardActions>
+      </Popover>
     );
   }
 }
+export default withStyles(styles)(MergeDialog);

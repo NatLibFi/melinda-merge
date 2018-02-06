@@ -41,6 +41,7 @@ import * as Cookies from 'js-cookie';
 import { validateSession } from 'commons/action-creators/session-actions';
 import { initKeyboardListener } from './keyboard-commands';
 import history from './history';
+import { MuiThemeProvider, createMuiTheme } from 'material-ui/styles';
 
 const loggerMiddleware = createLogger();
 
@@ -58,13 +59,26 @@ const store = createStore(
 
 const rootElement = document.getElementById('app');
 
+const theme = createMuiTheme({
+  palette: {
+    primary: {
+      main: '#00224F'
+    },
+    secondary: {
+      main: '#00B3F0'
+    }
+  },
+});
+
 ReactDOM.render(
   <Provider store={store}>
     <Router history={history}>
-      <App>
-        <Route exact path='/' component={BaseComponentContainer} />
-        <Route exact path='/records/:otherId/and/:preferredId?' component={BaseComponentContainer} />
-      </App>
+      <MuiThemeProvider theme={theme}>
+        <App>
+          <Route exact path='/' component={BaseComponentContainer} />
+          <Route exact path='/records/:otherId/and/:preferredId?' component={BaseComponentContainer} />
+        </App>
+      </MuiThemeProvider>
     </Router>
   </Provider>, 
   rootElement

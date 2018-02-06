@@ -28,12 +28,61 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../../styles/components/toolbar.scss';
-import { DuplicateDatabaseControls } from './duplicate-database-controls';
+import DuplicateDatabaseControls from './duplicate-database-controls';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import * as duplicateDatabaseActionCreators from '../action-creators/duplicate-database-actions';
 import _ from 'lodash';
+import { withStyles } from 'material-ui/styles';
+import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon';
+import Divider from 'material-ui/Divider';
+
+const styles = theme => ({
+  root: {
+    backgroundColor: '#ededed',
+    boxShadow: 'none',
+    borderBottom: '1px solid #ddd',
+    display: 'flex'
+  },
+  group: {
+    display: 'flex',
+    flexDirection: 'column',
+    alignItems: 'center'
+  },
+  groupButtons: {
+    display: 'flex'
+  },
+  groupLabel: {
+    color: 'black'
+  },
+  groupLabelBadge: {
+    position: 'static',
+    fontWeight: 300,
+    fontSize: '0.8rem',
+    color: '#fff',
+    backgroundColor: '#26a69a',
+    borderRadius: '2px'
+  },
+  button: {
+    textAlign: 'center',
+    flex: '0 0 auto',
+    width: theme.spacing.unit * 6,
+    height: theme.spacing.unit * 6,
+    padding: 0,
+    color: theme.palette.action.active,
+    transition: theme.transitions.create('background-color', {
+      duration: theme.transitions.duration.shortest,
+    }),
+    minWidth: 0
+  },
+  buttonLabel: {
+    width: '100%',
+    display: 'flex',
+    alignItems: 'inherit',
+    justifyContent: 'inherit',
+  },
+});
 
 export class ToolBar extends React.Component {
 
@@ -45,7 +94,8 @@ export class ToolBar extends React.Component {
     markAsNotDuplicate: PropTypes.func.isRequired,
     duplicatePairCount: PropTypes.number.isRequired,
     duplicateDatabaseStatus: PropTypes.string.isRequired,
-    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
+    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired,
+    classes: PropTypes.object.isRequired
   }
 
   componentWillMount() {
@@ -58,35 +108,43 @@ export class ToolBar extends React.Component {
   }
 
   renderNewPairButton() {
+    const { classes } = this.props;
+
     return (
-      <div className="group">
-        <ul id="nav">
-          <li><a href="#" onClick={(e) => this.startNewPair(e)}><i className="material-icons tooltip" title="Aloita uusi">add</i></a></li>
-        </ul>
-        <span className="group-label">Uusi</span>
+      <div className={classes.group}>
+        <div className={classes.groupButtons}>
+          <Button classes={{root: classes.button, label: classes.buttonLabel}} onClick={(e) => this.startNewPair(e)}><Icon>add</Icon></Button>
+        </div>
+
+        <span className={classes.groupLabel}>Uusi</span>
       </div>
     );
   }
 
   render() {
+    const { classes } = this.props;
+
     return (
-      <nav className="toolbar">
-        <div className="nav-wrapper">
-          {this.renderNewPairButton()}
-
-          <ul><li className="separator"><span /></li></ul>
-
-          <DuplicateDatabaseControls 
-            currentStatus={this.props.duplicateDatabaseStatus}
-            loadNextPair={this.props.fetchNextPair}
-            skipPair={this.props.skipPair}
-            notDuplicate={this.props.markAsNotDuplicate}
-            duplicatePairCount={this.props.duplicatePairCount}
-            recordsAreFromDuplicateDatabase={this.props.recordsAreFromDuplicateDatabase}
-          />
-          
-        </div>
-      </nav>
+      <div className={classes.root}>
+        {this.renderNewPairButton()}
+        <Divider/>
+        <DuplicateDatabaseControls 
+          classes={{
+            button: classes.button,
+            buttonLabel: classes.buttonLabel,
+            group: classes.group,
+            groupButtons: classes.groupButtons,
+            groupLabel: classes.groupLabel,
+            groupLabelBadge: classes.groupLabelBadge
+          }}
+          currentStatus={this.props.duplicateDatabaseStatus}
+          loadNextPair={this.props.fetchNextPair}
+          skipPair={this.props.skipPair}
+          notDuplicate={this.props.markAsNotDuplicate}
+          duplicatePairCount={this.props.duplicatePairCount}
+          recordsAreFromDuplicateDatabase={this.props.recordsAreFromDuplicateDatabase}
+        />
+      </div>
     );
   }
 }
@@ -102,4 +160,4 @@ function mapStateToProps(state) {
 export const ToolBarContainer = connect(
   mapStateToProps,
   _.assign({}, duplicateDatabaseActionCreators, uiActionCreators)
-)(ToolBar);
+)(withStyles(styles)(ToolBar));

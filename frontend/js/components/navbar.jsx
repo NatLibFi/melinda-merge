@@ -27,12 +27,33 @@
 */
 
 import React from 'react';
+
 import PropTypes from 'prop-types';
-import { commitMerge} from '../ui-actions';
+import { commitMerge, closeMergeDialog } from '../ui-actions';
 import {connect} from 'react-redux';
 import { mergeButtonEnabled } from '../selectors/merge-status-selector';
-import '../../styles/components/navbar.scss';
+
 import { removeSession } from 'commons/action-creators/session-actions';
+import AppBar from 'material-ui/AppBar';
+import Toolbar from 'material-ui/Toolbar';
+import Typography from 'material-ui/Typography';
+import Button from 'material-ui/Button';
+import Menu, { MenuItem } from 'material-ui/Menu';
+import IconButton from 'material-ui/IconButton';
+import Icon from 'material-ui/Icon';
+import { withStyles } from 'material-ui/styles';
+import MergeDialog from './merge-dialog';
+
+const styles = (theme) => ({
+  toolbar: {
+    display: 'flex',
+    justifyContent: 'flex-end',
+    alignItems: 'center',
+  },
+  statusInfo: {
+    marginRight: theme.spacing.unit
+  }
+});
 
 export class NavBar extends React.Component {
 
@@ -42,50 +63,111 @@ export class NavBar extends React.Component {
     statusInfo: PropTypes.string,
     mergeButtonEnabled: PropTypes.bool.isRequired,
     removeSession: PropTypes.func.isRequired,
+    mergeDialog: PropTypes.object.isRequired,
+    closeMergeDialog: PropTypes.func.isRequired,
+    mergeResponseMessage: PropTypes.string,
+    mergeResponse: PropTypes.object,
+    classes: PropTypes.object.isRequired
   }
 
-  componentDidMount() {
-    
-    window.$('.dropdown-navbar').dropdown({
-      inDuration: 300,
-      outDuration: 225,
-      constrain_width: false,
-      hover: false,
-      gutter: 0,
-      belowOrigin: true,
-      alignment: 'right'
-    });
+  constructor() {
+    super();
 
+    this.state = {
+      anchorEl: null
+    };
+  }
+ 
+  handleMenu = event => {
+    this.setState({ anchorEl: event.currentTarget });
+  };
+
+  handleClose = () => {
+    this.setState({ anchorEl: null });
+  };
+
+  handleLogOut = () => {
+    this.handleClose();
+    this.props.removeSession();
   }
 
   disableIfMergeNotPossible() {
-    return this.props.mergeButtonEnabled ? '' : 'disabled';
+    return !this.props.mergeButtonEnabled;
   }
 
   statusInfo() {
     return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
   }
 
+  closeDialog() {
+    this.props.closeMergeDialog();
+  }
+
+  renderMergeDialog() {
+    return (
+      <MergeDialog 
+        status={this.props.mergeStatus}
+        message={this.props.mergeResponseMessage} 
+        closable={this.props.mergeDialog.closable}
+        response={this.props.mergeResponse}
+        onClose={this.closeDialog.bind(this)}
+        anchorEl={this.mergeButton}
+        anchorOrigin={{
+          vertical: 'bottom',
+          horizontal: 'right',
+        }}
+        transformOrigin={{
+          vertical: 'top',
+          horizontal: 'right',
+        }}
+        open
+      />
+    );
+  }
+
   render() {
+    const { anchorEl } = this.state;
+    const { classes } = this.props;
+    const open = Boolean(anchorEl);
 
     return (
-    <div className="navbar-fixed">
-        <nav> 
-          <div className="nav-wrapper">
-            
-            <ul id="nav" className="right">
-              <li><div className="status-info">{this.props.statusInfo}</div></li>
-              <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>
-              <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">more_vert</i></a></li>
-            </ul>
-          </div>
-        </nav>
+      <AppBar position="static">
+        <Toolbar className={classes.toolbar}>
+          <Typography color="inherit" className={classes.statusInfo}>
+            {this.props.statusInfo}
+          </Typography>
+          <Button variant="raised" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} color="secondary" buttonRef={(ref) => this.mergeButton = ref}>Yhdistä</Button>
 
-        <ul id='mainmenu' className='dropdown-content'>
-          <li className="divider" />
-          <li><a href="#" onClick={this.props.removeSession}>Kirjaudu ulos</a></li>
-        </ul>
-      </div>
+          <IconButton
+            aria-owns={open ? 'menu-navbar' : null}
+            aria-haspopup="true"
+            onClick={this.handleMenu}
+            color="inherit"
+          >
+            <Icon>more_vert</Icon>
+          </IconButton>
+
+          <Menu
+            id="menu-navbar"
+            anchorEl={anchorEl}
+            anchorOrigin={{
+              vertical: 'bottom',
+              horizontal: 'right',
+            }}
+            transformOrigin={{
+              vertical: 'top',
+              horizontal: 'right',
+            }}
+            getContentAnchorEl={null}
+            open={open}
+            onClose={this.handleClose}
+          >
+            <MenuItem onClick={this.handleLogOut}>Kirjaudu ulos</MenuItem>
+          </Menu>
+          { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
+
+        </Toolbar>
+      </AppBar>
     );
   }
 }
@@ -93,6 +175,9 @@ export class NavBar extends React.Component {
 function mapStateToProps(state) {
   return {
     mergeButtonEnabled: mergeButtonEnabled(state),
+    mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
+    mergeResponse: state.getIn(['mergeStatus', 'response']),
+    mergeDialog: state.getIn(['mergeStatus', 'dialog']).toJS(),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     statusInfo: state.getIn(['mergeStatus', 'message'])
   };
@@ -100,5 +185,5 @@ function mapStateToProps(state) {
 
 export const NavBarContainer = connect(
   mapStateToProps,
-  { removeSession, commitMerge }
-)(NavBar);
+  { removeSession, commitMerge, closeMergeDialog }
+)(withStyles(styles)(NavBar));

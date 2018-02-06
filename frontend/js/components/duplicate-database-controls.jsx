@@ -29,9 +29,40 @@
 import React from 'react';
 import PropTypes from 'prop-types';
 import { DuplicateDatabaseStates } from '../constants';
-import classNames from 'classnames';
+import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon';
+import { LinearProgress } from 'material-ui/Progress';
+import { withStyles } from 'material-ui/styles';
 
-export class DuplicateDatabaseControls extends React.Component {
+const styles = (theme) => ({
+  button: {
+    position: 'relative',
+    ...theme.button
+  },
+  buttonProgress: {
+    position: 'absolute',
+    width: '100%',
+    bottom: 0,
+    ...theme.buttonProgress
+  },
+  buttonLabel: {
+    ...theme.buttonLabel
+  },
+  group: {
+    ...theme.group
+  },
+  groupButtons: {
+    ...theme.groupButtons
+  },
+  groupLabel: {
+    ...theme.groupLabel
+  },
+  groupLabelBadge: {
+    ...theme.groupLabelBadge
+  },
+});
+
+class DuplicateDatabaseControls extends React.Component {
 
   static propTypes = {
     loadNextPair: PropTypes.func.isRequired,
@@ -39,7 +70,8 @@ export class DuplicateDatabaseControls extends React.Component {
     notDuplicate: PropTypes.func.isRequired,
     duplicatePairCount: PropTypes.number.isRequired,
     currentStatus: PropTypes.string.isRequired,
-    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
+    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired,
+    classes: PropTypes.object.isRequired
   }
 
   loadNextDuplicatePair(event) {
@@ -64,14 +96,16 @@ export class DuplicateDatabaseControls extends React.Component {
   }
 
   renderDuplicateCountBadge() {
+    const { classes } = this.props;
+
     const count = this.props.duplicatePairCount;
 
-    return count > 0 ? (<span className="badge tooltip" title="Tuplaehdotukset">{count}</span>) : null;
+    return count > 0 ? (<span className={classes.groupLabelBadge} title="Tuplaehdotukset">{count}</span>) : null;
   }
 
   renderProgressIndicatorFor(action) {
-  
-    return this.props.currentStatus === action ? <div className="progress"><div className="indeterminate" /></div> : null;
+    const { classes } = this.props;
+    return this.props.currentStatus === action ? <LinearProgress classes={{root: classes.buttonProgress}} /> : null;
   }
 
   isEnabled() {
@@ -79,43 +113,30 @@ export class DuplicateDatabaseControls extends React.Component {
   }
 
   render() {
-
-    const nextClasses = classNames({
-      disabled: !this.isEnabled()
-    });
-
-    const skipClasses = classNames({
-      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
-    });
-    
-    const notDuplicateClasses = classNames({
-      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
-    });
-    
-
-    const classes = classNames('material-icons', 'tooltip');
+    const { classes } = this.props;
 
     return (
-      <div className="group">
-        <ul id="nav">
-          
-          <li className={nextClasses}>
-            <a href="#" onClick={(e) => this.loadNextDuplicatePair(e)}><i className={classes} title="Seuraava pari">navigate_next</i></a>
+      <div className={classes.group}>
+        <div className={classes.groupButtons}>
+          <Button disabled={!this.isEnabled()} classes={{root: classes.button, label: classes.buttonLabel}} onClick={(e) => this.loadNextDuplicatePair(e)} title="Seuraava pari">
+            <Icon>navigate_next</Icon>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING)}
-          </li>
-          <li className={skipClasses}>
-            <a href="#" onClick={(e) => this.skipCurrentDuplicatePair(e)}><i className={classes} title="Ohita">skip_next</i></a>
+          </Button>
+          <Button disabled={!this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase} classes={{root: classes.button, label: classes.buttonLabel}} onClick={(e) => this.skipCurrentDuplicatePair(e)} title="Ohita">
+            <Icon>skip_next</Icon>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.SKIP_PAIR_ONGOING)}
-          </li>
-          <li className={notDuplicateClasses}>
-            <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className={classes} title="Ei tupla">layers_clear</i></a>
+          </Button>
+          <Button disabled={!this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase} classes={{root: classes.button, label: classes.buttonLabel}} onClick={(e) => this.markAsNonDuplicate(e)} title="Ei tupla">
+            <Icon>layers_clear</Icon>
             {this.renderProgressIndicatorFor(DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING)}
-          </li>
-          
-        </ul>
-        <span className="group-label">Tuplatietokanta {this.renderDuplicateCountBadge()}</span>
+          </Button>
+        </div>
+
+        <span className={classes.groupLabel}>Tuplatietokanta {this.renderDuplicateCountBadge()}</span>
       </div>
     );
   }
 }
+
+export default withStyles(styles)(DuplicateDatabaseControls);
 

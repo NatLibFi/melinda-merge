@@ -28,15 +28,34 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../../styles/components/record-selection-controls';
 import * as uiActionCreators from '../ui-actions';
 import {connect} from 'react-redux';
 import _ from 'lodash';
 import { withRouter } from 'react-router';
 import classNames from 'classnames';
 import { hostRecordActionsEnabled } from '../selectors/merge-status-selector';
+import Grid from 'material-ui/Grid';
+import TextField from 'material-ui/TextField';
+import Button from 'material-ui/Button';
+import Icon from 'material-ui/Icon';
+import { withStyles } from 'material-ui/styles';
 
 const RECORD_LOADING_DELAY = 500;
+
+const styles = (theme) => ({
+  root: {
+    margin: (theme.spacing.unit * 2) + 'px 0'
+  },
+  swapButtonContainer: {
+    display: 'flex',
+    justifyContent: 'center',
+    alignItems: 'flex-end'
+  },
+  swapButton: {
+    height: '36px',
+    width: '36px'
+  }
+});
 
 export class RecordSelectionControls extends React.Component {
 
@@ -49,7 +68,8 @@ export class RecordSelectionControls extends React.Component {
     setTargetRecordId: PropTypes.func.isRequired,
     locationDidChange: PropTypes.func.isRequired,
     controlsEnabled: PropTypes.bool.isRequired,
-    history: PropTypes.object.isRequired
+    history: PropTypes.object.isRequired,
+    classes: PropTypes.object.isRequired
   }
 
   constructor() {
@@ -73,22 +93,6 @@ export class RecordSelectionControls extends React.Component {
 
     if (_.identity(next.targetRecordId) && _.identity(next.sourceRecordId)) {
       this.props.history.push(`/records/${next.sourceRecordId}/and/${next.targetRecordId}`);
-    }
-  }
-
-  componentDidUpdate() {
-    // update text fields if they are prefilled.
-    window.Materialize && window.Materialize.updateTextFields();
-  }
-
-  componentDidMount() {
-    // update text fields if they are prefilled.
-    window.Materialize && window.Materialize.updateTextFields();
-  }
-
-  componentWillUnmount() {
-    if (typeof this.unlisten == 'function') {
-      this.unlisten();
     }
   }
 
@@ -116,43 +120,32 @@ export class RecordSelectionControls extends React.Component {
     if (controlsEnabled) {
       this.props.swapRecords();
     }
-
   }
 
   render() {
-
-    const { controlsEnabled } = this.props;
-
-    const swapButtonClasses = classNames('btn-floating', 'blue', {
-      'waves-effect': controlsEnabled,
-      'waves-light': controlsEnabled,
-      'disabled': !controlsEnabled
-    });
+    const { controlsEnabled, classes } = this.props;
 
     return (
-      <div className="row row-margin-swap record-selection-controls">
-      
-        <div className="col s2 offset-s1 input-field">
-          <input id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled} />
-          <label htmlFor="source_record">Poistuva tietue</label>
-        </div>
-        <div className="col s2 control-swap-horizontal input-field">
-          <div>
-            <a className={swapButtonClasses} onClick={(e) => this.handleSwap(e)}>
-              <i className="material-icons tooltip small" title="Vaihda keskenään">swap_horiz</i>
-            </a>
-          </div>
-        </div>
+      <Grid container className={classNames(classes.root, 'record-selection-controls')} spacing={0}>
+        <Grid item xs={1} />
 
-        <div className="col s2 input-field">
-          <input id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled}/>
-          <label htmlFor="target_record">Säilyvä tietue</label>
-        </div>
-      
-      </div>
+        <Grid item xs={2}>
+          <TextField id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled} label="Poistuva tietue" />
+        </Grid>
+
+        <Grid item xs={2} className={classes.swapButtonContainer}>
+          <Button classes={{root: classes.swapButton}} variant="fab" color="secondary" aria-label="swap" disabled={!controlsEnabled} onClick={(e) => this.handleSwap(e)}>
+            <Icon>swap_horiz</Icon>
+          </Button>
+        </Grid>
+
+        <Grid item xs={2}>
+          <TextField id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled} label="Säilyvä tietue" />
+        </Grid>
+
+      </Grid>
     );
   }
-
 }
 
 function mapStateToProps(state) {
@@ -166,4 +159,4 @@ function mapStateToProps(state) {
 export const RecordSelectionControlsContainer = withRouter(connect(
   mapStateToProps,
   uiActionCreators
-)(RecordSelectionControls));
+)(withStyles(styles)(RecordSelectionControls)));
