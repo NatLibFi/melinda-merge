@@ -43,12 +43,19 @@ import IconButton from 'material-ui/IconButton';
 import Icon from 'material-ui/Icon';
 import { withStyles } from 'material-ui/styles';
 import MergeDialog from './merge-dialog';
+import MelindaLogo from '../../melinda-logo.png';
 
 const styles = (theme) => ({
   toolbar: {
     display: 'flex',
-    justifyContent: 'flex-end',
+    justifyContent: 'space-between',
     alignItems: 'center',
+  },
+  logoContainer: {
+    flex: '1',
+    alignSelf: 'stretch',
+    backgroundImage: `url(${MelindaLogo})`,
+    backgroundRepeat: 'no-repeat'
   },
   statusInfo: {
     marginRight: theme.spacing.unit
@@ -77,7 +84,7 @@ export class NavBar extends React.Component {
       anchorEl: null
     };
   }
- 
+
   handleMenu = event => {
     this.setState({ anchorEl: event.currentTarget });
   };
@@ -105,9 +112,9 @@ export class NavBar extends React.Component {
 
   renderMergeDialog() {
     return (
-      <MergeDialog 
+      <MergeDialog
         status={this.props.mergeStatus}
-        message={this.props.mergeResponseMessage} 
+        message={this.props.mergeResponseMessage}
         closable={this.props.mergeDialog.closable}
         response={this.props.mergeResponse}
         onClose={this.closeDialog.bind(this)}
@@ -133,6 +140,9 @@ export class NavBar extends React.Component {
     return (
       <AppBar position="static">
         <Toolbar className={classes.toolbar}>
+          <div className={classes.logoContainer}>
+            <span className="sr-only">Melinda</span>
+          </div>
           <Typography color="inherit" className={classes.statusInfo}>
             {this.props.statusInfo}
           </Typography>
