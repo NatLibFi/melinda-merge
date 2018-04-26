@@ -7,10 +7,10 @@ const CopyWebpackPlugin = require('copy-webpack-plugin');
 // App files location
 const PATHS = {
   app: path.resolve(__dirname, '../frontend/js'),
-  commons_frontend: path.resolve(__dirname, '../melinda-ui-commons/frontend'),
-  commons_styles: path.resolve(__dirname, '../melinda-ui-commons/frontend/styles'),
-  commons_server: path.resolve(__dirname, '../melinda-ui-commons/server'),
-  commons_images: path.resolve(__dirname, '../melinda-ui-commons/frontend/images'),
+  commons_frontend: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend'),
+  commons_styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
+  commons_server: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/server'),
+  commons_images: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/images'),
   styles: path.resolve(__dirname, '../frontend/styles'),
   build: path.resolve(__dirname, '../build/public')
 };
@@ -38,13 +38,6 @@ const plugins = [
   }),
   // This plugin moves all the CSS into a separate stylesheet
   new ExtractTextPlugin('css/app.css', { allChunks: true })
-];
-
-const sassLoaders = [
-  'style-loader',
-  'css-loader?sourceMap',
-  'postcss-loader',
-  'sass-loader?outputStyle=compressed'
 ];
 
 module.exports = {
@@ -77,11 +70,20 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: sassLoaders.join('!')
+        use: [
+          'style-loader',
+          'css-loader?sourceMap',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } },
+          'sass-loader?outputStyle=compressed'
+        ]
       },
       {
         test: /\.css$/,
-        loader: 'style-loader!css-loader!postcss-loader'
+        use: [
+          'style-loader',
+          'css-loader',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } }
+        ]
       },
       // Inline base64 URLs for <=8k images, direct URLs for the rest
       {
