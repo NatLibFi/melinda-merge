@@ -40,12 +40,10 @@ import _ from 'lodash';
 import { createArchive } from './archive-service';
 
 const MelindaClient = require('@natlibfi/melinda-api-client');
-const alephUrl = readEnvironmentVariable('ALEPH_URL');
-const apiVersion = readEnvironmentVariable('MELINDA_API_VERSION', null);
-const apiPath = apiVersion !== null ? `/${apiVersion}` : '';
+const apiUrl = readEnvironmentVariable('MELINDA_API', null);
 
 const defaultConfig = {
-  endpoint: `${alephUrl}/API${apiPath}`,
+  endpoint: apiUrl,
   user: '',
   password: ''
 };
@@ -62,13 +60,13 @@ mergeController.set('etag', false);
 mergeController.options('/commit-merge', cors(corsOptions)); // enable pre-flight
 
 mergeController.post('/commit-merge', cors(corsOptions), requireSession, requireBodyParams('otherRecord', 'preferredRecord', 'mergedRecord', 'unmodifiedRecord'), (req, res) => {
-  
+
   const {username, password} = req.session;
 
-  const [otherRecord, preferredRecord, mergedRecord, unmodifiedRecord] = 
+  const [otherRecord, preferredRecord, mergedRecord, unmodifiedRecord] =
         [req.body.otherRecord, req.body.preferredRecord, req.body.mergedRecord, req.body.unmodifiedRecord].map(transformToMarcRecordFamily);
 
-  const clientConfig = { 
+  const clientConfig = {
     ...defaultConfig,
     user: username,
     password: password
@@ -104,7 +102,7 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
         }
 
         const response = _.extend({}, mergedMainRecordResult, {
-          record, 
+          record,
           subrecords: subrecordsInRequestOrder
         });
 
@@ -113,7 +111,7 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
         logger.log('error', 'Commit merge error', error);
         res.status(500).send(error);
       });
-      
+
     }).catch(error => {
       logger.log('error', 'Commit merge error', error);
       res.status(500).send(error);
@@ -143,7 +141,7 @@ function requireSession(req, res, next) {
   if (username && password) {
     return next();
   } else {
-    res.sendStatus(HttpStatus.UNAUTHORIZED);    
+    res.sendStatus(HttpStatus.UNAUTHORIZED);
   }
 
 }

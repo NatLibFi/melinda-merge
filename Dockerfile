@@ -11,6 +11,5 @@ USER node
 
 ADD --chown=node build .
 ADD --chown=node package.json  .
-ADD --chown=node melinda-ui-commons/package.json melinda-ui-commons/
 
 RUN npm install --production
