@@ -23,13 +23,6 @@ const plugins = [
   new webpack.optimize.OccurrenceOrderPlugin()
 ];
 
-const sassLoaders = [
-  'style-loader',
-  'css-loader?sourceMap',
-  'postcss-loader',
-  'sass-loader?outputStyle=expanded'
-];
-
 module.exports = {
   // env : process.env.NODE_ENV,
   entry: {
@@ -67,7 +60,12 @@ module.exports = {
       },
       {
         test: /\.scss$/,
-        loader: sassLoaders.join('!')
+        use: [
+          'style-loader',
+          'css-loader?sourceMap',
+          { loader: 'postcss-loader', options: { config: { path: 'postcss.config' } } },
+          'sass-loader?outputStyle=compressed'
+        ]
       },
       {
         test: /\.css$/,
