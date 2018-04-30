@@ -1,7 +1,7 @@
 {
   "name": "@natlibfi/marc-merge-ui",
   "description": "UI for merging MARC records",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "author": {
     "name": "The National Library of Finland"
   },
