@@ -37,6 +37,10 @@ import { duplicateDatabaseController } from './duplicate-db-controller';
 import { mergeController } from './merge-controller';
 import cookieParser from 'cookie-parser';
 
+process.on('SIGINT', () => {
+  process.exit(-1);
+});
+
 //const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
 
@@ -57,4 +61,3 @@ app.use(express.static(path.resolve(__dirname, 'public')));
 const server = app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
 
 server.timeout = 1800000; // Half an hour
-
