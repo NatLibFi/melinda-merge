@@ -32,7 +32,7 @@ import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import archiver from 'archiver';
 import { __RewireAPI__ as RewireAPI } from '../archive-service';
-import { createArchive } from '../archive-service';
+import { createArchive, anonymizeRecord } from '../archive-service';
 import MarcRecord from 'marc-record-js';
 const Writable = require('stream').Writable;
 
@@ -43,36 +43,36 @@ chai.use(sinonChai);
 describe('Archive service', () => {
 
   const username = 'test-user';
-  
+
   const removedRecord = {
-    record: new MarcRecord({fields: [{ tag: '001', value: '1' }]}),
+    record: new MarcRecord({fields: [{ tag: '001', value: '1' }, { tag: 'CAT', subfields: [{code: 'a', value: 'foobar'}]}]}),
     subrecords: []
   };
-  
+
   const preferredRecord = {
-    record: new MarcRecord({fields: [{ tag: '001', value: '2' }]}),
+    record: new MarcRecord({fields: [{ tag: '001', value: '2' }, { tag: 'CAT', subfields: [{code: 'a', value: 'foobar'}]}]}),
     subrecords: []
   };
-  
+
   const mergedRecord = {
-    record: new MarcRecord({fields: [{ tag: '001', value: '3' }]}),
+    record: new MarcRecord({fields: [{ tag: '001', value: '3' }, { tag: 'CAT', subfields: [{code: 'a', value: 'foobar'}]}]}),
     subrecords: []
   };
 
   const unmodifiedMergedRecord = {
-    record: new MarcRecord({fields: [{ tag: '001', value: '3' }]}),
+    record: new MarcRecord({fields: [{ tag: '001', value: '3' }, { tag: 'CAT', subfields: [{code: 'a', value: 'foobar'}]}]}),
     subrecords: []
   };
 
   const mergedRecordId = '234723';
-  
+
   describe('createArchive without subrecords', () => {
 
     let archiveAppendSpy;
 
     beforeEach(() => {
       const createWriteStreamStub = sinon.stub();
-    
+
       const mockedStream = new Writable({
         write(chunk, encoding, callback) {
           callback();
@@ -80,7 +80,7 @@ describe('Archive service', () => {
       });
 
       mockedStream.on('finish', () => mockedStream.emit('close'));
-    
+
       RewireAPI.__Rewire__('fs', {
         createWriteStream: createWriteStreamStub.returns(mockedStream)
       });
@@ -98,19 +98,19 @@ describe('Archive service', () => {
     });
 
     it('adds removed record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.deep.include({data: removedRecord.record.toString(), name: 'removed.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: anonymizeRecord(removedRecord.record).toString(), name: 'removed.txt'});
     });
 
     it('adds preferred record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.deep.include({data: preferredRecord.record.toString(), name: 'preferred.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: anonymizeRecord(preferredRecord.record).toString(), name: 'preferred.txt'});
     });
-    
+
     it('adds merged record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.deep.include({data: mergedRecord.record.toString(), name: 'merged.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: anonymizeRecord(mergedRecord.record).toString(), name: 'merged.txt'});
     });
 
     it('adds unmodified merged record to the archive', () => {
-      expect(callsTo(archiveAppendSpy)).to.deep.include({data: unmodifiedMergedRecord.record.toString(), name: 'merged-unmodified.txt'});
+      expect(callsTo(archiveAppendSpy)).to.deep.include({data: anonymizeRecord(unmodifiedMergedRecord.record).toString(), name: 'merged-unmodified.txt'});
     });
 
     it('does not add subrecords of removed record to the archive', () => {
@@ -123,7 +123,6 @@ describe('Archive service', () => {
       delete(metadata.date);
 
       expect(metadata).to.eql({
-        username,
         removedRecordId: '1',
         preferredRecordId: '2',
         mergedRecordId: mergedRecordId
@@ -137,7 +136,7 @@ describe('Archive service', () => {
 
     beforeEach(() => {
       const createWriteStreamStub = sinon.stub();
-    
+
       const mockedStream = new Writable({
         write(chunk, encoding, callback) {
           callback();
@@ -145,7 +144,7 @@ describe('Archive service', () => {
       });
 
       mockedStream.on('finish', () => mockedStream.emit('close'));
-    
+
       RewireAPI.__Rewire__('fs', {
         createWriteStream: createWriteStreamStub.returns(mockedStream)
       });
@@ -171,14 +170,14 @@ describe('Archive service', () => {
     it('adds subrecords of removed record to the archive', () => {
       expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('removed-subrecords.txt');
     });
-    
+
     it('adds subrecords of preferred record to the archive', () => {
       expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('preferred-subrecords.txt');
     });
 
     it('adds subrecords of merged record to the archive', () => {
       expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('merged-subrecords.txt');
-    });    
+    });
 
     it('adds subrecords of merged record to the archive', () => {
       expect(callsTo(archiveAppendSpy).map(n => n.name)).to.include('merged-unmodified-subrecords.txt');
@@ -199,5 +198,5 @@ function callsTo(archiveAppendSpy) {
       data: archiveAppendSpy.getCall(key).args[0],
       name: archiveAppendSpy.getCall(key).args[1].name
     };
-  }); 
+  });
 }

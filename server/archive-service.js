@@ -31,6 +31,7 @@ import path from 'path';
 import archiver from 'archiver';
 import mkdirp from 'mkdirp';
 import moment from 'moment';
+import MarcRecord from 'marc-record-js';
 import { readEnvironmentVariable } from 'server/utils';
 import _ from 'lodash';
 
@@ -45,18 +46,16 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
     const timeStamp = new Date().getTime();
     const removedRecordId = getRecordId(removedRecord.record);
     const preferredRecordId = getRecordId(preferredRecord.record);
-    const username = user;
-    const date = moment().format();
+    const date = moment().format('YYYY-MM-DDTHH:mm:ss.SSS');
 
     const metadata = {
       date,
-      username,
       removedRecordId,
       preferredRecordId,
       mergedRecordId
     };
 
-    const filename = `merge-${removedRecordId}-${preferredRecordId}-${mergedRecordId}-${username}-${timeStamp}`;
+    const filename = `merge-${removedRecordId}-${preferredRecordId}-${mergedRecordId}-${timeStamp}`;
 
     const output = fs.createWriteStream(path.resolve(archivePath, `${filename}.zip`));
     const archive = archiver('zip');
@@ -75,30 +74,36 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
     archive.pipe(output);
 
     archive
-      .append(removedRecord.record.toString(), {name: 'removed.txt'})
-      .append(preferredRecord.record.toString(), {name: 'preferred.txt'})
-      .append(mergedRecord.record.toString(), {name: 'merged.txt'})
-      .append(unmodifiedRecord.record.toString(), {name: 'merged-unmodified.txt'})
+      .append(anonymizeRecord(removedRecord.record).toString(), {name: 'removed.txt'})
+      .append(anonymizeRecord(preferredRecord.record).toString(), {name: 'preferred.txt'})
+      .append(anonymizeRecord(mergedRecord.record).toString(), {name: 'merged.txt'})
+      .append(anonymizeRecord(unmodifiedRecord.record).toString(), {name: 'merged-unmodified.txt'})
       .append(JSON.stringify(metadata), {name: 'meta.json'});
 
 
     if (removedRecord.subrecords && removedRecord.subrecords.length) {
-      archive.append(removedRecord.subrecords.map(asString).join('\n'), {name: 'removed-subrecords.txt'});
+      archive.append(removedRecord.subrecords.map(anonymizeRecord).map(asString).join('\n'), {name: 'removed-subrecords.txt'});
     }
     if (preferredRecord.subrecords && preferredRecord.subrecords.length) {
-      archive.append(preferredRecord.subrecords.map(asString).join('\n'), {name: 'preferred-subrecords.txt'});
+      archive.append(preferredRecord.subrecords.map(anonymizeRecord).map(asString).join('\n'), {name: 'preferred-subrecords.txt'});
     }
     if (mergedRecord.subrecords && mergedRecord.subrecords.length) {
-      archive.append(mergedRecord.subrecords.map(asString).join('\n'), {name: 'merged-subrecords.txt'});
+      archive.append(mergedRecord.subrecords.map(anonymizeRecord).map(asString).join('\n'), {name: 'merged-subrecords.txt'});
     }
     if (unmodifiedRecord.subrecords && unmodifiedRecord.subrecords.length) {
-      archive.append(unmodifiedRecord.subrecords.map(asString).join('\n'), {name: 'merged-unmodified-subrecords.txt'});
+      archive.append(unmodifiedRecord.subrecords.map(anonymizeRecord).map(asString).join('\n'), {name: 'merged-unmodified-subrecords.txt'});
     }
-        
+
     archive.finalize();
 
   });
 
+}
+
+export function anonymizeRecord(record) {
+  const anonRecord = record.toJsonObject();
+  anonRecord.fields = anonRecord.fields.filter(f => f.tag !== 'CAT');
+  return new MarcRecord(anonRecord);
 }
 
 function asString(record) {
@@ -108,4 +113,3 @@ function asString(record) {
 function getRecordId(record) {
   return _.head(record.fields.filter(field => field.tag === '001').map(field => field.value));
 }
-
