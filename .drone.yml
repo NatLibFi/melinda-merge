@@ -15,4 +15,4 @@ pipeline:
     - docker_password
     when:
       event: [push, tag]
-branches: [master, test]
+      branch: [master, test]

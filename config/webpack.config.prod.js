@@ -12,7 +12,7 @@ const PATHS = {
   commons_server: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/server'),
   commons_images: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/images'),
   styles: path.resolve(__dirname, '../frontend/styles'),
-  build: path.resolve(__dirname, '../build/public')
+  build: path.resolve(__dirname, '../dist/public')
 };
 
 const plugins = [
