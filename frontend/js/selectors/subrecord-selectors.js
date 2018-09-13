@@ -4,7 +4,7 @@
 *
 * UI for merging MARC records
 *
-* Copyright (C) 2015-2017 University Of Helsinki (The National Library Of Finland)
+* Copyright (C) 2015-2018 University Of Helsinki (The National Library Of Finland)
 *
 * This file is part of marc-merge-ui
 *
