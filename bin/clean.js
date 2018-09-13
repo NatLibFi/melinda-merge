@@ -30,7 +30,7 @@ var rimraf = require('rimraf');
 var path = require('path');
 var fs = require('fs');
 
-var buildDir = path.resolve(__dirname, '../build');
+var buildDir = path.resolve(__dirname, '../dist');
 var publicDir = path.resolve(buildDir, 'public');
 
 rimraf(buildDir, function (err) {
