@@ -25,7 +25,7 @@ coverage
 .lock-wscript
 
 # Compiled binary addons (http://nodejs.org/api/addons.html)
-build/Release
+dist/Release
 
 # Dependency directories
 node_modules
@@ -40,9 +40,9 @@ jspm_packages
 # Optional REPL history
 .node_repl_history
 
-build
 tmp
 
 # default dir for merge-action-archive
 merge-action-archive
 .env
+dist
