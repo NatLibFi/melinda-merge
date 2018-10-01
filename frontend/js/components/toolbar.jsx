@@ -48,7 +48,7 @@ export class ToolBar extends React.Component {
     recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.props.fetchCount();
   }
 

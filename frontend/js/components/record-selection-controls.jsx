@@ -63,12 +63,12 @@ export class RecordSelectionControls extends React.Component {
     }, RECORD_LOADING_DELAY);
   }
 
-  componentWillMount() {
+  UNSAFE_componentWillMount() {
     this.unlisten = this.props.history.listen(location => this.props.locationDidChange(location));
     this.props.locationDidChange(this.props.history.location);
   }
 
-  componentWillReceiveProps(next) {
+  UNSAFE_componentWillReceiveProps(next) {
     if (next.targetRecordId === this.props.targetRecordId && next.sourceRecordId === this.props.sourceRecordId) return;
 
     if (_.identity(next.targetRecordId) && _.identity(next.sourceRecordId)) {
