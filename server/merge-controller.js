@@ -88,7 +88,7 @@ mergeController.post('/commit-merge', cors(corsOptions), requireSession, require
 
       loadRecord(client, createdRecordId).then(({record, subrecords}) => {
 
-        if (record.fields.length === 0) {
+        if (!record.fields || record.fields.length === 0) {
           logger.log('debug', `Record ${createdRecordId} appears to be empty record.`);
           return res.sendStatus(404);
         }
