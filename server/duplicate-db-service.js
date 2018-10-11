@@ -33,13 +33,17 @@ import { logger } from 'server/logger';
 import _ from 'lodash';
 
 const duplicateDatabaseUrl = readEnvironmentVariable('DUPLICATE_DB_URL');
+const duplicateDatabaseApiKey = readEnvironmentVariable('DUPLICATE_DB_API_KEY');
+const fixedHeaders = {
+  Authorization: `Basic ${Buffer.from(`${duplicateDatabaseApiKey}:`).toString('base64')}`
+};
 
 export function getDuplicateCount() {
 
   const url = `${duplicateDatabaseUrl}?a=count`;
 
   logger.debug('Loading duplicate count');
-  return fetch(url).then(response => {
+  return fetch(url, {headers: fixedHeaders}).then(response => {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
@@ -58,7 +62,7 @@ export function getNextDuplicatePair(username) {
   const url = `${duplicateDatabaseUrl}?a=getDouble&uid=${username}`;
 
   logger.debug(`Loading next duplicate: ${url}`);
-  return fetch(url).then(response => {
+  return fetch(url, {headers: fixedHeaders}).then(response => {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
@@ -94,7 +98,7 @@ export function markPairAsNotDuplicates(username, duplicatePairId) {
   const url = `${duplicateDatabaseUrl}?a=handleDouble&id=${duplicatePairId}&action=not-double&uid=${username}`;
 
   logger.debug(`Marking duplicate pair ${duplicatePairId} as not duplicates: ${url}`);
-  return fetch(url).then(response => {
+  return fetch(url, {headers: fixedHeaders}).then(response => {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
@@ -117,11 +121,11 @@ export function skipPair(username, duplicatePairId) {
   const url = `${duplicateDatabaseUrl}?a=handleDouble&id=${duplicatePairId}&action=Skip&uid=${username}`;
 
   logger.debug(`Skipping duplicate pair ${duplicatePairId} for ${username}: ${url}`);
-  return fetch(url).then(response => {
+  return fetch(url, {headers: fixedHeaders}).then(response => {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
-        
+
         body.success = true; // the duplicate db has bug that sends success=false on working for a=handleDouble
         if (body.success) {
           return body.message;
@@ -142,7 +146,7 @@ export function markDuplicatePairAsMerged(username, preferredRecordId, otherReco
   const url = `${duplicateDatabaseUrl}?a=handleDouble&id=${duplicatePairId}&action=merged&uid=${username}&source=${preferredRecordId}&target=${otherRecordId}&mergedId=${mergedRecordId}`;
 
   logger.debug(`Marking duplicate pair ${duplicatePairId} as merged ${username}: ${url}`);
-  return fetch(url).then(response => {
+  return fetch(url, {headers: fixedHeaders}).then(response => {
     if (response.status == HttpStatus.OK) {
 
       return response.json().then(body => {
