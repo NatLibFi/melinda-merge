@@ -2,18 +2,18 @@
 *
 * @licstart  The following is the entire license notice for the JavaScript code in this file.
 *
-* UI for merging MARC records
+* UI for merging MARC records in Melinda
 *
 * Copyright (C) 2015-2018 University Of Helsinki (The National Library Of Finland)
 *
-* This file is part of marc-merge-ui
+* This file is part of melinda-merge
 *
-* marc-merge-ui program is free software: you can redistribute it and/or modify
+* melinda-merge program is free software: you can redistribute it and/or modify
 * it under the terms of the GNU Affero General Public License as
 * published by the Free Software Foundation, either version 3 of the
 * License, or (at your option) any later version.
 *
-* marc-merge-ui is distributed in the hope that it will be useful,
+* melinda-merge is distributed in the hope that it will be useful,
 * but WITHOUT ANY WARRANTY; without even the implied warranty of
 * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 * GNU Affero General Public License for more details.
@@ -29,3 +29,4 @@
 process.env.ALEPH_URL='test-url';
 process.env.ALEPH_USER_LIBRARY='test-lib';
 process.env.DUPLICATE_DB_URL='test-duplicate-db-url';
+process.env.DUPLICATE_DB_API_KEY='foo';

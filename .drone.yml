@@ -9,7 +9,7 @@ pipeline:
   docker:
     image: plugins/docker
     registry: quay.io
-    repo: quay.io/natlibfi/melinda-merge-ui
+    repo: quay.io/natlibfi/melinda-merge
     secrets:
     - docker_username
     - docker_password

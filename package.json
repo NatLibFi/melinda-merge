@@ -1,6 +1,6 @@
 {
-  "name": "@natlibfi/marc-merge-ui",
-  "description": "UI for merging MARC records",
+  "name": "@natlibfi/melinda-merge",
+  "description": "UI for merging MARC records in Melinda",
   "version": "1.0.2",
   "author": {
     "name": "The National Library of Finland"
@@ -9,13 +9,13 @@
     "marc",
     "merge"
   ],
-  "homepage": "https://github.com/natlibfi/marc-merge-ui",
+  "homepage": "https://github.com/natlibfi/melinda-merge",
   "bugs": {
-    "url": "https://github.com/natlibfi/marc-merge-ui/issues"
+    "url": "https://github.com/natlibfi/melinda-merge/issues"
   },
   "repository": {
     "type": "git",
-    "url": "git@github.com:natlibfi/marc-merge-ui.git"
+    "url": "git@github.com:natlibfi/melinda-merge.git"
   },
   "main": "index.js",
   "scripts": {
