@@ -35,9 +35,9 @@ STA    ‡aTEST-STA
 500    ‡aTakakannessa tasku.
 500    ‡aXylofoni takakannessa.
 500    ‡aEtukannessa tasku.
-650  7 ‡akeittokirjat‡2ysa
-650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
-650  7 ‡aRUOANVALMISTUS‡2ysa
+650  7 ‡akeittokirjat‡2yso/fin
+650  7 ‡aruokaohjeet‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡aRUOANVALMISTUS‡2yso/fin
 901    ‡aMU20150707‡5FENNI
 LOW    ‡aFENNI
 LOW    ‡aOULA
@@ -52,14 +52,14 @@ SID    ‡c(ANDL100001)3123396‡bvaski
 001    000000000
 583    ‡aMERGED FROM (FI-MELINDA)007010372 + (FI-MELINDA)009346890‡c2016-12-07T13:38:18+02:00‡5MELINDA
 650  6 ‡aruokaohjeet‡xlomailu
-655  7 ‡akeittokirjat‡2ysa‡9FENNI<KEEP>
-650  7 ‡aruoanvalmistus‡2cilla
+655  7 ‡akeittokirjat‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡aruoanvalmistus‡2bella
 650  7 ‡aruoanvalmistus‡2bbb
-650  7 ‡aruoanvalmistus‡2musa
-650  7 ‡aruoanvalmistus‡2allars
+650  7 ‡aruoanvalmistus‡2kaunokki
+650  7 ‡aruoanvalmistus‡2yso/swe
 650  7 ‡aruoanvalmistus‡2aaa
-650  7 ‡aruoanvalmistus‡2ysa‡9FENNI<KEEP>
-650  7 ‡amuonanvalmistus‡2ysa‡9FENNI<KEEP>
+650  7 ‡aruoanvalmistus‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡amuonanvalmistus‡2yso/fin‡9FENNI<KEEP>
 
 Expected record after postmerge:
 LDR    00000_a____
@@ -86,17 +86,17 @@ STA    ‡aTEST-STA
 500    ‡aXylofoni takakannessa.
 583    ‡aMERGED FROM (FI-MELINDA)007010372 + (FI-MELINDA)009346890‡c2016-12-07T13:38:18+02:00‡5MELINDA
 650  6 ‡aruokaohjeet‡xlomailu
-650  7 ‡amuonanvalmistus‡2ysa‡9FENNI<KEEP>
-650  7 ‡aruoanvalmistus‡2ysa‡9FENNI<KEEP>
-650  7 ‡aruokaohjeet‡2ysa‡9FENNI<KEEP>
-650  7 ‡akeittokirjat‡2ysa
-650  7 ‡aRUOANVALMISTUS‡2ysa
-650  7 ‡aruoanvalmistus‡2allars
-650  7 ‡aruoanvalmistus‡2musa
-650  7 ‡aruoanvalmistus‡2cilla
+650  7 ‡amuonanvalmistus‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡aruoanvalmistus‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡aruokaohjeet‡2yso/fin‡9FENNI<KEEP>
+650  7 ‡akeittokirjat‡2yso/fin
+650  7 ‡aRUOANVALMISTUS‡2yso/fin
+650  7 ‡aruoanvalmistus‡2yso/swe
+650  7 ‡aruoanvalmistus‡2kaunokki
+650  7 ‡aruoanvalmistus‡2bella
 650  7 ‡aruoanvalmistus‡2aaa
 650  7 ‡aruoanvalmistus‡2bbb
-655  7 ‡akeittokirjat‡2ysa‡9FENNI<KEEP>
+655  7 ‡akeittokirjat‡2yso/fin‡9FENNI<KEEP>
 700 1  ‡aLindholm, Johanna,‡ekirjoittaja,‡evalokuvaaja.
 901    ‡aMU20150707‡5FENNI
 LOW    ‡aANDER
