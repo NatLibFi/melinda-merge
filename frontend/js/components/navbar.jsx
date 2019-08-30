@@ -73,10 +73,10 @@ export class NavBar extends React.Component {
     <div className="navbar-fixed">
         <nav> 
           <div className="nav-wrapper">
-                      <img 
-                        className="mt-logo" 
-                        src={melindaLogo}
-                      />
+            <img 
+              className="mt-logo" 
+              src={melindaLogo}
+            />
             <ul id="nav" className="right">
               <li><div className="status-info">{this.props.statusInfo}</div></li>
               <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>
