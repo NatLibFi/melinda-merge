@@ -71,7 +71,7 @@ export class ToolBar extends React.Component {
   render() {
     return (
       <nav className="toolbar">
-        <div className="nav-wrapper">
+        <div className="nav-toolbar">
           {this.renderNewPairButton()}
 
           <ul><li className="separator"><span /></li></ul>
