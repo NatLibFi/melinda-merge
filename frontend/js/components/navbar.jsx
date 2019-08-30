@@ -33,6 +33,7 @@ import {connect} from 'react-redux';
 import { mergeButtonEnabled } from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
 import { removeSession } from 'commons/action-creators/session-actions';
+import melindaLogo from '../../images/Melinda-logo-white.png';
 
 export class NavBar extends React.Component {
 
@@ -72,7 +73,10 @@ export class NavBar extends React.Component {
     <div className="navbar-fixed">
         <nav> 
           <div className="nav-wrapper">
-            
+                      <img 
+                        className="mt-logo" 
+                        src={melindaLogo}
+                      />
             <ul id="nav" className="right">
               <li><div className="status-info">{this.props.statusInfo}</div></li>
               <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>

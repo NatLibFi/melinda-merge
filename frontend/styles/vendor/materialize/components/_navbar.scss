@@ -1,7 +1,7 @@
 nav {
   color: $navbar-font-color;
-  @extend .z-depth-1;
-  background-color: $primary-color;
+  @extend .z-depth-1;  
+  background-color: #305d6d; /* For browsers not support gradients  */
   width: 100%;
   height: $navbar-height-mobile;
   line-height: $navbar-height-mobile;
@@ -18,6 +18,17 @@ nav {
   }
 
   .nav-wrapper {
+    background-image: linear-gradient(to right, #305d6d, #7bb9ce);
+    position: relative;
+    height: 100%;
+  }
+
+  .mt-logo {
+    height: 70px;
+    padding-bottom: 5px;
+  }
+
+  .nav-toolbar {
     position: relative;
     height: 100%;
   }
