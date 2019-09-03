@@ -135,12 +135,12 @@ nav {
      font-size: $navbar-font-size;
      color: #000000;
      font-weight: bold;
-     background-color: rgba(0,0,0,.1);
+     background-color: rgba(0,0,0,.1) !important;
      padding: 14px 16px;
      cursor: default;
 
      &:hover {
-       background: rgba(0,0,0,.1); // removes flicker when mouseover
+       background: rgba(0,0,0,.1) !important; // removes flicker when mouseover
       }
     }
 
