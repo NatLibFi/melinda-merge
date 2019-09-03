@@ -33,6 +33,7 @@ import Notifications from 'react-notification-system-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
+import SaveButton from './save-button';
 import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
@@ -147,6 +148,7 @@ export class BaseComponent extends React.Component {
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
         { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
+        <SaveButton />
       </div>
     );
   }
