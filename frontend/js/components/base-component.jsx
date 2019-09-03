@@ -75,7 +75,7 @@ export class BaseComponent extends React.Component {
     notifications: PropTypes.array,
     swapEverySubrecordRow: PropTypes.func.isRequired,
     swapSubrecordRow: PropTypes.func.isRequired,
-    userinfo: PropTypes.object,
+    userinfo: PropTypes.object
   }
 
   renderValidationIndicator() {
