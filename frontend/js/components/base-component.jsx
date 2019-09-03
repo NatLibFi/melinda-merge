@@ -73,7 +73,8 @@ export class BaseComponent extends React.Component {
     saveSubrecord: PropTypes.func.isRequired,
     notifications: PropTypes.array,
     swapEverySubrecordRow: PropTypes.func.isRequired,
-    swapSubrecordRow: PropTypes.func.isRequired
+    swapSubrecordRow: PropTypes.func.isRequired,
+    userinfo: PropTypes.object,
   }
 
   renderValidationIndicator() {
@@ -130,13 +131,17 @@ export class BaseComponent extends React.Component {
   }
 
   renderMainPanel() {
+    const firstName = _.head(_.get(this.props.userinfo, 'name', '').split(' '));
   
     return (
       <div>
         <Notifications
           notifications={this.props.notifications}
         />
-        <NavBarContainer />
+        <NavBarContainer 
+            username={firstName}
+            appTitle='Merge 2'
+          />
         { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
@@ -163,6 +168,7 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
+    userinfo: state.getIn(['session', 'userinfo']),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
     mergeResponse: state.getIn(['mergeStatus', 'response']),
