@@ -42,6 +42,7 @@ import { validateSession } from 'commons/action-creators/session-actions';
 import { initKeyboardListener } from './keyboard-commands';
 import history from './history';
 import 'material-design-icons-iconfont';
+import 'materialize-css';
 
 const loggerMiddleware = createLogger();
 
