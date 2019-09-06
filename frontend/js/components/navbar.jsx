@@ -43,6 +43,8 @@ export class NavBar extends React.Component {
     statusInfo: PropTypes.string,
     mergeButtonEnabled: PropTypes.bool.isRequired,
     removeSession: PropTypes.func.isRequired,
+    appTitle: PropTypes.string.isRequired,
+    username: PropTypes.string
   }
 
   componentDidMount() {
@@ -68,24 +70,28 @@ export class NavBar extends React.Component {
   }
 
   render() {
+    const { username, appTitle } = this.props;
 
     return (
     <div className="navbar-fixed">
         <nav> 
           <div className="nav-wrapper">
             <img 
-              className="mt-logo" 
+              className="mt-logo inline-block" 
               src={melindaLogo}
             />
+            <ul id="nav" className="inline-block">
+              <li className="heading">{appTitle}</li>
+            </ul>
             <ul id="nav" className="right">
               <li><div className="status-info">{this.props.statusInfo}</div></li>
-              <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">Yhdistä</button></li>
-              <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">more_vert</i></a></li>
+              <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">account_circle</i></a></li>
             </ul>
           </div>
         </nav>
 
         <ul id='mainmenu' className='dropdown-content'>
+          <li className="user-name-menu-item">{username ? username : ''}</li>
           <li className="divider" />
           <li><a href="#" onClick={this.props.removeSession}>Kirjaudu ulos</a></li>
         </ul>

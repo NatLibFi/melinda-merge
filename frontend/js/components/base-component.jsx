@@ -33,6 +33,7 @@ import Notifications from 'react-notification-system-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
 import { NavBarContainer } from './navbar';
+import SaveButton from './save-button';
 import { ToolBarContainer } from './toolbar';
 import { RecordSelectionControlsContainer } from './record-selection-controls';
 import { RecordMergePanelContainer } from './record-merge-panel';
@@ -73,7 +74,8 @@ export class BaseComponent extends React.Component {
     saveSubrecord: PropTypes.func.isRequired,
     notifications: PropTypes.array,
     swapEverySubrecordRow: PropTypes.func.isRequired,
-    swapSubrecordRow: PropTypes.func.isRequired
+    swapSubrecordRow: PropTypes.func.isRequired,
+    userinfo: PropTypes.object
   }
 
   renderValidationIndicator() {
@@ -130,18 +132,23 @@ export class BaseComponent extends React.Component {
   }
 
   renderMainPanel() {
+    const firstName = _.head(_.get(this.props.userinfo, 'name', '').split(' '));
   
     return (
       <div>
         <Notifications
           notifications={this.props.notifications}
         />
-        <NavBarContainer />
+        <NavBarContainer 
+            username={firstName}
+            appTitle='Merge'
+          />
         { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
         { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
+        <SaveButton />
       </div>
     );
   }
@@ -163,6 +170,7 @@ function mapStateToProps(state) {
 
   return {
     sessionState: state.getIn(['session', 'state']),
+    userinfo: state.getIn(['session', 'userinfo']),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
     mergeResponseMessage: state.getIn(['mergeStatus', 'message']),
     mergeResponse: state.getIn(['mergeStatus', 'response']),
