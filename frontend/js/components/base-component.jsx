@@ -141,7 +141,7 @@ export class BaseComponent extends React.Component {
         />
         <NavBarContainer 
             username={firstName}
-            appTitle='Merge2'
+            appTitle='Merge'
           />
         { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
