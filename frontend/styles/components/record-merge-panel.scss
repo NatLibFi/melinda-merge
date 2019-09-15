@@ -1,0 +1,54 @@
+.error-message-panel {
+  margin-left: 10px !important;
+  margin-right: 10px !important;
+}
+
+.row-no-bottom-margin {
+  margin-bottom: 0px;
+}
+
+.title-row-card {
+  display: flex;
+  align-items: center;
+  margin-bottom: 0px;
+
+  .title {
+    text-transform: uppercase;
+    width: 100%;
+    padding-top: 10px;
+    margin-bottom: 20px;
+    font-size: 1.5rem;
+  }
+
+  input {
+    font-size: 2rem;
+  }
+
+  .button {
+    margin-right: 7px;
+
+    .disabled {
+      color: grey !important;
+      pointer-events: none;
+      cursor: default;
+    }
+
+    .active > i {
+      background: #02725f28;
+    }
+
+    a {
+      display: inline;
+      margin-right: 7px;
+
+      i {
+        padding: 3px;
+        font-size: 2rem;
+        margin-right: 0px !important;
+        &:hover {
+          background: #00000020;
+        }
+      }
+    }
+  }
+}

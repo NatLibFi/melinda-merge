@@ -68,6 +68,11 @@ export class RecordSelectionControls extends React.Component {
     this.props.locationDidChange(this.props.history.location);
   }
 
+  componentDidMount() {
+    // update text fields if they are prefilled.
+    window.Materialize && window.Materialize.updateTextFields();
+  }
+  
   UNSAFE_componentWillReceiveProps(next) {
     if (next.targetRecordId === this.props.targetRecordId && next.sourceRecordId === this.props.sourceRecordId) return;
 
@@ -81,10 +86,6 @@ export class RecordSelectionControls extends React.Component {
     window.Materialize && window.Materialize.updateTextFields();
   }
 
-  componentDidMount() {
-    // update text fields if they are prefilled.
-    window.Materialize && window.Materialize.updateTextFields();
-  }
 
   componentWillUnmount() {
     if (typeof this.unlisten == 'function') {
@@ -123,32 +124,28 @@ export class RecordSelectionControls extends React.Component {
 
     const { controlsEnabled } = this.props;
 
-    const swapButtonClasses = classNames('btn-floating', 'blue', {
+    const swapButtonClasses = classNames('btn', 'blue', {
       'waves-effect': controlsEnabled,
       'waves-light': controlsEnabled,
       'disabled': !controlsEnabled
     });
 
     return (
-      <div className="row row-margin-swap record-selection-controls">
-      
-        <div className="col s2 offset-s1 input-field">
+      <div className="row row-margin-swap record-selection-controls center-align">
+        <div className="input-field col 5s">
           <input id="source_record" type="tel" value={this.props.sourceRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled} />
           <label htmlFor="source_record">Poistuva tietue</label>
         </div>
-        <div className="col s2 control-swap-horizontal input-field">
-          <div>
+        <div className="col 2s">
             <a className={swapButtonClasses} onClick={(e) => this.handleSwap(e)}>
-              <i className="material-icons tooltip small" title="Vaihda keskenään">swap_horiz</i>
+              <i className="material-icons tooltip left" title="Vaihda keskenään">swap_horiz</i>
+              Vaihda
             </a>
-          </div>
         </div>
-
-        <div className="col s2 input-field">
+        <div className="input-field col 5s">
           <input id="target_record" type="tel" value={this.props.targetRecordId} onChange={this.handleChange.bind(this)} disabled={!controlsEnabled}/>
           <label htmlFor="target_record">Säilyvä tietue</label>
         </div>
-      
       </div>
     );
   }

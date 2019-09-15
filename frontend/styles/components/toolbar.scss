@@ -36,8 +36,8 @@
     position: relative;
     .progress {
       position: absolute;
-      margin: 0;
-      bottom: 0;
+      margin-top: 0px;
+      bottom: 0px;
     }
     
     &.disabled a {

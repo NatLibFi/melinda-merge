@@ -39,7 +39,8 @@ export class MergeDialog extends React.Component {
     onClose: PropTypes.func.isRequired,
     status: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
-    response: PropTypes.object
+    response: PropTypes.object,
+    mergeStatus: PropTypes.string,
   }
 
   close(event) {
@@ -50,7 +51,7 @@ export class MergeDialog extends React.Component {
   }
 
   title() {
-    switch(this.props.status) {
+    switch (this.props.status) {
       case CommitMergeStates.COMMIT_MERGE_ONGOING: return 'Tietueita yhdistetään';
       case CommitMergeStates.COMMIT_MERGE_ERROR: return 'Virhe tietueiden yhdistämisessä';
       case CommitMergeStates.COMMIT_MERGE_COMPLETE: return 'Tietueet yhdistetty';
@@ -59,11 +60,11 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
-    
+
     if (_.isEmpty(response)) {
       return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
     }
-    
+
     if (response.name === 'RollbackError') {
       return <div className="response-container"><div className="red lighten-5">{response.message}</div></div>;
     }
@@ -76,7 +77,7 @@ export class MergeDialog extends React.Component {
     return (
       <div className="response-container">
         {messages.length ? <div className="green lighten-4">{messages}</div> : null}
-        {errors.length   ? <div className="red lighten-5">{errors}</div> : null}
+        {errors.length ? <div className="red lighten-5">{errors}</div> : null}
         {warnings.length ? <div className="lime lighten-4">{warnings}</div> : null}
         {triggers.length ? <div className="light-blue lighten-5">{triggers}</div> : null}
       </div>
@@ -98,28 +99,22 @@ export class MergeDialog extends React.Component {
     if (this.props.response) {
       return this.renderResponseMessages(this.props.response);
     } else if (this.props.status === CommitMergeStates.COMMIT_MERGE_ONGOING) {
-      return <div>{this.renderSpinner()}</div>;
+      return <div>{this.renderPreloader()}</div>;
     } else {
       return <p>{this.props.message}</p>;
     }
   }
 
-  renderSpinner() {
+  renderPreloader() {
     return (
-      <div className="preloader-wrapper small active">
-        <div className="spinner-layer spinner-blue-only">
-          <div className="circle-clipper left">
-            <div className="circle" />
-          </div>
-          <div className="gap-patch">
-            <div className="circle" />
-          </div>
-          <div className="circle-clipper right">
-            <div className="circle" />
-          </div>
-        </div>
+      <div className="progress">
+        <div className="indeterminate"></div>
       </div>
     );
+  }
+
+  statusInfo() {
+    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
   }
 
   render() {
@@ -130,14 +125,17 @@ export class MergeDialog extends React.Component {
 
     return (
       <div className="row modal-merge-dialog">
-        <div className="col offset-s8 s4">
+        <div className="col offset-s4 s4">
           <div className="card">
             <div className="card-content">
               <span className="card-title">{this.title()}</span>
               {this.renderContent()}
             </div>
             <div className="card-action right-align">
-              <a className={buttonClasses} href="#" onClick={(e) => this.close(e)}>Sulje</a>
+              <a className={buttonClasses} href="#" onClick={(e) => this.close(e)}>
+                <i className="material-icons right">close</i>
+                Sulje
+                </a>
             </div>
           </div>
         </div>

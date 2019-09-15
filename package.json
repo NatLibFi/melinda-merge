@@ -43,7 +43,7 @@
   "dependencies": {
     "@natlibfi/marc-record-merge": "^3.6.0",
     "@natlibfi/melinda-api-client": "^1.1.6",
-    "@natlibfi/melinda-ui-commons": "^2.1.0",
+    "@natlibfi/melinda-ui-commons": "git+https://github.com/NatLibFi/melinda-ui-commons.git#melkehitys-984",
     "archiver": "^2.1.0",
     "babel-eslint": "^7.1.0",
     "body-parser": "^1.18.2",

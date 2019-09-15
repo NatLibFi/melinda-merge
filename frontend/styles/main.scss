@@ -12,3 +12,13 @@ html {
 .navbar-fixed nav {
   position: static;    
 }
+
+.status-info {
+  margin-left: 10px;
+  margin-right: 10px;
+  p {
+    padding: 5px 0;
+    text-align: center;
+    font-size: 1rem;
+  }
+}

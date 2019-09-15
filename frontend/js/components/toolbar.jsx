@@ -28,11 +28,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import '../../styles/components/toolbar.scss';
-import { DuplicateDatabaseControls } from './duplicate-database-controls';
+import { DuplicateDatabaseStates } from '../constants';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import * as duplicateDatabaseActionCreators from '../action-creators/duplicate-database-actions';
+import classNames from 'classnames';
 import _ from 'lodash';
 
 export class ToolBar extends React.Component {
@@ -52,41 +52,80 @@ export class ToolBar extends React.Component {
     this.props.fetchCount();
   }
 
+  loadNextDuplicatePair(event) {
+    event.preventDefault();
+    if (this.props.duplicateDatabaseStatus === DuplicateDatabaseStates.READY) {
+      this.props.fetchNextPair();
+    }
+  }
+
+  skipCurrentDuplicatePair(event) {
+    event.preventDefault();
+    if (this.props.duplicateDatabaseStatus === DuplicateDatabaseStates.READY) {
+      this.props.skipPair(event);
+    }
+  }
+
+  markAsNonDuplicate(event) {
+    event.preventDefault();
+    if (this.props.duplicateDatabaseStatus === DuplicateDatabaseStates.READY) {
+      this.props.markAsNotDuplicate(event);
+    }
+  }
+
   startNewPair(event) {
     event.preventDefault();
     this.props.resetWorkspace();
   }
 
-  renderNewPairButton() {
-    return (
-      <div className="group">
-        <ul id="nav">
-          <li><a href="#" onClick={(e) => this.startNewPair(e)}><i className="material-icons tooltip" title="Aloita uusi">add</i></a></li>
-        </ul>
-        <span className="group-label">Uusi</span>
-      </div>
-    );
+  renderDuplicateCountBadge() {
+    const count = this.props.duplicatePairCount;
+
+    return count > 0 ? (<span className="badge tooltip" title="Tuplaehdotukset">{count}</span>) : null;
+  }
+
+  renderProgressIndicatorFor(action) {
+  
+    return this.props.duplicateDatabaseStatus === action ? <div className="progress lifted-progress"><div className="indeterminate" /></div> : null;
+  }
+
+  isEnabled() {
+    return this.props.duplicateDatabaseStatus === DuplicateDatabaseStates.READY;
   }
 
   render() {
+
+    const nextClasses = classNames({
+      disabled: !this.isEnabled()
+    });
+
+    const skipClasses = classNames({
+      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
+    });
+    
+    const notDuplicateClasses = classNames({
+      disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
+    });
+    
+
+    const classes = classNames('material-icons', 'tooltip');
+
     return (
-      <nav className="toolbar">
-        <div className="nav-toolbar">
-          {this.renderNewPairButton()}
-
-          <ul><li className="separator"><span /></li></ul>
-
-          <DuplicateDatabaseControls 
-            currentStatus={this.props.duplicateDatabaseStatus}
-            loadNextPair={this.props.fetchNextPair}
-            skipPair={this.props.skipPair}
-            notDuplicate={this.props.markAsNotDuplicate}
-            duplicatePairCount={this.props.duplicatePairCount}
-            recordsAreFromDuplicateDatabase={this.props.recordsAreFromDuplicateDatabase}
-          />
-          
-        </div>
-      </nav>
+      <ul id="nav" className="right">
+        <li><a href="#" onClick={(e) => this.startNewPair(e)}><i className={classes} title="Aloita uusi">add</i></a></li>
+        <li className={nextClasses}>
+          <a href="#" onClick={(e) => this.loadNextDuplicatePair(e)}><i className={classes} title="Seuraava pari">navigate_next</i></a>
+          {this.renderProgressIndicatorFor(DuplicateDatabaseStates.FETCH_NEXT_DUPLICATE_ONGOING)}
+        </li>
+        <li className={skipClasses}>
+          <a href="#" onClick={(e) => this.skipCurrentDuplicatePair(e)}><i className={classes} title="Ohita">skip_next</i></a>
+          {this.renderProgressIndicatorFor(DuplicateDatabaseStates.SKIP_PAIR_ONGOING)}
+        </li>
+        <li className={notDuplicateClasses}>
+          <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className={classes} title="Ei tupla">layers_clear</i></a>
+          {this.renderProgressIndicatorFor(DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING)}
+        </li>
+      </ul>
     );
   }
 }
@@ -103,3 +142,4 @@ export const ToolBarContainer = connect(
   mapStateToProps,
   _.assign({}, duplicateDatabaseActionCreators, uiActionCreators)
 )(ToolBar);
+

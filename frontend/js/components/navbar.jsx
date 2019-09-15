@@ -34,13 +34,13 @@ import { mergeButtonEnabled } from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
 import { removeSession } from 'commons/action-creators/session-actions';
 import melindaLogo from '../../images/Melinda-logo-white.png';
+import { ToolBarContainer } from './toolbar';
 
 export class NavBar extends React.Component {
 
   static propTypes = {
     commitMerge: PropTypes.func.isRequired,
     mergeStatus: PropTypes.string,
-    statusInfo: PropTypes.string,
     mergeButtonEnabled: PropTypes.bool.isRequired,
     removeSession: PropTypes.func.isRequired,
     appTitle: PropTypes.string.isRequired,
@@ -65,10 +65,6 @@ export class NavBar extends React.Component {
     return this.props.mergeButtonEnabled ? '' : 'disabled';
   }
 
-  statusInfo() {
-    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
-  }
-
   render() {
     const { username, appTitle } = this.props;
 
@@ -84,9 +80,13 @@ export class NavBar extends React.Component {
               <li className="heading">{appTitle}</li>
             </ul>
             <ul id="nav" className="right">
-              <li><div className="status-info">{this.props.statusInfo}</div></li>
-              <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">account_circle</i></a></li>
+              <li>
+                <a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu">
+                  <i className="material-icons tooltip" title="Käyttäjä">account_circle</i>
+                </a>
+              </li>
             </ul>
+            <ToolBarContainer />
           </div>
         </nav>
 
@@ -104,7 +104,6 @@ function mapStateToProps(state) {
   return {
     mergeButtonEnabled: mergeButtonEnabled(state),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
-    statusInfo: state.getIn(['mergeStatus', 'message'])
   };
 }
 
