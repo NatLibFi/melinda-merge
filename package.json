@@ -51,7 +51,6 @@
     "cors": "^2.8.4",
     "es6-promise": "^4.1.1",
     "es6-promisify": "^5.0.0",
-    "eslint": "^3.10.1",
     "express": "^4.16.2",
     "express-winston": "^2.4.0",
     "fbjs": "^0.8.16",
