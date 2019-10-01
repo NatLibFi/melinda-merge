@@ -276,7 +276,7 @@ export class RecordMergePanel extends React.Component {
         <RecordPanel
           showHeader
           recordHeader={this.mergeHeader(record)}
-          editMode={this.state.editMode}
+          editable={this.state.editMode}
           record={record}
           onFieldClick={(field) => this.toggleMergedRecordField(field)}
           onRecordUpdate={(record) => this.props.editMergedRecord(record)}>
