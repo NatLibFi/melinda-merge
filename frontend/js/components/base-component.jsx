@@ -96,7 +96,6 @@ export class BaseComponent extends React.Component {
           setCompactSubrecordView={this.props.setCompactSubrecordView}
           compactSubrecordView={this.props.compactSubrecordView}
           subrecords={this.props.subrecords}
-          saveButtonVisible={this.props.saveButtonVisible}
           actionsEnabled={this.props.subrecordActionsEnabled}
           onInsertSubrecordRow={this.props.insertSubrecordRow}
           onRemoveSubrecordRow={this.props.removeSubrecordRow}

@@ -32,12 +32,15 @@ import { DuplicateDatabaseStates } from '../constants';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
 import * as duplicateDatabaseActionCreators from '../action-creators/duplicate-database-actions';
+import { mergeButtonEnabled } from '../selectors/merge-status-selector';
 import classNames from 'classnames';
 import _ from 'lodash';
 
 export class ToolBar extends React.Component {
 
   static propTypes = {
+    commitMerge: PropTypes.func.isRequired,
+    mergeButtonEnabled: PropTypes.bool,
     resetWorkspace: PropTypes.func.isRequired,
     fetchCount: PropTypes.func.isRequired,
     fetchNextPair: PropTypes.func.isRequired,
@@ -45,7 +48,8 @@ export class ToolBar extends React.Component {
     markAsNotDuplicate: PropTypes.func.isRequired,
     duplicatePairCount: PropTypes.number.isRequired,
     duplicateDatabaseStatus: PropTypes.string.isRequired,
-    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired
+    recordsAreFromDuplicateDatabase: PropTypes.bool.isRequired,
+    mergedRecord: PropTypes.object
   }
 
   UNSAFE_componentWillMount() {
@@ -73,6 +77,11 @@ export class ToolBar extends React.Component {
     }
   }
 
+  commitMerge(event) {
+    event.preventDefault();
+    this.props.commitMerge();
+  }
+
   startNewPair(event) {
     event.preventDefault();
     this.props.resetWorkspace();
@@ -85,7 +94,6 @@ export class ToolBar extends React.Component {
   }
 
   renderProgressIndicatorFor(action) {
-  
     return this.props.duplicateDatabaseStatus === action ? <div className="progress lifted-progress"><div className="indeterminate" /></div> : null;
   }
 
@@ -107,6 +115,9 @@ export class ToolBar extends React.Component {
       disabled: !this.isEnabled() || !this.props.recordsAreFromDuplicateDatabase
     });
     
+    const mergeClasses = classNames({
+      disabled: !this.props.mergeButtonEnabled || !this.props.mergedRecord
+    });
 
     const classes = classNames('material-icons', 'tooltip');
 
@@ -125,6 +136,10 @@ export class ToolBar extends React.Component {
           <a href="#" onClick={(e) => this.markAsNonDuplicate(e)}><i className={classes} title="Ei tupla">layers_clear</i></a>
           {this.renderProgressIndicatorFor(DuplicateDatabaseStates.MARK_AS_NON_DUPLICATE_ONGOING)}
         </li>
+        <li className={mergeClasses}>
+          <a title="Yhdistä" href="#" onClick={(e) => this.commitMerge(e)} ><i className={classes}>call_merge</i></a>
+          {this.renderProgressIndicatorFor(DuplicateDatabaseStates.COMMIT_MERGE_ONGOING)}
+          </li>
       </ul>
     );
   }
@@ -134,7 +149,9 @@ function mapStateToProps(state) {
   return {
     recordsAreFromDuplicateDatabase: state.getIn(['duplicateDatabase', 'currentPair']).size !== 0,
     duplicateDatabaseStatus: state.getIn(['duplicateDatabase', 'status']),
-    duplicatePairCount: state.getIn(['duplicateDatabase', 'count'])
+    duplicatePairCount: state.getIn(['duplicateDatabase', 'count']),
+    mergedRecord: (state.getIn(['mergedRecord', 'record'])),
+    mergeButtonEnabled: mergeButtonEnabled(state),
   };
 }
 

@@ -38,7 +38,7 @@ import { ErrorMessagePanel } from 'commons/components/error-message-panel';
 import { MergeValidationErrorMessagePanel } from 'commons/components/merge-validation-error-message-panel';
 import { isControlField } from '../utils';
 import { SaveButtonPanel } from 'commons/components/save-button-panel';
-import { hostRecordActionsEnabled, recordSaveActionAvailable, mergeButtonEnabled } from '../selectors/merge-status-selector';
+import { hostRecordActionsEnabled, recordSaveActionAvailable} from '../selectors/merge-status-selector';
 import classNames from 'classnames';
 import '../../styles/components/record-merge-panel.scss';
 import { withRouter } from 'react-router';
@@ -49,14 +49,12 @@ const RECORD_LOADING_DELAY = 500;
 export class RecordMergePanel extends React.Component {
 
   static propTypes = {
-    commitMerge: PropTypes.func.isRequired,
     controlsEnabled: PropTypes.bool.isRequired,
     dismissMergeWarning: PropTypes.func.isRequired,
     editMergedRecord: PropTypes.func.isRequired,
     fetchRecord: PropTypes.func.isRequired,
     history: PropTypes.object.isRequired,
     locationDidChange: PropTypes.func.isRequired,
-    mergeButtonEnabled: PropTypes.bool,
     mergedRecord: PropTypes.object,
     mergedRecordError: PropTypes.oneOfType([PropTypes.string, PropTypes.instanceOf(Error)]),
     mergedRecordSaveError: PropTypes.instanceOf(Error),
@@ -246,21 +244,15 @@ export class RecordMergePanel extends React.Component {
 
   mergeHeader(record = null) {
     const editButtonClasses = classNames({
-      'disabled': !record,
-      'active': this.state.editMode
-    });
-
-    const mergeButtonClasses = classNames({
-      //'disabled': !this.props.mergeButtonEnabled || this.state.editMode || record === undefined
-      'disabled': !this.props.mergeButtonEnabled || record
+      disabled: !record,
+      active: this.state.editMode
     });
 
     return (
       <div className="row row-no-bottom-margin">
         <div className="col s12">
           <ul className="title-row-card" ref={(c) => this._tabs = c}>
-            <li className="disabled title">Yhdistetty</li>
-            <li className="button tooltip" title="Yhdistä"><a className={mergeButtonClasses} href="#" onClick={this.props.commitMerge} ><i className="material-icons">call_merge</i></a></li>
+            <li className="title">Yhdistetty</li>
             <li className="button tooltip" title="Muokkaa"><a className={editButtonClasses} href="#" onClick={(e) => this.handleEditModeChange(e)}><i className="material-icons">edit</i></a></li>
           </ul>
         </div>
@@ -345,7 +337,6 @@ export class RecordMergePanel extends React.Component {
             {this.renderMergedRecordPanel(this.props.mergedRecordState, this.props.mergedRecordError, this.props.mergedRecord)}
           </div>
         </div>
-
       </div>
     );
   }
@@ -355,7 +346,6 @@ function mapStateToProps(state) {
 
   return {
     controlsEnabled: hostRecordActionsEnabled(state),
-    mergeButtonEnabled: mergeButtonEnabled(state),
     mergedRecord: (state.getIn(['mergedRecord', 'record'])),
     mergedRecordError: state.getIn(['mergedRecord', 'errorMessage']),
     mergedRecordSaveError: state.getIn(['mergedRecord', 'saveError']),
