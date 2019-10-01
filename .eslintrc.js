@@ -15,10 +15,16 @@ module.exports = {
         },
         "sourceType": "module"
     },
+    "settings": {
+        "react": {
+          "version": "latest"
+        }
+    },
     "plugins": [
         "react", "mocha"
     ],
     "rules": {
+        "no-console": "warn",
         "indent": ["error", 2, { "SwitchCase": 1 }],
         "linebreak-style": [
             "error",
