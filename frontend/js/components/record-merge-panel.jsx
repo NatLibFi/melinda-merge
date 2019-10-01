@@ -178,9 +178,9 @@ export class RecordMergePanel extends React.Component {
     });
 
     const button = (
-      <div className="button">
+      <div className="button tooltip" title="Vaihda keskenään">
         <a className={swapButtonClasses} href="#" onClick={(e) => this.handleSwap(e)}>
-          <i className="material-icons tooltip left" title="Vaihda keskenään">swap_horiz</i>
+          <i className="material-icons left">swap_horiz</i>
         </a>
       </div>
     );
@@ -271,7 +271,7 @@ export class RecordMergePanel extends React.Component {
   renderMergedRecordPanel(recordState, errorMessage, record) {
     if (recordState === 'ERROR') {
       return (<MergeValidationErrorMessagePanel
-        headerTitle={this.mergeHeader()}
+        recordHeader={this.mergeHeader()}
         typePanel
         error={errorMessage}
       />
