@@ -73,10 +73,10 @@ export class NavBar extends React.Component {
         <nav> 
           <div className="nav-wrapper">
             <img 
-              className="mt-logo inline-block" 
+              className="mt-logo left"
               src={melindaLogo}
             />
-            <ul id="nav" className="inline-block">
+            <ul id="nav" className="heading-wrapper left">
               <li className="heading">{appTitle}</li>
             </ul>
             <ul id="nav" className="right">

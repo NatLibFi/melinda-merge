@@ -40,7 +40,7 @@ export class MergeDialog extends React.Component {
     status: PropTypes.string.isRequired,
     message: PropTypes.string.isRequired,
     response: PropTypes.object,
-    mergeStatus: PropTypes.string,
+    statusInfo: PropTypes.string
   }
 
   close(event) {
@@ -108,13 +108,13 @@ export class MergeDialog extends React.Component {
   renderPreloader() {
     return (
       <div className="progress">
-        <div className="indeterminate"></div>
+        <div className="indeterminate" />
       </div>
     );
   }
 
   statusInfo() {
-    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
+    return this.props.status === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
   }
 
   render() {

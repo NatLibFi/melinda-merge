@@ -37,7 +37,7 @@ $primary-color: #305d6d !default;
 $primary-color-light: lighten($primary-color, 15%) !default;
 $primary-color-dark: darken($primary-color, 15%) !default;
 
-$secondary-color: #305d6d !default;
+$secondary-color: #000 !default;
 $success-color: color("green", "base") !default;
 $error-color: color("red", "base") !default;
 $link-color: color("light-blue", "darken-1") !default;
@@ -65,7 +65,7 @@ $button-disabled-background: #DFDFDF !default;
 $button-disabled-color: #9F9F9F !default;
 
 // Raised buttons
-$button-raised-background: $secondary-color !default;
+$button-raised-background: $primary-color !default;
 $button-raised-background-hover: lighten($button-raised-background, 5%) !default;
 $button-raised-color: #fff !default;
 
@@ -163,7 +163,7 @@ $input-invalid-border: 1px solid $input-error-color !default;
 $placeholder-text-color: $input-border-color !default;
 
 // Radio Buttons
-$radio-fill-color: $secondary-color !default;
+$radio-fill-color: $primary-color !default;
 $radio-empty-color: #5a5a5a !default;
 $radio-border: 2px solid $radio-fill-color !default;
 
@@ -181,7 +181,7 @@ $select-radius: 2px !default;
 $select-disabled-color: rgba(0,0,0,.3) !default;
 
 // Switches
-$switch-bg-color: $secondary-color !default;
+$switch-bg-color: $primary-color !default;
 $switch-checked-lever-bg: desaturate(lighten($secondary-color, 25%), 25%) !default;
 $switch-unchecked-bg: #F1F1F1 !default;
 $switch-unchecked-lever-bg: #818181 !default;
@@ -245,7 +245,7 @@ $slider-indicator-color: color('green', 'base') !default;
 /* 16. Spinners | Loaders
    ========================================================================== */
 
-$spinner-default-color: $secondary-color !default;
+$spinner-default-color: $primary-color !default;
 
 
 /* 17. Tabs
@@ -312,4 +312,4 @@ $collection-link-color: $secondary-color !default;
 /* 24. Progress Bar
    ========================================================================== */
 
-$progress-bar-color: $secondary-color !default;
+$progress-bar-color: $primary-color !default;

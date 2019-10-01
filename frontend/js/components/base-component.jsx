@@ -129,7 +129,6 @@ export class BaseComponent extends React.Component {
         closable={this.props.mergeDialog.closable}
         response={this.props.mergeResponse}
         onClose={this.closeDialog.bind(this)}
-        mergeStatus={this.props.mergeStatus}
       />
     );
   }

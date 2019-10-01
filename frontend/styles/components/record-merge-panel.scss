@@ -34,7 +34,11 @@
     }
 
     .active > i {
-      background: #02725f28;
+      border-bottom: #305d6d70 solid 3px;
+      background: #305d6d30;
+      &:hover {
+        background: #305d6d50;
+      }
     }
 
     a {
