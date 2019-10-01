@@ -137,5 +137,8 @@
     "webpack": "^3.10.0",
     "webpack-dev-server": "^2.9.5",
     "xregexp": "^3.2.0"
+  },
+  "engines": {
+    "node": ">=8"
   }
 }
