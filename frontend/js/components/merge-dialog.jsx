@@ -135,7 +135,7 @@ export class MergeDialog extends React.Component {
               <a className={buttonClasses} href="#" onClick={(e) => this.close(e)}>
                 <i className="material-icons right">close</i>
                 Sulje
-               </a>
+              </a>
             </div>
           </div>
         </div>
