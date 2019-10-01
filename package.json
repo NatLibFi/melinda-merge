@@ -111,7 +111,7 @@
     "nodemon": "^1.12.4",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
     "postcss-loader": "^2.0.9",
-    "proptypes": "^1.1.0",
+    "prop-types": "^15.7.2",
     "q": "^1.5.1",
     "react": "^16.2.0",
     "react-dnd": "^2.5.4",
