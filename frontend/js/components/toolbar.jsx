@@ -139,7 +139,7 @@ export class ToolBar extends React.Component {
         <li className={mergeClasses}>
           <a title="Yhdistä" href="#" onClick={(e) => this.commitMerge(e)} ><i className={classes}>call_merge</i></a>
           {this.renderProgressIndicatorFor(DuplicateDatabaseStates.COMMIT_MERGE_ONGOING)}
-          </li>
+        </li>
       </ul>
     );
   }

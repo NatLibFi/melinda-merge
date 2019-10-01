@@ -69,7 +69,7 @@ export class NavBar extends React.Component {
     const { username, appTitle } = this.props;
 
     return (
-    <div className="navbar-fixed">
+      <div className="navbar-fixed">
         <nav> 
           <div className="nav-wrapper">
             <img 
