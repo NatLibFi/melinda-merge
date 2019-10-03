@@ -28,13 +28,13 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { commitMerge} from '../ui-actions';
+import {commitMerge} from '../ui-actions';
 import {connect} from 'react-redux';
-import { mergeButtonEnabled } from '../selectors/merge-status-selector';
+import {mergeButtonEnabled} from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
-import { removeSession } from 'commons/action-creators/session-actions';
+import {removeSession} from 'commons/action-creators/session-actions';
 import melindaLogo from '../../images/Melinda-logo-white.png';
-import { ToolBarContainer } from './toolbar';
+import {ToolBarContainer} from './toolbar';
 
 export class NavBar extends React.Component {
 
@@ -48,7 +48,6 @@ export class NavBar extends React.Component {
   }
 
   componentDidMount() {
-    
     window.$('.dropdown-navbar').dropdown({
       inDuration: 300,
       outDuration: 225,
@@ -58,7 +57,6 @@ export class NavBar extends React.Component {
       belowOrigin: true,
       alignment: 'right'
     });
-
   }
 
   disableIfMergeNotPossible() {
@@ -66,13 +64,13 @@ export class NavBar extends React.Component {
   }
 
   render() {
-    const { username, appTitle } = this.props;
+    const {username, appTitle} = this.props;
 
     return (
       <div className="navbar-fixed">
-        <nav> 
+        <nav>
           <div className="nav-wrapper">
-            <img 
+            <img
               className="mt-logo left"
               src={melindaLogo}
             />
@@ -109,5 +107,5 @@ function mapStateToProps(state) {
 
 export const NavBarContainer = connect(
   mapStateToProps,
-  { removeSession, commitMerge }
+  {removeSession, commitMerge}
 )(NavBar);
