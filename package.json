@@ -45,7 +45,7 @@
     "@natlibfi/melinda-ui-commons": "git+https://github.com/NatLibFi/melinda-ui-commons.git#melkehitys-984",
     "archiver": "^2.1.0",
     "babel-eslint": "^7.1.0",
-    "body-parser": "^1.18.2",
+    "body-parser": "^1.19.0",
     "classnames": "^2.2.5",
     "cookie-parser": "^1.4.3",
     "cors": "^2.8.4",
