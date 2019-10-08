@@ -7,6 +7,7 @@ steps:
   user: node
   image: node:10
   commands:
+  - whoami
   - npm install
   - npm test
 - name: docker 
