@@ -38,10 +38,10 @@ import { SubrecordComponent } from 'commons/components/subrecord/subrecord-compo
 import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
 import { connect } from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
-import { MergeDialog } from './merge-dialog';
-import { eitherHasSubrecords, sourceSubrecords, targetSubrecords, subrecordRowsDisplay } from '../selectors/subrecord-selectors';
-import { recordSaveActionAvailable, subrecordActionsEnabled } from '../selectors/merge-status-selector';
-import { compactRowsMap } from '../selectors/ui-selectors';
+import {MergeDialog} from './merge-dialog';
+import {eitherHasSubrecords, sourceSubrecords, targetSubrecords, subrecordRowsDisplay} from '../selectors/subrecord-selectors';
+import {recordSaveActionAvailable, subrecordActionsEnabled} from '../selectors/merge-status-selector';
+import {compactRowsMap} from '../selectors/ui-selectors';
 import * as subrecordActions from '../action-creators/subrecord-actions';
 
 export class BaseComponent extends React.Component {
