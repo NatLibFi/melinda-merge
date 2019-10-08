@@ -112,6 +112,42 @@
   }
 }
 
+// Floating extended button
+.btn-floating-extended {
+  display: flex;
+  align-items: stretch;
+  color: $button-floating-color;
+  position: relative;
+  z-index: 1;
+  width: auto !important;
+  padding: $button-padding !important;
+  background-color: $button-floating-background;
+  border-radius: $button-floating-ext-radius;
+  font-size: $button-font-size;
+  @extend .z-depth-1;
+  transition: .3s;
+  cursor: pointer;
+  // Gets rid of tap active state
+  -webkit-tap-highlight-color: transparent;
+
+  i {
+    width: inherit;
+    display: inline-block;
+    text-align: center;
+    color: $button-floating-color;
+    font-size: $button-large-icon-font-size;
+  }
+
+  &:hover {
+    background-color: $button-floating-background-hover;
+    @extend .z-depth-1-half;
+  }
+
+  &:before {
+    border-radius: 0;
+  }
+}
+
 // button fix
 button.btn-floating {
   border: $button-border;
@@ -197,8 +233,8 @@ button.btn-floating {
 // Large button
 .btn-large {
   @extend .btn;
-  height: $button-large-height;
-  line-height: $button-large-height;
+  height: $button-large-height !important;
+  line-height: $button-large-height !important;
 
   i {
     font-size: $button-large-icon-font-size;

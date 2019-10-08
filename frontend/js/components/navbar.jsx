@@ -28,11 +28,11 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { commitMerge} from '../ui-actions';
+import {commitMerge} from '../ui-actions';
 import {connect} from 'react-redux';
-import { mergeButtonEnabled } from '../selectors/merge-status-selector';
+import {mergeButtonEnabled} from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
-import { removeSession } from 'commons/action-creators/session-actions';
+import {removeSession} from 'commons/action-creators/session-actions';
 import melindaLogo from '../../images/Melinda-logo-white.png';
 
 export class NavBar extends React.Component {
@@ -48,7 +48,7 @@ export class NavBar extends React.Component {
   }
 
   componentDidMount() {
-    
+
     window.$('.dropdown-navbar').dropdown({
       inDuration: 300,
       outDuration: 225,
@@ -70,24 +70,21 @@ export class NavBar extends React.Component {
   }
 
   render() {
-    const { username, appTitle } = this.props;
+    const {username, appTitle} = this.props;
 
     return (
-    <div className="navbar-fixed">
-        <nav> 
+      <div className="navbar-fixed">
+        <nav>
           <div className="nav-wrapper">
-            <img 
-              className="mt-logo left" 
+            <img
+              className="mt-logo inline-block"
               src={melindaLogo}
             />
-            <ul id="nav" className="left">
+            <ul id="nav" className="inline-block">
               <li className="heading">{appTitle}</li>
             </ul>
             <ul id="nav" className="right">
               <li><div className="status-info">{this.props.statusInfo}</div></li>
-              <li><button className="waves-effect waves-light btn" disabled={this.disableIfMergeNotPossible()} onClick={this.props.commitMerge} name="commit_merge">
-                Yhdistä
-                </button></li>
               <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">account_circle</i></a></li>
             </ul>
           </div>
@@ -113,5 +110,5 @@ function mapStateToProps(state) {
 
 export const NavBarContainer = connect(
   mapStateToProps,
-  { removeSession, commitMerge }
+  {removeSession, commitMerge}
 )(NavBar);

@@ -32,18 +32,19 @@ import PropTypes from 'prop-types';
 import Notifications from 'react-notification-system-redux';
 import _ from 'lodash';
 import '../../styles/main.scss';
-import { NavBarContainer } from './navbar';
-import { ToolBarContainer } from './toolbar';
-import { RecordSelectionControlsContainer } from './record-selection-controls';
-import { RecordMergePanelContainer } from './record-merge-panel';
-import { SubrecordComponent } from 'commons/components/subrecord/subrecord-component';
-import { SigninFormPanelContainer } from 'commons/components/signin-form-panel';
+import {NavBarContainer} from './navbar';
+import SaveButton from './save-button';
+import {ToolBarContainer} from './toolbar';
+import {RecordSelectionControlsContainer} from './record-selection-controls';
+import {RecordMergePanelContainer} from './record-merge-panel';
+import {SubrecordComponent} from 'commons/components/subrecord/subrecord-component';
+import {SigninFormPanelContainer} from 'commons/components/signin-form-panel';
 import {connect} from 'react-redux';
 import * as uiActionCreators from '../ui-actions';
-import { MergeDialog } from './merge-dialog';
-import { eitherHasSubrecords, sourceSubrecords, targetSubrecords, subrecordRowsDisplay } from '../selectors/subrecord-selectors';
-import { recordSaveActionAvailable, subrecordActionsEnabled } from '../selectors/merge-status-selector';
-import { compactRowsMap } from '../selectors/ui-selectors';
+import {MergeDialog} from './merge-dialog';
+import {eitherHasSubrecords, sourceSubrecords, targetSubrecords, subrecordRowsDisplay} from '../selectors/subrecord-selectors';
+import {recordSaveActionAvailable, subrecordActionsEnabled} from '../selectors/merge-status-selector';
+import {compactRowsMap} from '../selectors/ui-selectors';
 import * as subrecordActions from '../action-creators/subrecord-actions';
 export class BaseComponent extends React.Component {
 
@@ -74,14 +75,14 @@ export class BaseComponent extends React.Component {
     notifications: PropTypes.array,
     swapEverySubrecordRow: PropTypes.func.isRequired,
     swapSubrecordRow: PropTypes.func.isRequired,
-    userinfo: PropTypes.object,
+    userinfo: PropTypes.object
   }
 
   renderValidationIndicator() {
     return null;
   }
 
-  renderSignin() {   
+  renderSignin() {
     return this.props.sessionState === 'VALIDATION_ONGOING' ? this.renderValidationIndicator() : <SigninFormPanelContainer title='Merge' />;
   }
 
@@ -89,8 +90,8 @@ export class BaseComponent extends React.Component {
     return (
       <div>
         <div className='divider' />
-        <SubrecordComponent 
-          setCompactSubrecordView={this.props.setCompactSubrecordView} 
+        <SubrecordComponent
+          setCompactSubrecordView={this.props.setCompactSubrecordView}
           compactSubrecordView={this.props.compactSubrecordView}
           subrecords={this.props.subrecords}
           saveButtonVisible={this.props.saveButtonVisible}
@@ -120,9 +121,9 @@ export class BaseComponent extends React.Component {
 
   renderMergeDialog() {
     return (
-      <MergeDialog 
+      <MergeDialog
         status={this.props.mergeStatus}
-        message={this.props.mergeResponseMessage} 
+        message={this.props.mergeResponseMessage}
         closable={this.props.mergeDialog.closable}
         response={this.props.mergeResponse}
         onClose={this.closeDialog.bind(this)}
@@ -132,21 +133,22 @@ export class BaseComponent extends React.Component {
 
   renderMainPanel() {
     const firstName = _.head(_.get(this.props.userinfo, 'name', '').split(' '));
-  
+
     return (
       <div>
         <Notifications
           notifications={this.props.notifications}
         />
-        <NavBarContainer 
-            username={firstName}
-            appTitle='Merge 2'
-          />
-        { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
+        <NavBarContainer
+          username={firstName}
+          appTitle='Merge'
+        />
+        {this.props.mergeDialog.visible ? this.renderMergeDialog() : null}
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
         <RecordMergePanelContainer />
-        { this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
+        {this.props.shouldRenderSubrecordComponent ? this.renderSubrecordComponent() : ''}
+        <SaveButton />
       </div>
     );
   }

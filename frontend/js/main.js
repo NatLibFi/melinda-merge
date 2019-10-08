@@ -29,19 +29,20 @@
 import 'babel-polyfill';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { BaseComponentContainer } from './components/base-component';
+import {BaseComponentContainer} from './components/base-component';
 import thunkMiddleware from 'redux-thunk';
-import { createLogger } from 'redux-logger';
-import { createStore, applyMiddleware, compose } from 'redux';
+import {createLogger} from 'redux-logger';
+import {createStore, applyMiddleware, compose} from 'redux';
 import rootReducer from './root-reducer';
 import {Provider} from 'react-redux';
-import {Router,Route} from 'react-router-dom';
+import {Router, Route} from 'react-router-dom';
 import {App} from './components/app';
 import * as Cookies from 'js-cookie';
-import { validateSession } from 'commons/action-creators/session-actions';
-import { initKeyboardListener } from './keyboard-commands';
+import {validateSession} from 'commons/action-creators/session-actions';
+import {initKeyboardListener} from './keyboard-commands';
 import history from './history';
 import 'material-design-icons-iconfont';
+import 'materialize-css';
 
 const loggerMiddleware = createLogger();
 
@@ -67,7 +68,7 @@ ReactDOM.render(
         <Route exact path='/records/:otherId/and/:preferredId?' component={BaseComponentContainer} />
       </App>
     </Router>
-  </Provider>, 
+  </Provider>,
   rootElement
 );
 
