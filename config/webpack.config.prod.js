@@ -56,5 +56,5 @@ module.exports = merge(common, {
       __DEV__: JSON.stringify(JSON.parse(process.env.DEBUG || 'false'))
     })
   ],
-  devtool: 'source-map'
+  devtool: 'false'
 });
