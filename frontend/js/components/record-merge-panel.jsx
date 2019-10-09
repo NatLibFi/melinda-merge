@@ -28,20 +28,20 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { connect } from 'react-redux';
+import {connect} from 'react-redux';
 import _ from 'lodash';
-import { editMergedRecord, toggleSourceRecordFieldSelection, dismissMergeWarning } from '../ui-actions';
-import { saveRecord } from '../action-creators/record-actions';
-import { RecordPanel } from 'commons/components/record-panel';
-import { Preloader } from 'commons/components/preloader';
-import { ErrorMessagePanel } from 'commons/components/error-message-panel';
-import { MergeValidationErrorMessagePanel } from 'commons/components/merge-validation-error-message-panel';
-import { isControlField } from '../utils';
-import { SaveButtonPanel } from 'commons/components/save-button-panel';
-import { hostRecordActionsEnabled, recordSaveActionAvailable} from '../selectors/merge-status-selector';
+import {editMergedRecord, toggleSourceRecordFieldSelection, dismissMergeWarning} from '../ui-actions';
+import {saveRecord} from '../action-creators/record-actions';
+import {RecordPanel} from 'commons/components/record-panel';
+import {Preloader} from 'commons/components/preloader';
+import {ErrorMessagePanel} from 'commons/components/error-message-panel';
+import {MergeValidationErrorMessagePanel} from 'commons/components/merge-validation-error-message-panel';
+import {isControlField} from '../utils';
+import {SaveButtonPanel} from 'commons/components/save-button-panel';
+import {hostRecordActionsEnabled, recordSaveActionAvailable} from '../selectors/merge-status-selector';
 import classNames from 'classnames';
 import '../../styles/components/record-merge-panel.scss';
-import { withRouter } from 'react-router';
+import {withRouter} from 'react-router';
 import * as uiActionCreators from '../ui-actions';
 
 const RECORD_LOADING_DELAY = 500;
@@ -85,7 +85,7 @@ export class RecordMergePanel extends React.Component {
       this.props.fetchRecord(event.target.value, 'TARGET');
     }, RECORD_LOADING_DELAY);
 
-    this.state = { editMode: false };
+    this.state = {editMode: false};
   }
 
   UNSAFE_componentWillMount() {
@@ -120,11 +120,11 @@ export class RecordMergePanel extends React.Component {
 
   handleEditModeChange(event) {
     event.preventDefault();
-    this.setState({ editMode: !this.state.editMode });
+    this.setState({editMode: !this.state.editMode});
   }
 
   handleChange(event) {
-    const { controlsEnabled } = this.props;
+    const {controlsEnabled} = this.props;
     if (!controlsEnabled) {
       return;
     }
@@ -142,7 +142,7 @@ export class RecordMergePanel extends React.Component {
   }
 
   handleSwap() {
-    const { controlsEnabled } = this.props;
+    const {controlsEnabled} = this.props;
 
     if (controlsEnabled) {
       this.props.swapRecords();
@@ -167,7 +167,7 @@ export class RecordMergePanel extends React.Component {
   }
 
   renderSourceRecordPanel(recordState, errorMessage, record) {
-    const { controlsEnabled } = this.props;
+    const {controlsEnabled} = this.props;
 
     const swapButtonClasses = classNames({
       'waves-effect': controlsEnabled,
@@ -198,7 +198,8 @@ export class RecordMergePanel extends React.Component {
         record={record}
         showHeader
         recordHeader={sourceField}
-        onFieldClick={(field) => this.toggleSourceRecordField(field)}>
+        onFieldClick={(field) => this.toggleSourceRecordField(field)}
+      >
         {recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null}
       </RecordPanel>
     );
@@ -217,7 +218,7 @@ export class RecordMergePanel extends React.Component {
   }
 
   renderTargetRecordPanel(recordState, errorMessage, record) {
-    const { controlsEnabled } = this.props;
+    const {controlsEnabled} = this.props;
 
     const targetField = this.recordInput('target_record', this.props.targetRecordId, this.handleChange.bind(this), !controlsEnabled, 'Säilyvä tietue');
 
@@ -235,9 +236,7 @@ export class RecordMergePanel extends React.Component {
         showHeader
         recordHeader={targetField}
       >
-
         {recordState === 'LOADING' ? <div className="card-content"><Preloader /></div> : null}
-
       </RecordPanel>
     );
   }
@@ -355,14 +354,14 @@ function mapStateToProps(state) {
     sourceRecordState: state.getIn(['sourceRecord', 'state']),
     targetRecord: (state.getIn(['targetRecord', 'record'])),
     targetRecordError: state.getIn(['targetRecord', 'errorMessage']),
-    targetRecordId: state.getIn(['targetRecord', 'id']) || '',
     targetRecordState: state.getIn(['targetRecord', 'state']),
     saveButtonVisible: recordSaveActionAvailable(state),
+    targetRecordId: state.getIn(['targetRecord', 'id']) || '',
     sourceRecordId: state.getIn(['sourceRecord', 'id']) || ''
   };
 }
 
 export const RecordMergePanelContainer = withRouter(connect(
   mapStateToProps,
-  { editMergedRecord, toggleSourceRecordFieldSelection, saveRecord, dismissMergeWarning, ...uiActionCreators },
+  {editMergedRecord, toggleSourceRecordFieldSelection, saveRecord, dismissMergeWarning, ...uiActionCreators},
 )(RecordMergePanel));
