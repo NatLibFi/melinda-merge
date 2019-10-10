@@ -248,9 +248,9 @@ export class RecordMergePanel extends React.Component {
     });
 
     return (
-      <div className="row row-no-bottom-margin">
-        <div className="col s12">
-          <ul className="title-row-card" ref={(c) => this._tabs = c}>
+      <div className="row title-row-card">
+        <div className="title-wrapper col 11s">
+          <ul ref={(c) => this._tabs = c}>
             <li className="title">Yhdistetty</li>
             <li className="button tooltip" title="Muokkaa"><a className={editButtonClasses} href="#" onClick={(e) => this.handleEditModeChange(e)}><i className="material-icons">edit</i></a></li>
           </ul>
