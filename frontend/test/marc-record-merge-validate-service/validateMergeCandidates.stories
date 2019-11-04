@@ -39,17 +39,20 @@ LDR    00000_a____
 001    28475
 100    ‡aTest Author
 245    ‡aSome content
+337    ‡akäytettävissä ilman laitetta‡bn‡2rdamedia
 
 Other record:
 LDR    00000_b____
 001    28475
 100    ‡aTest Author
 245    ‡aSome content
+337    ‡amikromuoto‡bh‡2rdamedia
 STA    ‡aSUPPRESSED
-LOW    ‡aFENNI
+LOW    ‡aFIKKA
 
 Expected to be valid: false
 Expected failure message: Other record is suppressed
 Expected failure message: Records are of different type (leader/6): a - b
+Expected failure message: Records have different 33X fields: 337  
 Expected failure message: Both records have the same record id
-Expected failure message: The record with FENNI LOW tag should usually be the preferred record
+Expected failure message: The record with FIKKA LOW tag should usually be the preferred record

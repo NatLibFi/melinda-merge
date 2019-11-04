@@ -1,10 +1,10 @@
-Candidate is valid if the preferred record is from FENNI
+Candidate is valid if the preferred record is from FIKKA
 Preferred record:
 LDR    00000_a____
 001    28474
 100    ‡aTest Author
 245    ‡aSome content
-LOW    ‡aFENNI
+LOW    ‡aFIKKA
 
 Other record:
 LDR    00000_a____
@@ -16,7 +16,7 @@ Expected to be valid: true
 
 
 
-Candidate is valid if neither are records are from FENNI
+Candidate is valid if neither are records are from FIKKA
 Preferred record:
 LDR    00000_a____
 001    28474
@@ -33,7 +33,7 @@ Expected to be valid: true
 
 
 
-Candidate is invalid if the other record is from FENNI
+Candidate is invalid if the other record is from FIKKA
 Preferred record:
 LDR    00000_a____
 001    28474
@@ -45,7 +45,7 @@ LDR    00000_ab___
 001    28474
 100    ‡aTest Author
 245    ‡aSome content
-LOW    ‡aFENNI
+LOW    ‡aFIKKA
 
 Expected to be valid: false
-Expected failure message: The record with FENNI LOW tag should usually be the preferred record
+Expected failure message: The record with FIKKA LOW tag should usually be the preferred record
