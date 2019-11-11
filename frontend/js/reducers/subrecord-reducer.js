@@ -210,8 +210,8 @@ export function setSourceSubrecords(state, record, subrecords) {
     const row = createEmptyRow().set('sourceRecord', subrecord);
     const newRowKey = row.get('rowId');
     return state
-        .set(newRowKey, row)
-        .update('index', index => index.push(newRowKey));
+      .set(newRowKey, row)
+      .update('index', index => index.push(newRowKey));
 
   }, state);
 }
@@ -243,8 +243,8 @@ export function setTargetSubrecords(state, record, subrecords) {
     const row = createEmptyRow().set('targetRecord', subrecord);
     const newRowKey = row.get('rowId');
     return state
-        .set(newRowKey, row)
-        .update('index', index => index.push(newRowKey));
+      .set(newRowKey, row)
+      .update('index', index => index.push(newRowKey));
 
   }, state);
 

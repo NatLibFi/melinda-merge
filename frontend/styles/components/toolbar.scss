@@ -36,15 +36,8 @@
     position: relative;
     .progress {
       position: absolute;
-      margin: 0;
-      bottom: 0;
-    }
-    
-    &.disabled a {
-      color: #9F9F9F !important;
-      cursor: default !important;
+      margin-top: 0px;
+      bottom: 0px;
     }
   }
-
- 
 }

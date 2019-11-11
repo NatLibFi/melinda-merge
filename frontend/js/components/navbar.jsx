@@ -28,19 +28,19 @@
 
 import React from 'react';
 import PropTypes from 'prop-types';
-import { commitMerge} from '../ui-actions';
+import {commitMerge} from '../ui-actions';
 import {connect} from 'react-redux';
-import { mergeButtonEnabled } from '../selectors/merge-status-selector';
+import {mergeButtonEnabled} from '../selectors/merge-status-selector';
 import '../../styles/components/navbar.scss';
-import { removeSession } from 'commons/action-creators/session-actions';
+import {removeSession} from 'commons/action-creators/session-actions';
 import melindaLogo from '../../images/Melinda-logo-white.png';
+import {ToolBarContainer} from './toolbar';
 
 export class NavBar extends React.Component {
 
   static propTypes = {
     commitMerge: PropTypes.func.isRequired,
     mergeStatus: PropTypes.string,
-    statusInfo: PropTypes.string,
     mergeButtonEnabled: PropTypes.bool.isRequired,
     removeSession: PropTypes.func.isRequired,
     appTitle: PropTypes.string.isRequired,
@@ -48,7 +48,6 @@ export class NavBar extends React.Component {
   }
 
   componentDidMount() {
-    
     window.$('.dropdown-navbar').dropdown({
       inDuration: 300,
       outDuration: 225,
@@ -58,35 +57,34 @@ export class NavBar extends React.Component {
       belowOrigin: true,
       alignment: 'right'
     });
-
   }
 
   disableIfMergeNotPossible() {
     return this.props.mergeButtonEnabled ? '' : 'disabled';
   }
 
-  statusInfo() {
-    return this.props.mergeStatus === 'COMMIT_MERGE_ERROR' ? 'Tietueiden tallentamisessa tapahtui virhe' : this.props.statusInfo;
-  }
-
   render() {
-    const { username, appTitle } = this.props;
+    const {username, appTitle} = this.props;
 
     return (
-    <div className="navbar-fixed">
-        <nav> 
+      <div className="navbar-fixed">
+        <nav>
           <div className="nav-wrapper">
-            <img 
-              className="mt-logo inline-block" 
+            <img
+              className="mt-logo left"
               src={melindaLogo}
             />
-            <ul id="nav" className="inline-block">
+            <ul id="nav" className="heading-wrapper left">
               <li className="heading">{appTitle}</li>
             </ul>
             <ul id="nav" className="right">
-              <li><div className="status-info">{this.props.statusInfo}</div></li>
-              <li><a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu"><i className="material-icons">account_circle</i></a></li>
+              <li>
+                <a className="dropdown-navbar dropdown-button-menu" href="#" data-activates="mainmenu">
+                  <i className="material-icons tooltip" title="Käyttäjä">account_circle</i>
+                </a>
+              </li>
             </ul>
+            <ToolBarContainer />
           </div>
         </nav>
 
@@ -104,11 +102,10 @@ function mapStateToProps(state) {
   return {
     mergeButtonEnabled: mergeButtonEnabled(state),
     mergeStatus: state.getIn(['mergeStatus', 'status']),
-    statusInfo: state.getIn(['mergeStatus', 'message'])
   };
 }
 
 export const NavBarContainer = connect(
   mapStateToProps,
-  { removeSession, commitMerge }
+  {removeSession, commitMerge}
 )(NavBar);

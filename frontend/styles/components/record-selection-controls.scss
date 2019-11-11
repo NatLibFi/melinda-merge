@@ -1,13 +1,10 @@
 
-.record-selection-controls input {
-  font-size: 2rem;
+.record-selection-controls {
+  display: flex;
+  justify-content: center;
+  align-items: baseline;
 }
 
-.control-swap-horizontal > div {
-  transform: translate(50%, 50%);
-  height: 60px;
-
-  a {
-    transform: translate(-50%, -50%);  
-  }
+.record-selection-controls input {
+  font-size: 2rem;
 }

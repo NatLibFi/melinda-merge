@@ -1,32 +1,36 @@
+@import '../vendor/materialize/components/_variables';
 
 .modal-merge-dialog {
   position: fixed;
   z-index: 999;
   width: 100%;
   height: 100%;
-  background-color: rgba(1,1,1,0.2);
-
+  background-color: rgba(1, 1, 1, 0.2);
 
   a.disabled {
-    color: #9F9F9F !important;
+    color: #9f9f9f !important;
     cursor: default !important;
   }
 
-  .message-container {
-
+  a {
+    margin-right: 0px !important;
+    padding-right: 5px;
+    color: $link-color;
   }
+
+  i {
+    margin-left: 0px;
+  }
+
   .code {
     padding: 2px;
     margin-right: 3px;
   }
-  .message {
 
-  }
   .response-container {
-
     & > div {
       margin-bottom: 3px;
-      border: 1px solid #9F9F9F;
+      border: 1px solid #9f9f9f;
       border-radius: 5px;
       padding: 5px;
       max-height: 700px;
