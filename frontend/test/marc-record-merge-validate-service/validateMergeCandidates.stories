@@ -53,6 +53,6 @@ LOW    ‡aFIKKA
 Expected to be valid: false
 Expected failure message: Other record is suppressed
 Expected failure message: Records are of different type (leader/6): a - b
-Expected failure message: Records have different 33X fields: 337  
 Expected failure message: Both records have the same record id
 Expected failure message: The record with FIKKA LOW tag should usually be the preferred record
+Expected failure message: Records have different 33X fields: 337

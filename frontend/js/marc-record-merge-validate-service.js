@@ -45,13 +45,13 @@ B warn: Other record has LOW: FENNI, but preferred does not.
 
  */
 
-const defaultPreset = [preferredRecordIsNotDeleted, otherRecordIsNotDeleted, preferredRecordIsNotSuppressed, otherRecordIsNotSuppressed, recordsHaveSameType, recordsHaveDifferent33XFields];
+const defaultPreset = [preferredRecordIsNotDeleted, otherRecordIsNotDeleted, preferredRecordIsNotSuppressed, otherRecordIsNotSuppressed, recordsHaveSameType];
 
 export const preset = {
   defaults: defaultPreset,
   melinda_host: _.concat(defaultPreset, [recordsHaveDifferentLOWTags, recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
   melinda_component: _.concat(defaultPreset, [recordsHaveDifferentLOWTags]),
-  melinda_warnings: [preferredRecordFromFIKKA, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
+  melinda_warnings: [preferredRecordFromFIKKA, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields,recordsHaveDifferent33XFields]
 };
 
 export function validateMergeCandidates(validationFunctions, preferredRecord, otherRecord, warning = false) {
@@ -189,9 +189,7 @@ export function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
 }
 
 export function recordsHaveDifferent33XFields(preferredRecord, otherRecord) {
-  const other33xFields = otherRecord.fields.filter(field => findFieldsByPattern(field, [/^336$/, /^337$/, /^338$/]));
-  const pref33xFields = preferredRecord.fields.filter(field => findFieldsByPattern(field, [/^336$/, /^337$/, /^338$/]));
-  const error = checkMatching33x(pref33xFields, other33xFields);
+  const error = checkMatching33x(preferredRecord.get(/^336$|^337$|^338$/), otherRecord.get(/^336$|^337$|^338$/));
   const valid = error.pref.length === 0 && error.oth.length === 0;
 
   return {
@@ -239,19 +237,15 @@ function jsonStringFieldConversion(array, reverse) {
     });
   } else {
     return array.map(field => {
+      field = {
+        tag: field.tag,
+        ind1: field.ind1,
+        ind2: field.ind2,
+        subfields: field.subfields
+      };
       return JSON.stringify(field);
     });
   }
-}
-
-function findFieldsByPattern(field, patterns) {
-  let match = false;
-  patterns.forEach(pattern => {
-    if (pattern.test(field.tag)) {
-      match = true;
-    }
-  });
-  return match;
 }
 
 function isSplitField(field) {

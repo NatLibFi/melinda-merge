@@ -140,9 +140,9 @@ export class BaseComponent extends React.Component {
           notifications={this.props.notifications}
         />
         <NavBarContainer 
-            username={firstName}
-            appTitle='Merge'
-          />
+          username={firstName}
+          appTitle='Merge'
+        />
         { this.props.mergeDialog.visible ? this.renderMergeDialog() : null }
         <ToolBarContainer />
         <RecordSelectionControlsContainer />
