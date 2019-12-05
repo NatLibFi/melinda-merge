@@ -57,10 +57,11 @@ export function fetchCount() {
         if (response.status == HttpStatus.OK) {
 
           response.text().then(res => {
-            if (isNaN(res)) {
+            const json = JSON.parse(res);
+            if (isNaN(json.count)) {
               return dispatch(fetchDuplicateCountError('Duplicate count was not a number'));
             }
-            dispatch(fetchDuplicateCountSuccess(parseInt(res)));
+            dispatch(fetchDuplicateCountSuccess(parseInt(json.count)));
           });
 
         } else {
