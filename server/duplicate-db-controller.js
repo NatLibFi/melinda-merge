@@ -51,7 +51,7 @@ duplicateDatabaseController.options('/pairs/:id/mark-as-not-duplicates', cors(co
 duplicateDatabaseController.get('/pairs/count', cors(corsOptions), (req, res) => {
 
   getDuplicateCount()
-    .then(count => res.send(count))
+    .then(count => res.send({count}))
     .catch(error => {
       logger.log('error', error);
       res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
