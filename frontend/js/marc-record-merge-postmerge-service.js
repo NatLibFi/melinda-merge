@@ -117,12 +117,11 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
   // Check if allready has it to avoid doubles
   otherRecordLOWFieldList.forEach(field => {
     if (!mergedRecord.containsFieldWithValue(field.tag, field.subfields)) {
-        mergedRecord.appendField(field);
+      mergedRecord.appendField(field);
     }
   });
 
   const otherRecordLibraryIdList = selectValues(otherRecord, 'LOW', 'a');
-  console.log(otherRecordLibraryIdList);
 
   otherRecordLibraryIdList.forEach(libraryId => {
     const otherRecordSIDFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', libraryId.toLowerCase());
