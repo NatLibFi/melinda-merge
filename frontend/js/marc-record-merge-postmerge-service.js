@@ -59,8 +59,8 @@ const defaultPreset = [
 
 // Note: We don't handle LOW/SID tags when subrecord action=COPY.
 // LOW-SYNC will handle that after the record has been added to melinda.
-const subrecordCopyOther = [check041aLength, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
-const subrecordCopyPrefer = [check041aLength, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+const subrecordCopyOther = [check041aLength, addLOWSIDFieldsFromOther, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+const subrecordCopyPrefer = [check041aLength, addLOWSIDFieldsFromPreferred, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
 
 export const preset = {
   defaults: defaultPreset,
@@ -114,19 +114,29 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
     .filter(field => field.tag === 'LOW')
     .map(markAsPostmergeField);
 
-  mergedRecord.fields = mergedRecord.fields.concat(otherRecordLOWFieldList);
+  // Check if allready has it to avoid doubles
+  otherRecordLOWFieldList.forEach(field => {
+    if (!mergedRecord.containsFieldWithValue(field.tag, field.subfields)) {
+        mergedRecord.appendField(field);
+    }
+  });
 
   const otherRecordLibraryIdList = selectValues(otherRecord, 'LOW', 'a');
+  console.log(otherRecordLibraryIdList);
 
   otherRecordLibraryIdList.forEach(libraryId => {
     const otherRecordSIDFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', libraryId.toLowerCase());
 
     if (otherRecordSIDFieldList.length > 0) {
+      // Check if allready has it to avoid doubles
+      otherRecordSIDFieldList.forEach(field => {
+        if (!mergedRecord.containsFieldWithValue(field.tag, field.subfields)) {
+          mergedRecord.appendField(field);
+        }
+      });
 
-      mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDFieldList.map(markAsPostmergeField));
-
+      otherRecordSIDFieldList.map(markAsPostmergeField);
     } else {
-
       const otherRecordId = selectRecordId(otherRecord);
 
       mergedRecord.fields.push(createField({
