@@ -14,7 +14,7 @@ Possible actions are:
 
 copy
  Copies field from other, if it's missing from the preferred. Normally the field-wise comparison is made using normalized subfield sets. If other set is a proper subset, then 
- the fields are considered identical. 
+ the fields are considered identical.
 
 
 selectBetter
