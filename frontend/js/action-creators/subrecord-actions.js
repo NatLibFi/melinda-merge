@@ -221,11 +221,13 @@ function mergeSubrecord(options) {
     if (preferredRecord) {
       hostRecordId = preferredHostRecordId;
       const postMergeFixes = _.clone(PostMerge.preset.subrecordCopyPrefer);
-      recordToCopy = PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, undefined, preferredRecord);
+      const result = PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, undefined, preferredRecord);
+      recordToCopy = result.record;
     } else {
       hostRecordId = otherHostRecordId;
       const postMergeFixes = _.clone(PostMerge.preset.subrecordCopyOther);
-      recordToCopy = PostMerge.applyPostMergeModifications(postMergeFixes, undefined, otherRecord, otherRecord);
+      const result = PostMerge.applyPostMergeModifications(postMergeFixes, undefined, otherRecord, otherRecord);
+      recordToCopy = result.record;
     }
 
     // reset 773w
@@ -235,6 +237,7 @@ function mergeSubrecord(options) {
 
     // Note: We don't handle LOW/SID tags when subrecord action=COPY.
     // LOW-SYNC will handle that after the record has been added to melinda.
+    // Maybe we do it here after all...
     return Promise.resolve(recordToCopy);
   }
 
