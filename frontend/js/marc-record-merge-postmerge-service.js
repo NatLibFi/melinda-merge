@@ -56,8 +56,11 @@ import {fieldOrderComparator} from './marc-field-sort';
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged,
   setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
-const subrecordCopyOther = [check041aLength, addLOWSIDFieldsFromOther, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
-const subrecordCopyPrefer = [check041aLength, addLOWSIDFieldsFromPreferred, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+
+// Note: We don't handle LOW/SID tags when subrecord action=COPY.
+// LOW-SYNC will handle that after the record has been added to melinda.
+const subrecordCopyOther = [check041aLength, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+const subrecordCopyPrefer = [check041aLength, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
 
 export const preset = {
   defaults: defaultPreset,
@@ -226,7 +229,7 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, mergedRe
 
       if (field.subfields.length == 0) {
         (otherRecord) ? markFieldAsUnused(otherRecord, field.uuid) : null;
-        (preferredRecord) ? markFieldAsUnused(preferredRecord, field.uuid): null;
+        (preferredRecord) ? markFieldAsUnused(preferredRecord, field.uuid) : null;
 
         return fields;
       }
