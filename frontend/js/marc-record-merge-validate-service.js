@@ -51,7 +51,7 @@ export const preset = {
   defaults: defaultPreset,
   melinda_host: _.concat(defaultPreset, [recordsHaveDifferentLOWTags, recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
   melinda_component: _.concat(defaultPreset, [recordsHaveDifferentLOWTags]),
-  melinda_warnings: [preferredRecordFromFENNI, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
+  melinda_warnings: [preferredRecordFromFIKKA, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
 };
 
 export function validateMergeCandidates(validationFunctions, preferredRecord, otherRecord, warning = false) {
@@ -59,9 +59,9 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
   const validationResults = validationFunctions.map(fn => fn(preferredRecord, otherRecord));
 
   return Promise.all(validationResults).then(results => {
-    
+
     const failures = results.filter(result => result.valid === false);
-    
+
     if (failures.length > 0) {
       const failureMessages = failures.map(failure => failure.validationFailureMessage);
       if (warning)
@@ -69,7 +69,7 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
       else
         throw new MergeValidationError('Merge validation failed', failureMessages);
     }
-    
+
     return {
       valid: true
     };
@@ -84,10 +84,10 @@ export function recordsHaveDifferentIds(preferredRecord, otherRecord) {
 }
 
 export function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
-  
+
   const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
   const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
-  
+
   const libraryTagsInBoth = _.intersection(preferredRecordLibraryTagList, otherRecordLibraryTagList);
 
   return {
@@ -97,10 +97,10 @@ export function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
 }
 
 export function recordsHaveSameType(preferredRecord, otherRecord) {
-  
-  var preferredRecordType = preferredRecord.leader.substr(6,1);
-  var otherRecordType = otherRecord.leader.substr(6,1);
-  
+
+  var preferredRecordType = preferredRecord.leader.substr(6, 1);
+  var otherRecordType = otherRecord.leader.substr(6, 1);
+
   return {
     valid: preferredRecordType === otherRecordType,
     validationFailureMessage: `Records are of different type (leader/6): ${preferredRecordType} - ${otherRecordType}`
@@ -138,7 +138,7 @@ export function otherRecordIsNotSuppressed(preferredRecord, otherRecord) {
 
 export function preferredRecordIsNotComponentRecord(preferredRecord) {
   const recordType = preferredRecord.leader.charAt(7);
-  const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
+  const isComponentRecord = ['a', 'b', 'd'].some(componentRecordType => componentRecordType === recordType);
   return {
     valid: isComponentRecord === false,
     validationFailureMessage: 'Preferred record is a component record'
@@ -147,22 +147,22 @@ export function preferredRecordIsNotComponentRecord(preferredRecord) {
 
 export function otherRecordIsNotComponentRecord(preferredRecord, otherRecord) {
   const recordType = otherRecord.leader.charAt(7);
-  const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
+  const isComponentRecord = ['a', 'b', 'd'].some(componentRecordType => componentRecordType === recordType);
   return {
     valid: isComponentRecord === false,
     validationFailureMessage: 'Other record is a component record'
   };
 }
 
-export function preferredRecordFromFENNI(preferredRecord, otherRecord) {
+export function preferredRecordFromFIKKA(preferredRecord, otherRecord) {
   const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
   const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
 
-  const otherHasButPreferredDoesNot = _.includes(otherRecordLibraryTagList, 'FENNI') && !_.includes(preferredRecordLibraryTagList, 'FENNI');
+  const otherHasButPreferredDoesNot = _.includes(otherRecordLibraryTagList, 'FIKKA') && !_.includes(preferredRecordLibraryTagList, 'FIKKA');
 
   return {
     valid: otherHasButPreferredDoesNot === false,
-    validationFailureMessage: 'The record with FENNI LOW tag should usually be the preferred record'
+    validationFailureMessage: 'The record with FIKKA LOW tag should usually be the preferred record'
   };
 }
 
@@ -191,7 +191,7 @@ export function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
 
 function isSplitField(field) {
   if (field.subfields !== undefined && field.subfields.length > 0) {
-    return field.subfields[0].value.substr(0,2) === '^^';
+    return field.subfields[0].value.substr(0, 2) === '^^';
   }
 }
 
@@ -218,12 +218,12 @@ function isDeleted(record) {
   if (checkLeader()) return true;
   if (checkDELFields()) return true;
   if (checkSTAFields()) return true;
-  
+
   return false;
 
 
   function checkLeader() {
-    return record.leader.substr(5,1) === 'd';
+    return record.leader.substr(5, 1) === 'd';
   }
 
   function checkDELFields() {
