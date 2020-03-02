@@ -51,7 +51,7 @@ export const preset = {
   defaults: defaultPreset,
   melinda_host: _.concat(defaultPreset, [recordsHaveDifferentLOWTags, recordsHaveDifferentIds, preferredRecordIsNotComponentRecord, otherRecordIsNotComponentRecord]),
   melinda_component: _.concat(defaultPreset, [recordsHaveDifferentLOWTags]),
-  melinda_warnings: [preferredRecordFromFENNI, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields]
+  melinda_warnings: [preferredRecordFromFIKKA, preferredRecordHasAlephSplitFields, otherRecordHasAlephSplitFields, recordsHaveDifferent33XFields]
 };
 
 export function validateMergeCandidates(validationFunctions, preferredRecord, otherRecord, warning = false) {
@@ -59,9 +59,9 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
   const validationResults = validationFunctions.map(fn => fn(preferredRecord, otherRecord));
 
   return Promise.all(validationResults).then(results => {
-    
+
     const failures = results.filter(result => result.valid === false);
-    
+
     if (failures.length > 0) {
       const failureMessages = failures.map(failure => failure.validationFailureMessage);
       if (warning)
@@ -69,7 +69,7 @@ export function validateMergeCandidates(validationFunctions, preferredRecord, ot
       else
         throw new MergeValidationError('Merge validation failed', failureMessages);
     }
-    
+
     return {
       valid: true
     };
@@ -84,10 +84,10 @@ export function recordsHaveDifferentIds(preferredRecord, otherRecord) {
 }
 
 export function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
-  
+
   const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
   const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
-  
+
   const libraryTagsInBoth = _.intersection(preferredRecordLibraryTagList, otherRecordLibraryTagList);
 
   return {
@@ -97,10 +97,10 @@ export function recordsHaveDifferentLOWTags(preferredRecord, otherRecord) {
 }
 
 export function recordsHaveSameType(preferredRecord, otherRecord) {
-  
-  var preferredRecordType = preferredRecord.leader.substr(6,1);
-  var otherRecordType = otherRecord.leader.substr(6,1);
-  
+
+  var preferredRecordType = preferredRecord.leader.substr(6, 1);
+  var otherRecordType = otherRecord.leader.substr(6, 1);
+
   return {
     valid: preferredRecordType === otherRecordType,
     validationFailureMessage: `Records are of different type (leader/6): ${preferredRecordType} - ${otherRecordType}`
@@ -138,7 +138,7 @@ export function otherRecordIsNotSuppressed(preferredRecord, otherRecord) {
 
 export function preferredRecordIsNotComponentRecord(preferredRecord) {
   const recordType = preferredRecord.leader.charAt(7);
-  const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
+  const isComponentRecord = ['a', 'b', 'd'].some(componentRecordType => componentRecordType === recordType);
   return {
     valid: isComponentRecord === false,
     validationFailureMessage: 'Preferred record is a component record'
@@ -147,22 +147,22 @@ export function preferredRecordIsNotComponentRecord(preferredRecord) {
 
 export function otherRecordIsNotComponentRecord(preferredRecord, otherRecord) {
   const recordType = otherRecord.leader.charAt(7);
-  const isComponentRecord = ['a','b','d'].some(componentRecordType => componentRecordType === recordType);
+  const isComponentRecord = ['a', 'b', 'd'].some(componentRecordType => componentRecordType === recordType);
   return {
     valid: isComponentRecord === false,
     validationFailureMessage: 'Other record is a component record'
   };
 }
 
-export function preferredRecordFromFENNI(preferredRecord, otherRecord) {
+export function preferredRecordFromFIKKA(preferredRecord, otherRecord) {
   const preferredRecordLibraryTagList = getLibraryTagList(preferredRecord);
   const otherRecordLibraryTagList = getLibraryTagList(otherRecord);
 
-  const otherHasButPreferredDoesNot = _.includes(otherRecordLibraryTagList, 'FENNI') && !_.includes(preferredRecordLibraryTagList, 'FENNI');
+  const otherHasButPreferredDoesNot = _.includes(otherRecordLibraryTagList, 'FIKKA') && !_.includes(preferredRecordLibraryTagList, 'FIKKA');
 
   return {
     valid: otherHasButPreferredDoesNot === false,
-    validationFailureMessage: 'The record with FENNI LOW tag should usually be the preferred record'
+    validationFailureMessage: 'The record with FIKKA LOW tag should usually be the preferred record'
   };
 }
 
@@ -188,10 +188,69 @@ export function otherRecordHasAlephSplitFields(preferredRecord, otherRecord) {
   };
 }
 
+export function recordsHaveDifferent33XFields(preferredRecord, otherRecord) {
+  const error = checkMatching33x(preferredRecord.get(/^336$|^337$|^338$/), otherRecord.get(/^336$|^337$|^338$/));
+  const valid = error.pref.length === 0 && error.oth.length === 0;
+
+  return {
+    valid,
+    validationFailureMessage: handleErrorData(error)
+  };
+}
+
+function handleErrorData(error) {
+  let diff = [];
+  const prefered = jsonStringFieldConversion(error.pref, true);
+  const other = jsonStringFieldConversion(error.oth, true);
+  prefered.forEach(field => {
+    diff.push(field.tag);
+  });
+  other.forEach(field => {
+    diff.push(field.tag);
+  });
+  diff = [...new Set(diff)];
+  return `${diff.length > 0 ? 'Records have different 33X fields: ' + diff : ''}`;
+}
+
+function checkMatching33x(prefer, other) {
+  const preStrings = jsonStringFieldConversion(prefer, false);
+  const othStrings = jsonStringFieldConversion(other, false);
+  const preDiff = findDiffStringArrays(preStrings, othStrings);
+  const othDiff = findDiffStringArrays(othStrings, preStrings);
+  return {'pref': preDiff, 'oth': othDiff};
+}
+
+function findDiffStringArrays(array, array2) {
+  const diff = [];
+  array.forEach((field, index) => {
+    if (!array2.includes(field)) {
+      diff.push(array[index]);
+    }
+  });
+  return diff;
+}
+
+function jsonStringFieldConversion(array, reverse) {
+  if (reverse) {
+    return array.map(field => {
+      return JSON.parse(field);
+    });
+  }
+
+  return array.map(field => {
+    field = {
+      tag: field.tag,
+      ind1: field.ind1,
+      ind2: field.ind2,
+      subfields: field.subfields
+    };
+    return JSON.stringify(field);
+  });
+}
 
 function isSplitField(field) {
   if (field.subfields !== undefined && field.subfields.length > 0) {
-    return field.subfields[0].value.substr(0,2) === '^^';
+    return field.subfields[0].value.substr(0, 2) === '^^';
   }
 }
 
@@ -218,12 +277,12 @@ function isDeleted(record) {
   if (checkLeader()) return true;
   if (checkDELFields()) return true;
   if (checkSTAFields()) return true;
-  
+
   return false;
 
 
   function checkLeader() {
-    return record.leader.substr(5,1) === 'd';
+    return record.leader.substr(5, 1) === 'd';
   }
 
   function checkDELFields() {
@@ -243,7 +302,6 @@ function isDeleted(record) {
   }
 
 }
-
 
 function getRecordId(record) {
   var field001ValuesList = record.fields.filter(field => field.tag === '001').map(field => field.value);
