@@ -235,17 +235,17 @@ function jsonStringFieldConversion(array, reverse) {
     return array.map(field => {
       return JSON.parse(field);
     });
-  } else {
-    return array.map(field => {
-      field = {
-        tag: field.tag,
-        ind1: field.ind1,
-        ind2: field.ind2,
-        subfields: field.subfields
-      };
-      return JSON.stringify(field);
-    });
   }
+
+  return array.map(field => {
+    field = {
+      tag: field.tag,
+      ind1: field.ind1,
+      ind2: field.ind2,
+      subfields: field.subfields
+    };
+    return JSON.stringify(field);
+  });
 }
 
 function isSplitField(field) {
