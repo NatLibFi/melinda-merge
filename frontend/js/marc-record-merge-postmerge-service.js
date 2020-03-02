@@ -50,15 +50,22 @@ import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
 import uuid from 'node-uuid';
 import moment from 'moment';
-import { selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual } from './record-utils';
-import { fieldOrderComparator } from './marc-field-sort';
+import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual} from './record-utils';
+import {fieldOrderComparator} from './marc-field-sort';
 
 const defaultPreset = [
-  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, 
+  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged,
   setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
 
+// Note: We don't handle LOW/SID tags when subrecord action=COPY.
+// LOW-SYNC will handle that after the record has been added to melinda.
+const subrecordCopyOther = [check041aLength, addLOWSIDFieldsFromOther, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+const subrecordCopyPrefer = [check041aLength, addLOWSIDFieldsFromPreferred, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+
 export const preset = {
-  defaults: defaultPreset
+  defaults: defaultPreset,
+  subrecordCopyOther,
+  subrecordCopyPrefer
 };
 
 export function applyPostMergeModifications(postMergeFunctions, preferredRecord, otherRecord, originalMergedRecord) {
@@ -78,7 +85,7 @@ export function applyPostMergeModifications(postMergeFunctions, preferredRecord,
     };
   }, initial_value);
 
-  return { 
+  return {
     record: result.mergedRecord,
     notes: result.notes
   };
@@ -107,7 +114,12 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
     .filter(field => field.tag === 'LOW')
     .map(markAsPostmergeField);
 
-  mergedRecord.fields = mergedRecord.fields.concat(otherRecordLOWFieldList);
+  // Check if allready has it to avoid doubles
+  otherRecordLOWFieldList.forEach(field => {
+    if (!mergedRecord.containsFieldWithValue(field.tag, field.subfields)) {
+      mergedRecord.appendField(field);
+    }
+  });
 
   const otherRecordLibraryIdList = selectValues(otherRecord, 'LOW', 'a');
 
@@ -115,26 +127,30 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
     const otherRecordSIDFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', libraryId.toLowerCase());
 
     if (otherRecordSIDFieldList.length > 0) {
+      // Check if allready has it to avoid doubles
+      otherRecordSIDFieldList.forEach(field => {
+        if (!mergedRecord.containsFieldWithValue(field.tag, field.subfields)) {
+          mergedRecord.appendField(field);
+        }
+      });
 
-      mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDFieldList.map(markAsPostmergeField));
-
+      otherRecordSIDFieldList.map(markAsPostmergeField);
     } else {
-
       const otherRecordId = selectRecordId(otherRecord);
 
       mergedRecord.fields.push(createField({
         tag: 'SID',
         subfields: [
-          { code: 'c', value: 'FCC' + otherRecordId },
-          { code: 'b', value: libraryId.toLowerCase() },
+          {code: 'c', value: 'FCC' + otherRecordId},
+          {code: 'b', value: libraryId.toLowerCase()},
         ]
       }));
     }
   });
-  
+
   otherRecordLibraryIdList.forEach(libraryId => {
-  /* TODO: Add here config -table for extra SID $b value / libraryID pairs */
-    
+    /* TODO: Add here config -table for extra SID $b value / libraryID pairs */
+
     if (libraryId == 'VOLTE') {
       const otherRecordSIDExtraFieldList = selectFieldsByValue(otherRecord, 'SID', 'b', 'volsi');
 
@@ -142,12 +158,10 @@ export function addLOWSIDFieldsFromOther(preferredRecord, otherRecord, mergedRec
 
         mergedRecord.fields = _.concat(mergedRecord.fields, otherRecordSIDExtraFieldList.map(markAsPostmergeField));
 
-      }   
+      }
     }
   });
 
-  
-  
   return {
     mergedRecord
   };
@@ -168,13 +182,13 @@ export function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, merge
       mergedRecord.fields.push(createField({
         tag: 'SID',
         subfields: [
-          { code: 'c', value: 'FCC' + preferredRecordId },
-          { code: 'b', value: libraryId.toLowerCase() },
+          {code: 'c', value: 'FCC' + preferredRecordId},
+          {code: 'b', value: libraryId.toLowerCase()},
         ]
       }));
     }
   });
-  
+
   return {
     mergedRecord
   };
@@ -183,11 +197,11 @@ export function addLOWSIDFieldsFromPreferred(preferredRecord, otherRecord, merge
 export function add035zFromOther(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
   const otherRecordId = selectRecordId(otherRecord);
-  
+
   mergedRecord.fields.push(createField({
     tag: '035',
     subfields: [
-      { code: 'z', value: '(FI-MELINDA)' + otherRecordId },
+      {code: 'z', value: '(FI-MELINDA)' + otherRecordId},
     ]
   }));
 
@@ -199,11 +213,11 @@ export function add035zFromOther(preferredRecord, otherRecord, mergedRecordParam
 export function add035zFromPreferred(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
   const preferredRecordId = selectRecordId(preferredRecord);
-  
+
   mergedRecord.fields.push(createField({
     tag: '035',
     subfields: [
-      { code: 'z', value: '(FI-MELINDA)' + preferredRecordId },
+      {code: 'z', value: '(FI-MELINDA)' + preferredRecordId},
     ]
   }));
 
@@ -216,17 +230,15 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, mergedRe
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
   mergedRecord.fields = mergedRecord.fields.reduce((fields, field) => {
-
     if (field.tag === '035') {
       field.subfields = field.subfields.filter(subfield => {
-        const isExtraSubfield = subfield.code === 'a' && subfield.value.substr(0,12) === '(FI-MELINDA)';
+        const isExtraSubfield = subfield.code === 'a' && subfield.value.substr(0, 12) === '(FI-MELINDA)';
         return isExtraSubfield === false;
       });
 
       if (field.subfields.length == 0) {
-
-        markFieldAsUnused(otherRecord, field.uuid);
-        markFieldAsUnused(preferredRecord, field.uuid);
+        (otherRecord) ? markFieldAsUnused(otherRecord, field.uuid) : null;
+        (preferredRecord) ? markFieldAsUnused(preferredRecord, field.uuid) : null;
 
         return fields;
       }
@@ -244,7 +256,7 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, mergedRe
 export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
-  mergedRecord.fields = mergedRecord.fields.filter(function(field) {
+  mergedRecord.fields = mergedRecord.fields.filter(function (field) {
     return field.tag !== '001';
   });
   mergedRecord.fields.push(createField({
@@ -259,15 +271,19 @@ export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordPar
 
 export function add583NoteAboutMerge(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
-  const preferredRecordId = selectRecordId(preferredRecord);
-  const otherRecordId = selectRecordId(otherRecord);
-  
+  const preferredRecordId = (preferredRecord) ? selectRecordId(preferredRecord) : undefined;
+  const otherRecordId = (otherRecord) ? selectRecordId(otherRecord) : undefined;
+
+  const valueA = (preferredRecordId && otherRecordId) ? `MERGED FROM (FI-MELINDA)${otherRecordId} + (FI-MELINDA)${preferredRecordId}`
+    : (preferredRecordId) ? `MERGED FROM (FI-MELINDA)${preferredRecordId}`
+      : `MERGED FROM (FI-MELINDA)${otherRecordId}`;
+
   mergedRecord.fields.push(createField({
     tag: '583',
     subfields: [
-      { code: 'a', value: `MERGED FROM (FI-MELINDA)${otherRecordId} + (FI-MELINDA)${preferredRecordId}` },
-      { code: 'c', value: formatDate(new Date()) },
-      { code: '5', value: 'MELINDA' },
+      {code: 'a', value: valueA},
+      {code: 'c', value: formatDate(new Date())},
+      {code: '5', value: 'MELINDA'},
     ]
   }));
 
@@ -294,16 +310,16 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
     .filter(field => field.tag === '250')
     .filter(field => {
       return !mergedRecord.fields.some(fieldInMerged => fieldIsEqual(fieldInMerged, field));
-    }).map(function(field) {
+    }).map(function (field) {
       return field.subfields
         .filter(sub => sub.code === 'a')
         .map(sub => sub.value.trim());
-    }).forEach(function(reprintText) {
+    }).forEach(function (reprintText) {
       let text = 'Lisäpainokset: ' + reprintText;
       const f008 = _.head(otherRecord.fields.filter(field => field.tag === '008'));
 
       if (f008 !== undefined) {
-        const year = f008.value.substr(7,4);
+        const year = f008.value.substr(7, 4);
 
         if (!isNaN(year)) {
           text += ` ${year}`;
@@ -318,7 +334,7 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
         mergedRecord.fields.push(createField({
           tag: '500',
           subfields: [
-            { code: 'a', value: text },
+            {code: 'a', value: text},
           ]
         }));
       }
@@ -342,7 +358,7 @@ export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam)
 
     const fieldInPreferred = _.chain(preferredRecord.fields).filter(fieldInPreferred => fieldInPreferred.uuid === field.uuid).value();
     const fieldInOther = _.chain(otherRecord.fields).filter(otherRecord => otherRecord.uuid === field.uuid).value();
-    
+
     const linkedFieldsFromPreferred = _.flatMap(fieldInPreferred, (fieldWithLink) => {
       return preferredRecord.fields.filter(isLinkedFieldOf(fieldWithLink));
     });
@@ -358,13 +374,13 @@ export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam)
     linkedFieldsFromOther.forEach(field => {
       markFieldAsUsed(field, {fromOther: true});
     });
-    
+
     const linkedFields = _.concat(_.cloneDeep(linkedFieldsFromPreferred), _.cloneDeep(linkedFieldsFromOther));
 
-    updateLinks(i+1, field, linkedFields);
+    updateLinks(i + 1, field, linkedFields);
 
     return linkedFields;
-    
+
   }).value();
 
   mergedRecord.fields = _.concat(fieldsWithout880, relinked880Fields);
@@ -374,8 +390,8 @@ export function handle880Fields(preferredRecord, otherRecord, mergedRecordParam)
     markFieldAsUnused(preferredRecord, uuid);
     markFieldAsUnused(otherRecord, uuid);
   });
-  
-  return { mergedRecord };
+
+  return {mergedRecord};
 }
 
 function updateLinks(linkIndex, field, linkedFieldList) {
@@ -387,7 +403,7 @@ function updateLinks(linkIndex, field, linkedFieldList) {
       sub.value = `880-${linkIndexNormalized}`;
     }
   });
-  
+
   linkedFieldList.forEach(field => {
     field.subfields.forEach(sub => {
       if (sub.code === '6') {
@@ -402,12 +418,12 @@ export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecor
 
   mergedRecord.fields.sort(fieldOrderComparator);
 
-  return { mergedRecord };
+  return {mergedRecord};
 }
 
 export function select773Fields(preferredHostRecordId, othterHostRecordId) {
-  return function(preferredRecord, otherRecord, mergedRecord) {
-  
+  return function (preferredRecord, otherRecord, mergedRecord) {
+
     const linksToPreferredHost = mergedRecord.fields.filter(field => {
       return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${preferredHostRecordId}`);
     });
@@ -455,8 +471,8 @@ function markFieldAsUnused(record, fieldUuid) {
   record.fields
     .filter(field => field.uuid === fieldUuid)
     .forEach(field => {
-      delete(field.wasUsed);
-      delete(field.fromOther);
+      delete (field.wasUsed);
+      delete (field.fromOther);
     });
 }
 

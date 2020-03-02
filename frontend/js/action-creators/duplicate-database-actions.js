@@ -31,26 +31,30 @@ import HttpStatus from 'http-status-codes';
 import _ from 'lodash';
 import Notifications from 'react-notification-system-redux';
 
-import { fetchRecord, resetWorkspace } from '../ui-actions';
+import {fetchRecord, resetWorkspace} from '../ui-actions';
 
-import {DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR, 
-  NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR} from '../constants/action-type-constants';
+import {
+  DUPLICATE_COUNT_SUCCESS, DUPLICATE_COUNT_ERROR,
+  NEXT_DUPLICATE_START, NEXT_DUPLICATE_SUCCESS, NEXT_DUPLICATE_ERROR
+} from '../constants/action-type-constants';
 
-import {SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS, 
+import {
+  SKIP_PAIR_SUCCESS, SKIP_PAIR_ERROR, MARK_AS_NOT_DUPLICATE_SUCCESS,
   MARK_AS_NOT_DUPLICATE_ERROR, MARK_AS_MERGED_SUCCESS, MARK_AS_MERGED_ERROR,
-  MARK_AS_MERGED_START, MARK_AS_NOT_DUPLICATE_START, SKIP_PAIR_START} from '../constants/action-type-constants';
+  MARK_AS_MERGED_START, MARK_AS_NOT_DUPLICATE_START, SKIP_PAIR_START
+} from '../constants/action-type-constants';
 
-const APIBasePath = __DEV__ ? 'http://localhost:3001/duplicates': '/duplicates';
+const APIBasePath = __DEV__ ? 'http://localhost:3001/duplicates' : '/duplicates';
 
 export function fetchCount() {
 
-  return function(dispatch) {
+  return function (dispatch) {
 
     const fetchOptions = {
       method: 'GET',
       credentials: 'include'
     };
-   
+
     return fetch(`${APIBasePath}/pairs/count`, fetchOptions)
       .then(response => {
 
@@ -79,16 +83,16 @@ export function fetchCount() {
 }
 
 function fetchDuplicateCountSuccess(count) {
-  return { type: DUPLICATE_COUNT_SUCCESS, count};
+  return {type: DUPLICATE_COUNT_SUCCESS, count};
 }
 
 function fetchDuplicateCountError(error) {
-  return { type: DUPLICATE_COUNT_ERROR, error};
+  return {type: DUPLICATE_COUNT_ERROR, error};
 }
 
 export function fetchNextPair() {
 
-  return function(dispatch) {
+  return function (dispatch) {
 
     dispatch(fetchNextPairStart());
 
@@ -96,7 +100,7 @@ export function fetchNextPair() {
       method: 'GET',
       credentials: 'include'
     };
-   
+
     return fetch(`${APIBasePath}/pairs/next`, fetchOptions)
       .then(response => {
 
@@ -114,7 +118,7 @@ export function fetchNextPair() {
 
         } else {
           switch (response.status) {
-            case HttpStatus.UNAUTHORIZED: 
+            case HttpStatus.UNAUTHORIZED:
               dispatch(Notifications.error({
                 title: 'Virhe',
                 message: 'Käyttäjätunnus ja salasana eivät täsmää.',
@@ -146,21 +150,21 @@ export function fetchNextPair() {
 }
 
 function fetchNextPairStart() {
-  return { type: NEXT_DUPLICATE_START };
+  return {type: NEXT_DUPLICATE_START};
 }
 
 export function fetchNextPairSuccess(pair) {
-  return { type: NEXT_DUPLICATE_SUCCESS, pair};
+  return {type: NEXT_DUPLICATE_SUCCESS, pair};
 }
 
 function fetchNextPairError(error) {
-  return { type: NEXT_DUPLICATE_ERROR, error};
+  return {type: NEXT_DUPLICATE_ERROR, error};
 }
 
 export function skipPair() {
 
-  return function(dispatch, getState) {
-    
+  return function (dispatch, getState) {
+
     const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
     if (id === undefined) {
       return;
@@ -190,20 +194,20 @@ export function skipPair() {
   };
 }
 export function skipPairStart() {
-  return { type: SKIP_PAIR_START};
+  return {type: SKIP_PAIR_START};
 }
 
 export function skipPairSuccess() {
-  return { type: SKIP_PAIR_SUCCESS};
+  return {type: SKIP_PAIR_SUCCESS};
 }
 
 export function skipPairError(error) {
-  return { type: SKIP_PAIR_ERROR, error};
+  return {type: SKIP_PAIR_ERROR, error};
 }
 
 export function markAsNotDuplicate() {
 
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
     if (id === undefined) {
       return;
@@ -235,22 +239,22 @@ export function markAsNotDuplicate() {
 }
 
 export function markAsNotDuplicateStart() {
-  return { type: MARK_AS_NOT_DUPLICATE_START };
+  return {type: MARK_AS_NOT_DUPLICATE_START};
 }
 
 export function markAsNotDuplicateSuccess() {
-  return { type: MARK_AS_NOT_DUPLICATE_SUCCESS };
+  return {type: MARK_AS_NOT_DUPLICATE_SUCCESS};
 }
 
 export function markAsNotDuplicateError(error) {
-  return { type: MARK_AS_NOT_DUPLICATE_ERROR, error};
+  return {type: MARK_AS_NOT_DUPLICATE_ERROR, error};
 }
 
 
 
 export function markAsMerged() {
 
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
 
     const id = getState().getIn(['duplicateDatabase', 'currentPair', 'duplicatePairId']);
     const preferredRecordId = getState().getIn(['duplicateDatabase', 'currentPair', 'preferredRecordId']);
@@ -267,7 +271,7 @@ export function markAsMerged() {
 
     const fetchOptions = {
       method: 'PUT',
-      body: JSON.stringify({ 
+      body: JSON.stringify({
         preferredRecordId: preferredRecordId,
         otherRecordId: otherRecordId,
         mergedRecordId: mergedRecordId
@@ -291,12 +295,11 @@ export function markAsMerged() {
   };
 }
 export function markAsMergedStart() {
-  return { type: MARK_AS_MERGED_START };
+  return {type: MARK_AS_MERGED_START};
 }
 export function markAsMergedSuccess() {
-  return { type: MARK_AS_MERGED_SUCCESS };
+  return {type: MARK_AS_MERGED_SUCCESS};
 }
 export function markAsMergedError(error) {
-  return { type: MARK_AS_MERGED_ERROR, error};
+  return {type: MARK_AS_MERGED_ERROR, error};
 }
-

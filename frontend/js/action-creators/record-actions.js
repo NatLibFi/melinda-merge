@@ -26,39 +26,39 @@
 *
 */
 
-import { SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE } from '../constants/action-type-constants';
+import {SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE} from '../constants/action-type-constants';
 import HttpStatus from 'http-status-codes';
 import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
-import { exceptCoreErrors } from '../utils';
-import { FetchNotOkError } from '../errors';
+import {exceptCoreErrors} from '../utils';
+import {FetchNotOkError} from '../errors';
 import uuid from 'node-uuid';
 
 
 export function saveRecordStart(recordId) {
-  return { type: SAVE_RECORD_START, recordId };
+  return {type: SAVE_RECORD_START, recordId};
 }
 
 export function saveRecordSuccess(recordId, record) {
-  return { type: SAVE_RECORD_SUCCESS, recordId, record };
+  return {type: SAVE_RECORD_SUCCESS, recordId, record};
 }
 
 export function saveRecordFailure(recordId, error) {
-  return { 'type': SAVE_RECORD_FAILURE, recordId, error };
+  return {'type': SAVE_RECORD_FAILURE, recordId, error};
 }
 
-export const saveRecord = (function() {
-  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
-  
-  return function(recordId, record) {
+export const saveRecord = (function () {
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api' : '/api';
 
-    return function(dispatch) {
+  return function (recordId, record) {
+
+    return function (dispatch) {
 
       dispatch(saveRecordStart(recordId));
-      
+
       const fetchOptions = {
         method: 'PUT',
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           record: record
         }),
         headers: new Headers({
@@ -73,15 +73,15 @@ export const saveRecord = (function() {
         .then(json => {
 
           const mainRecord = json.record;
-      
+
           const marcRecord = new MarcRecord(mainRecord);
-         
+
           marcRecord.fields.forEach(field => {
             field.uuid = uuid.v4();
           });
 
           dispatch(saveRecordSuccess(recordId, marcRecord));
-   
+
         }).catch(exceptCoreErrors((error) => {
 
           if (error instanceof FetchNotOkError) {

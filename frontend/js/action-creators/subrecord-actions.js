@@ -29,79 +29,80 @@
 import HttpStatus from 'http-status-codes';
 import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
-import { exceptCoreErrors } from '../utils';
-import { FetchNotOkError } from '../errors';
+import {exceptCoreErrors} from '../utils';
+import {FetchNotOkError} from '../errors';
 
-import { 
-  INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW, 
-  CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR, 
+import {
+  INSERT_SUBRECORD_ROW, REMOVE_SUBRECORD_ROW, CHANGE_SOURCE_SUBRECORD_ROW, CHANGE_TARGET_SUBRECORD_ROW,
+  CHANGE_SUBRECORD_ROW, SET_SUBRECORD_ACTION, SET_EVERY_MERGED_SUBRECORD, SET_MERGED_SUBRECORD, SET_MERGED_SUBRECORD_ERROR,
   EXPAND_SUBRECORD_ROW, COMPRESS_SUBRECORD_ROW, ADD_SOURCE_SUBRECORD_FIELD, REMOVE_SOURCE_SUBRECORD_FIELD,
-  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE, SWAP_SUBRECORD_ROW, SWAP_EVERY_SUBRECORD_ROWS } from '../constants/action-type-constants';
+  UPDATE_SUBRECORD_ARRANGEMENT, EDIT_MERGED_SUBRECORD, SAVE_SUBRECORD_START, SAVE_SUBRECORD_SUCCESS, SAVE_SUBRECORD_FAILURE, SWAP_SUBRECORD_ROW, SWAP_EVERY_SUBRECORD_ROWS
+} from '../constants/action-type-constants';
 
-import { SubrecordActionTypes } from 'commons/constants';
+import {SubrecordActionTypes} from 'commons/constants';
 import createRecordMerger from '@natlibfi/marc-record-merge';
 import mergeConfiguration from '../config/merge-config';
 import * as MergeValidation from '../marc-record-merge-validate-service';
 import * as PostMerge from '../marc-record-merge-postmerge-service';
-import { selectPreferredHostRecord, selectOtherHostRecord } from '../selectors/record-selectors';
+import {selectPreferredHostRecord, selectOtherHostRecord} from '../selectors/record-selectors';
 import _ from 'lodash';
-import { decorateFieldsWithUuid, selectRecordId, resetRecordId, resetComponentHostLinkSubfield } from '../record-utils';
+import {decorateFieldsWithUuid, selectRecordId, resetComponentHostLinkSubfield} from '../record-utils';
 
 export function swapEverySubrecordRow() {
-  return function(dispatch) {
-    dispatch({ type: SWAP_EVERY_SUBRECORD_ROWS });
+  return function (dispatch) {
+    dispatch({type: SWAP_EVERY_SUBRECORD_ROWS});
 
     dispatch(updateEveryMergedSubrecord());
   };
 }
 
 export function swapSubrecordRow(rowId) {
-  return function(dispatch) {
-    dispatch({ type: SWAP_SUBRECORD_ROW, rowId });
+  return function (dispatch) {
+    dispatch({type: SWAP_SUBRECORD_ROW, rowId});
 
     dispatch(updateMergedSubrecord(rowId));
   };
 }
 
 export function expandSubrecordRow(rowId) {
-  return { type: EXPAND_SUBRECORD_ROW, rowId };
+  return {type: EXPAND_SUBRECORD_ROW, rowId};
 }
 
 export function compressSubrecordRow(rowId) {
-  return { type: COMPRESS_SUBRECORD_ROW, rowId };
+  return {type: COMPRESS_SUBRECORD_ROW, rowId};
 }
 
 export function insertSubrecordRow(rowIndex) {
-  return { 'type': INSERT_SUBRECORD_ROW, rowIndex };
+  return {'type': INSERT_SUBRECORD_ROW, rowIndex};
 }
 
 export function removeSubrecordRow(rowId) {
-  return { 'type': REMOVE_SUBRECORD_ROW, rowId };
+  return {'type': REMOVE_SUBRECORD_ROW, rowId};
 }
 
 export function changeSourceSubrecordRow(fromRowId, toRowId) {
-  return { 'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowId, toRowId };
+  return {'type': CHANGE_SOURCE_SUBRECORD_ROW, fromRowId, toRowId};
 }
 
 export function changeTargetSubrecordRow(fromRowId, toRowId) {
-  return { 'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowId, toRowId };
+  return {'type': CHANGE_TARGET_SUBRECORD_ROW, fromRowId, toRowId};
 }
 
 export function changeSubrecordRow(fromRowIndex, toRowIndex) {
-  return { 'type': CHANGE_SUBRECORD_ROW, fromRowIndex, toRowIndex };
+  return {'type': CHANGE_SUBRECORD_ROW, fromRowIndex, toRowIndex};
 }
 
 export function setSubrecordAction(rowId, actionType) {
-  return { 'type': SET_SUBRECORD_ACTION, rowId, actionType };
+  return {'type': SET_SUBRECORD_ACTION, rowId, actionType};
 }
 
 export function setEverySubrecordAction() {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
 
     const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
     const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => {
       const subrecordRow = getState().getIn(['subrecords', rowId]);
 
       const preferredRecord = subrecordRow.get('targetRecord');
@@ -118,20 +119,20 @@ export function setEverySubrecordAction() {
         selectedActionType = SubrecordActionTypes.UNSET;
       }
 
-      return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
-        .then(record => ({ rowId, record, actionType: selectedActionType }))
-        .catch(error => ({ rowId, error, actionType: selectedActionType }));
+      return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped})
+        .then(record => ({rowId, record, actionType: selectedActionType}))
+        .catch(error => ({rowId, error, actionType: selectedActionType}));
     })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
   };
 }
 
 
 export function setEveryMatchedSubrecordAction() {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
     const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => {
       const subrecordRow = getState().getIn(['subrecords', rowId]);
 
       const preferredRecord = subrecordRow.get('targetRecord');
@@ -139,9 +140,9 @@ export function setEveryMatchedSubrecordAction() {
       const isSwapped = subrecordRow.get('isSwapped');
 
       if (preferredRecord && otherRecord) {
-        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType: SubrecordActionTypes.MERGE, isSwapped })
-          .then(record => ({ rowId, record }))
-          .catch(error => ({ rowId, error }));
+        return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType: SubrecordActionTypes.MERGE, isSwapped})
+          .then(record => ({rowId, record}))
+          .catch(error => ({rowId, error}));
       }
     })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined), SubrecordActionTypes.MERGE)));
   };
@@ -149,22 +150,22 @@ export function setEveryMatchedSubrecordAction() {
 
 
 export function updateSubrecordArrangement(pairs) {
-  return { 'type': UPDATE_SUBRECORD_ARRANGEMENT, pairs };
+  return {'type': UPDATE_SUBRECORD_ARRANGEMENT, pairs};
 }
 
 export function changeSubrecordAction(rowId, actionType) {
-  return function(dispatch) {
+  return function (dispatch) {
     dispatch(setSubrecordAction(rowId, actionType));
     dispatch(updateMergedSubrecord(rowId));
   };
 }
 
 export function updateEveryMergedSubrecord() {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
     const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => { 
+    Promise.all(getState().getIn(['subrecords', 'index']).map((rowId) => {
       const subrecordRow = getState().getIn(['subrecords', rowId]);
 
       const selectedActionType = subrecordRow.get('selectedAction');
@@ -173,9 +174,9 @@ export function updateEveryMergedSubrecord() {
       const isSwapped = subrecordRow.get('isSwapped');
 
       if (preferredRecord && otherRecord) {
-        return mergeSubrecord({ preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
-          .then(record => ({ rowId, record, actionType: selectedActionType }))
-          .catch(error => ({ rowId, error, actionType: selectedActionType }));
+        return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped})
+          .then(record => ({rowId, record, actionType: selectedActionType}))
+          .catch(error => ({rowId, error, actionType: selectedActionType}));
       }
     })).then((rows) => dispatch(setEveryMergedSubrecord(rows.filter(row => row !== undefined))));
   };
@@ -183,7 +184,7 @@ export function updateEveryMergedSubrecord() {
 
 
 export function updateMergedSubrecord(rowId) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
     const row = getState().getIn(['subrecords', rowId]);
 
     const selectedActionType = row.get('selectedAction');
@@ -194,21 +195,21 @@ export function updateMergedSubrecord(rowId) {
     const preferredHostRecordId = selectRecordId(selectPreferredHostRecord(getState()));
     const otherHostRecordId = selectRecordId(selectOtherHostRecord(getState()));
 
-    return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped })
+    return mergeSubrecord({preferredRecord, otherRecord, preferredHostRecordId, otherHostRecordId, selectedActionType, isSwapped})
       .then(record => dispatch(setMergedSubrecord(rowId, record)))
       .catch(error => dispatch(setMergedSubrecordError(rowId, error)));
   };
 }
 
 function mergeSubrecord(options) {
-  const { selectedActionType, isSwapped } = options;
+  const {selectedActionType, isSwapped} = options;
 
   const otherRecord = isSwapped ? options.preferredRecord : options.otherRecord;
   const preferredRecord = isSwapped ? options.otherRecord : options.preferredRecord;
 
   const preferredHostRecordId = isSwapped ? options.otherHostRecordId : options.preferredHostRecordId;
   const otherHostRecordId = isSwapped ? options.preferredHostRecordId : options.otherHostRecordId;
-  
+
   if (selectedActionType === SubrecordActionTypes.COPY) {
     if (preferredRecord && otherRecord) {
       return Promise.reject(new Error('Cannot copy both records'));
@@ -219,24 +220,22 @@ function mergeSubrecord(options) {
 
     if (preferredRecord) {
       hostRecordId = preferredHostRecordId;
-      recordToCopy = new MarcRecord(preferredRecord);
+      const postMergeFixes = _.clone(PostMerge.preset.subrecordCopyPrefer);
+      const result = PostMerge.applyPostMergeModifications(postMergeFixes, preferredRecord, undefined, preferredRecord);
+      recordToCopy = result.record;
     } else {
       hostRecordId = otherHostRecordId;
-      recordToCopy = new MarcRecord(otherRecord);
+      const postMergeFixes = _.clone(PostMerge.preset.subrecordCopyOther);
+      const result = PostMerge.applyPostMergeModifications(postMergeFixes, undefined, otherRecord, otherRecord);
+      recordToCopy = result.record;
     }
-
-    // reset 001      
-    resetRecordId(recordToCopy);
 
     // reset 773w
     recordToCopy.fields.filter(field => {
       return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${hostRecordId}`);
     }).map(resetComponentHostLinkSubfield);
 
-    // Note: We don't handle LOW/SID tags when subrecord action=COPY. 
-    // LOW-SYNC will handle that after the record has been added to melinda.
     return Promise.resolve(recordToCopy);
-
   }
 
   if (selectedActionType === SubrecordActionTypes.BLOCK) {
@@ -253,7 +252,7 @@ function mergeSubrecord(options) {
       const postMergeFixes = _.clone(PostMerge.preset.defaults);
 
       // insert select773 just before sort
-      postMergeFixes.splice(postMergeFixes.length-1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
+      postMergeFixes.splice(postMergeFixes.length - 1, 0, PostMerge.select773Fields(preferredHostRecordId, otherHostRecordId));
 
       const merge = createRecordMerger(mergeConfiguration);
 
@@ -272,30 +271,30 @@ function mergeSubrecord(options) {
 }
 
 export function editMergedSubrecord(rowId, record) {
-  return { 'type': EDIT_MERGED_SUBRECORD, rowId, record };
+  return {'type': EDIT_MERGED_SUBRECORD, rowId, record};
 }
 
 export function setEveryMergedSubrecord(rows, actionType) {
-  return { 'type': SET_EVERY_MERGED_SUBRECORD, rows, actionType };
+  return {'type': SET_EVERY_MERGED_SUBRECORD, rows, actionType};
 }
 
 export function setMergedSubrecord(rowId, record) {
-  return { 'type': SET_MERGED_SUBRECORD, rowId, record };
+  return {'type': SET_MERGED_SUBRECORD, rowId, record};
 }
 
 export function setMergedSubrecordError(rowId, error) {
-  return { 'type': SET_MERGED_SUBRECORD_ERROR, rowId, error };
+  return {'type': SET_MERGED_SUBRECORD_ERROR, rowId, error};
 }
 
 export function addSourceSubrecordField(rowId, field) {
-  return { 'type': ADD_SOURCE_SUBRECORD_FIELD, rowId, field};
+  return {'type': ADD_SOURCE_SUBRECORD_FIELD, rowId, field};
 }
 export function removeSourceSubrecordField(rowId, field) {
-  return { 'type': REMOVE_SOURCE_SUBRECORD_FIELD, rowId, field};
+  return {'type': REMOVE_SOURCE_SUBRECORD_FIELD, rowId, field};
 }
 
 export function toggleSourceSubrecordFieldSelection(rowId, fieldInSourceRecord) {
-  return function(dispatch, getState) {
+  return function (dispatch, getState) {
 
     const row = getState().getIn(['subrecords', rowId]);
     const mergedRecord = row.get('mergedRecord');
@@ -311,18 +310,18 @@ export function toggleSourceSubrecordFieldSelection(rowId, fieldInSourceRecord) 
   };
 }
 
-export const saveSubrecord = (function() {
-  const APIBasePath = __DEV__ ? 'http://localhost:3001/api': '/api';
-  
-  return function(rowId, recordId, record) {
+export const saveSubrecord = (function () {
+  const APIBasePath = __DEV__ ? 'http://localhost:3001/api' : '/api';
 
-    return function(dispatch) {
+  return function (rowId, recordId, record) {
+
+    return function (dispatch) {
 
       dispatch(saveSubrecordStart(rowId, recordId));
-      
+
       const fetchOptions = {
         method: 'PUT',
-        body: JSON.stringify({ 
+        body: JSON.stringify({
           record: record
         }),
         headers: new Headers({
@@ -338,9 +337,9 @@ export const saveSubrecord = (function() {
 
           const marcRecord = new MarcRecord(json.record);
           decorateFieldsWithUuid(marcRecord);
-         
+
           dispatch(saveSubrecordSuccess(rowId, marcRecord));
-   
+
         }).catch(exceptCoreErrors((error) => {
 
           if (error instanceof FetchNotOkError) {
@@ -359,15 +358,15 @@ export const saveSubrecord = (function() {
 })();
 
 export function saveSubrecordStart(rowId, recordId) {
-  return { type: SAVE_SUBRECORD_START, rowId, recordId};
+  return {type: SAVE_SUBRECORD_START, rowId, recordId};
 }
 
 export function saveSubrecordSuccess(rowId, record) {
-  return { type: SAVE_SUBRECORD_SUCCESS, rowId, record};
+  return {type: SAVE_SUBRECORD_SUCCESS, rowId, record};
 }
 
 export function saveSubrecordFailure(rowId, recordId, error) {
-  return { type: SAVE_SUBRECORD_FAILURE, rowId, recordId, error };
+  return {type: SAVE_SUBRECORD_FAILURE, rowId, recordId, error};
 }
 
 function validateResponseStatus(response) {
