@@ -54,7 +54,7 @@ import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, res
 import {fieldOrderComparator} from './marc-field-sort';
 
 const defaultPreset = [
-  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged,
+  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, mergeUniqueF042,
   setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
 
 // Note: We don't handle LOW/SID tags when subrecord action=COPY.
@@ -252,6 +252,21 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, mergedRe
   };
 }
 
+export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam) {
+  const mergedRecord = new MarcRecord(mergedRecordParam);
+  const f042s = mergedRecord.get(/^042$/);
+  if (f042s.length > 0) {
+    const uniqueValues = [...new Set([].concat(...f042s.map(field => field.subfields.map(sub => sub.value))))];
+    const uniqueSubs = uniqueValues.map(value => {return {code: 'a', value}})
+    mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== '042');
+    mergedRecord.fields.push(createField({
+      tag: '042',
+      subfields: uniqueSubs
+    }));
+  }
+
+  return {mergedRecord};
+}
 
 export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
