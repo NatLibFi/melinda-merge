@@ -13,7 +13,7 @@ steps:
   commands:
   - npm install
   - npm test
-- name: docker 
+- name: docker
   image: plugins/docker
   settings:
     repo: quay.io/natlibfi/melinda-merge
@@ -24,4 +24,12 @@ steps:
       from_secret: docker_password
   when:
     branch: [master, test]
-    event: [push, tag]
+---
+  kind: secret
+  name: docker_username
+  data: 6K/e4C/4TiXjvMc74YU5l3bQgF3mGFjXOO4uxmjBBymoSsaAjYGyoL7KXxH4jKF04Zs=
+---
+  kind: secret
+  name: docker_password
+  data: b88hKbU1r91ZQcnzIu53Kc3XgyrShCB9X5exzjh7Ndk8J0BO/ESsptVemHap18kgdY/X4OZBFqoZiuGDeAEQcKntsXL0ePYU5ZVh/GlbazkzOnTRypf0VczhpCQ=
+...
