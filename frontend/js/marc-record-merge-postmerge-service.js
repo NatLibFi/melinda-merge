@@ -256,10 +256,10 @@ export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam)
   const mergedRecord = new MarcRecord(mergedRecordParam);
   const f042s = mergedRecord.get(/^042$/);
   if (f042s.length > 0) {
-    // Collect only values of subfields with code a
-    const arrayContainingArrayofSubValues = f042s.map(field => field.subfields.filter(sub => sub.code === 'a').map(sub => sub.value));
-    // Flatten array and make Set to filter only unique values
-    const setOfUniqueSubValues = new Set([].concat(...arrayContainingArrayofSubValues));
+    // Collect only values of subfields with code a and flatten array
+    const arrayofSubValues = f042s.map(field => field.subfields.filter(sub => sub.code === 'a').map(sub => sub.value)).flat();
+    // Make Set to filter only unique values
+    const setOfUniqueSubValues = new Set(arrayofSubValues);
     // Transform Set to array and reconstruct subfields
     const uniqueSubs = [...setOfUniqueSubValues].map(value => {return {code: 'a', value}})
     // Remove existing 042 fields from merged record
@@ -468,7 +468,6 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
 
   };
 }
-
 
 function markAsPostmergeField(field) {
   field.fromPostmerge = true;
