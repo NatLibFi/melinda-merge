@@ -258,7 +258,6 @@ export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam)
   if (f042s.length > 0) {
     // Collect unique subfields
     const arrayOfUniqueSubValues = collectUniqueSubfields(f042s);
-    console.log(arrayOfUniqueSubValues);
     // Remove existing 042 fields from merged record
     mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== '042');
     // Push new 042 field in merged record containing unique subfields
