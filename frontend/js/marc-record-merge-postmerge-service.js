@@ -256,18 +256,15 @@ export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam)
   const mergedRecord = new MarcRecord(mergedRecordParam);
   const f042s = mergedRecord.get(/^042$/);
   if (f042s.length > 0) {
-    // Collect only values of subfields with code a and flatten array
-    const arrayofSubValues = f042s.map(field => field.subfields.filter(sub => sub.code === 'a').map(sub => sub.value)).flat();
-    // Make Set to filter only unique values
-    const setOfUniqueSubValues = new Set(arrayofSubValues);
-    // Transform Set to array and reconstruct subfields
-    const uniqueSubs = [...setOfUniqueSubValues].map(value => {return {code: 'a', value}})
+    // Collect unique subfields
+    const arrayOfUniqueSubValues = collectUniqueSubfields(f042s);
+    console.log(arrayOfUniqueSubValues);
     // Remove existing 042 fields from merged record
     mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== '042');
-    // Push new 042 field in merged record
+    // Push new 042 field in merged record containing unique subfields
     mergedRecord.fields.push(createField({
       tag: '042',
-      subfields: uniqueSubs
+      subfields: arrayOfUniqueSubValues
     }));
   }
 
@@ -467,6 +464,18 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
     };
 
   };
+}
+
+function collectUniqueSubfields(fields) {
+  const subfields = fields.map(({subfields}) => subfields).flat();
+
+  return subfields.reduce((acc, {code, value}) => {
+    return acc.some(exists) ? acc : acc.concat({code, value});
+
+    function exists({code: existingCode, value: existingValue}) {
+      return existingCode === code && existingValue === value;
+    }
+  }, []);
 }
 
 function markAsPostmergeField(field) {
