@@ -256,9 +256,15 @@ export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam)
   const mergedRecord = new MarcRecord(mergedRecordParam);
   const f042s = mergedRecord.get(/^042$/);
   if (f042s.length > 0) {
-    const uniqueValues = [...new Set([].concat(...f042s.map(field => field.subfields.map(sub => sub.value))))];
-    const uniqueSubs = uniqueValues.map(value => {return {code: 'a', value}})
+    // Collect only values of subfields with code a
+    const arrayContainingArrayofSubValues = f042s.map(field => field.subfields.filter(sub => sub.code === 'a').map(sub => sub.value));
+    // Flatten array and make Set to filter only unique values
+    const setOfUniqueSubValues = new Set([].concat(...arrayContainingArrayofSubValues));
+    // Transform Set to array and reconstruct subfields
+    const uniqueSubs = [...setOfUniqueSubValues].map(value => {return {code: 'a', value}})
+    // Remove existing 042 fields from merged record
     mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== '042');
+    // Push new 042 field in merged record
     mergedRecord.fields.push(createField({
       tag: '042',
       subfields: uniqueSubs
