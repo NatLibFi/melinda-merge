@@ -54,7 +54,7 @@ import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, res
 import {fieldOrderComparator} from './marc-field-sort';
 
 const defaultPreset = [
-  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged,
+  check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, mergeUniqueF042,
   setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
 
 // Note: We don't handle LOW/SID tags when subrecord action=COPY.
@@ -252,6 +252,23 @@ export function removeExtra035aFromMerged(preferredRecord, otherRecord, mergedRe
   };
 }
 
+export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam) {
+  const mergedRecord = new MarcRecord(mergedRecordParam);
+  const f042s = mergedRecord.get(/^042$/);
+  if (f042s.length > 0) {
+    // Collect unique subfields
+    const arrayOfUniqueSubValues = collectUniqueSubfields(f042s);
+    // Remove existing 042 fields from merged record
+    mergedRecord.fields = mergedRecord.fields.filter(field => field.tag !== '042');
+    // Push new 042 field in merged record containing unique subfields
+    mergedRecord.fields.push(createField({
+      tag: '042',
+      subfields: arrayOfUniqueSubValues
+    }));
+  }
+
+  return {mergedRecord};
+}
 
 export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
@@ -448,6 +465,17 @@ export function select773Fields(preferredHostRecordId, othterHostRecordId) {
   };
 }
 
+function collectUniqueSubfields(fields) {
+  const subfields = fields.map(({subfields}) => subfields).flat();
+
+  return subfields.reduce((acc, {code, value}) => {
+    return acc.some(exists) ? acc : acc.concat({code, value});
+
+    function exists({code: existingCode, value: existingValue}) {
+      return existingCode === code && existingValue === value;
+    }
+  }, []);
+}
 
 function markAsPostmergeField(field) {
   field.fromPostmerge = true;
