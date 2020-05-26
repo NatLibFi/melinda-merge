@@ -27,7 +27,7 @@
 */
 
 import {expect} from 'chai';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import { INITIAL_STATE } from '../js/root-reducer';
 import { SubrecordActionTypes } from 'commons/constants';
 import { setSourceRecord, setTargetRecord } from '../js/ui-actions';

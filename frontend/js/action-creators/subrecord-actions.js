@@ -26,8 +26,8 @@
 *
 */
 
-import HttpStatus from 'http-status-codes';
-import MarcRecord from 'marc-record-js';
+import httpStatus from 'http-status';
+import {MarcRecord} from '@natlibfi/marc-record';
 import fetch from 'isomorphic-fetch';
 import {exceptCoreErrors} from '../utils';
 import {FetchNotOkError} from '../errors';
@@ -310,7 +310,7 @@ export function toggleSourceSubrecordFieldSelection(rowId, fieldInSourceRecord) 
   };
 }
 
-export const saveSubrecord = (function () {
+export const saveSubrecord = (() => {
   const APIBasePath = __DEV__ ? 'http://localhost:3001/api' : '/api';
 
   return function (rowId, recordId, record) {
@@ -341,17 +341,15 @@ export const saveSubrecord = (function () {
           dispatch(saveSubrecordSuccess(rowId, marcRecord));
 
         }).catch(exceptCoreErrors((error) => {
-
           if (error instanceof FetchNotOkError) {
             switch (error.response.status) {
-              case HttpStatus.BAD_REQUEST: return dispatch(saveSubrecordFailure(rowId, recordId, new Error(error.message)));
-              case HttpStatus.NOT_FOUND: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietuetta ei löytynyt')));
-              case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietueen tallentamisessa tapahtui virhe.')));
+              case httpStatus.BAD_REQUEST: return dispatch(saveSubrecordFailure(rowId, recordId, new Error(error.message)));
+              case httpStatus.NOT_FOUND: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietuetta ei löytynyt')));
+              case httpStatus.INTERNAL_SERVER_ERROR: return dispatch(saveSubrecordFailure(rowId, recordId, new Error('Tietueen tallentamisessa tapahtui virhe.')));
             }
           }
 
           dispatch(saveSubrecordFailure(rowId, recordId, new Error('There has been a problem with fetch operation: ' + error.message)));
-
         }));
     };
   };
@@ -370,7 +368,7 @@ export function saveSubrecordFailure(rowId, recordId, error) {
 }
 
 function validateResponseStatus(response) {
-  if (response.status !== HttpStatus.OK) {
+  if (response.status !== httpStatus.OK) {
 
     return response.text().then(errorReason => {
       throw new FetchNotOkError(response, errorReason);

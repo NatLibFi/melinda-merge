@@ -29,7 +29,7 @@
 import { Map } from 'immutable'; 
 import {LOAD_SOURCE_RECORD, SET_SOURCE_RECORD, SET_SOURCE_RECORD_ERROR, SET_SOURCE_RECORD_ID, ADD_SOURCE_RECORD_FIELD, REMOVE_SOURCE_RECORD_FIELD } from '../ui-actions';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 const INITIAL_STATE = Map({
   state: 'EMPTY'

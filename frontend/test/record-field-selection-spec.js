@@ -29,7 +29,7 @@
 import {expect} from 'chai';
 import * as actions from '../js/ui-actions';
 import reducer from '../js/root-reducer';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 describe('record field selections', () => {
 

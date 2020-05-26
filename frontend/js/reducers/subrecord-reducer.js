@@ -26,7 +26,7 @@
 *
 */
 
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import { Map, List } from 'immutable';
 import { SubrecordActionTypes, RecordSaveStatus } from 'commons/constants';
 import _ from 'lodash';

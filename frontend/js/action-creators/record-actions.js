@@ -27,12 +27,12 @@
 */
 
 import {SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE} from '../constants/action-type-constants';
-import HttpStatus from 'http-status-codes';
-import MarcRecord from 'marc-record-js';
+import httpStatus from 'http-status';
+import {MarcRecord} from '@natlibfi/marc-record';
 import fetch from 'isomorphic-fetch';
 import {exceptCoreErrors} from '../utils';
 import {FetchNotOkError} from '../errors';
-import uuid from 'node-uuid';
+import {v4 as uuid} from 'uuid';
 
 
 export function saveRecordStart(recordId) {
@@ -47,7 +47,7 @@ export function saveRecordFailure(recordId, error) {
   return {'type': SAVE_RECORD_FAILURE, recordId, error};
 }
 
-export const saveRecord = (function () {
+export const saveRecord = (() => {
   const APIBasePath = __DEV__ ? 'http://localhost:3001/api' : '/api';
 
   return function (recordId, record) {
@@ -77,23 +77,20 @@ export const saveRecord = (function () {
           const marcRecord = new MarcRecord(mainRecord);
 
           marcRecord.fields.forEach(field => {
-            field.uuid = uuid.v4();
+            field.uuid = uuid();
           });
 
           dispatch(saveRecordSuccess(recordId, marcRecord));
-
         }).catch(exceptCoreErrors((error) => {
-
           if (error instanceof FetchNotOkError) {
             switch (error.response.status) {
-              case HttpStatus.BAD_REQUEST: return dispatch(saveRecordFailure(recordId, new Error(error.message)));
-              case HttpStatus.NOT_FOUND: return dispatch(saveRecordFailure(recordId, new Error('Tietuetta ei löytynyt')));
-              case HttpStatus.INTERNAL_SERVER_ERROR: return dispatch(saveRecordFailure(recordId, new Error('Tietueen tallentamisessa tapahtui virhe.')));
+              case httpStatus.BAD_REQUEST: return dispatch(saveRecordFailure(recordId, new Error(error.message)));
+              case httpStatus.NOT_FOUND: return dispatch(saveRecordFailure(recordId, new Error('Tietuetta ei löytynyt')));
+              case httpStatus.INTERNAL_SERVER_ERROR: return dispatch(saveRecordFailure(recordId, new Error('Tietueen tallentamisessa tapahtui virhe.')));
             }
           }
 
           dispatch(saveRecordFailure(recordId, new Error('There has been a problem with fetch operation: ' + error.message)));
-
         }));
     };
   };
@@ -101,7 +98,7 @@ export const saveRecord = (function () {
 
 
 function validateResponseStatus(response) {
-  if (response.status !== HttpStatus.OK) {
+  if (response.status !== httpStatus.OK) {
 
     return response.text().then(errorReason => {
       throw new FetchNotOkError(response, errorReason);

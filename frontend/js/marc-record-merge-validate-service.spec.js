@@ -31,7 +31,7 @@ import { expect } from 'chai';
 import path from 'path';
 import fs from 'fs';
 import * as MarcRecordMergeValidateService from './marc-record-merge-validate-service';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 const TEST_CASE_SEPARATOR = '\n\n\n\n';
 

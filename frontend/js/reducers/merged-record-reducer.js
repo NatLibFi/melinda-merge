@@ -31,7 +31,7 @@ import {CLEAR_MERGED_RECORD, SET_MERGED_RECORD_ERROR, SET_MERGED_RECORD_WARNING,
 import { SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE } from '../constants/action-type-constants';
 import {RESET_WORKSPACE} from '../constants/action-type-constants';
 import { DEFAULT_MERGED_RECORD } from '../root-reducer';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 const INITIAL_STATE = Map({
   state: 'EMPTY'

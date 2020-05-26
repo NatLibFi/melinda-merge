@@ -26,19 +26,16 @@
 *
 */
 
-
 export function executeTransaction(sequence, additionalRollbackActions) {
-
   var additionalRollbacksToRun = additionalRollbackActions || [];
-
   var rollbacks = [];
 
   return new Promise((resolve, reject) => {
 
     var chain;
     const results = [];
-    sequence.forEach(function(transactionStepDefinition, i) {
-      
+    sequence.forEach((transactionStepDefinition, i) => {
+
       if (i === 0) {
         chain = step(transactionStepDefinition)();
       } else {
@@ -49,17 +46,17 @@ export function executeTransaction(sequence, additionalRollbackActions) {
       }
     });
 
-    chain.then(function(lastResult) {
+    chain.then((lastResult) => {
       results.push(lastResult);
       resolve(results);
-    }).catch(function(error) {
+    }).catch(function (error) {
 
       var rollbacksToRun = error.rollbacks || [];
       rollbacksToRun = rollbacksToRun.concat(additionalRollbacksToRun);
 
       if (rollbacksToRun.length > 0) {
         // do a rollback
-      
+
         executeRollbacks(rollbacksToRun)
           .then(() => reject(error)) // error, but rollback was success
           .catch(error => {
@@ -74,28 +71,26 @@ export function executeTransaction(sequence, additionalRollbackActions) {
 
   // transaction step
   function step(fn) {
-
-    return function() {
+    return function () {
       var p = fn.action();
-    
-      p.catch(function(error) {
+
+      p.catch(function (error) {
         //Add rollbackinfo to error
         error.rollbacks = rollbacks;
         throw error;
       });
 
-      p.then(function(result) {
+      p.then(function (result) {
         rollbacks.unshift(fn.rollback.bind(null, result));
         return result;
       });
-    
+
       return p;
     };
   }
 }
 
 function executeRollbacks(rollbackSequence) {
-  
   return new Promise((resolve, reject) => {
     const inital = Promise.resolve();
 
@@ -104,7 +99,6 @@ function executeRollbacks(rollbackSequence) {
     }, inital).then(resolve);
   });
 }
-
 
 export function RollbackError(message) {
   this.name = 'RollbackError';

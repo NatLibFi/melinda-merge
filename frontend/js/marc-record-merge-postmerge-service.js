@@ -47,8 +47,8 @@ adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
 */
 
 import _ from 'lodash';
-import MarcRecord from 'marc-record-js';
-import uuid from 'node-uuid';
+import {MarcRecord} from '@natlibfi/marc-record';
+import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual} from './record-utils';
 import {fieldOrderComparator} from './marc-field-sort';
@@ -273,7 +273,7 @@ export function mergeUniqueF042(preferredRecord, otherRecord, mergedRecordParam)
 export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
 
-  mergedRecord.fields = mergedRecord.fields.filter(function (field) {
+  mergedRecord.fields = mergedRecord.fields.filter((field) => {
     return field.tag !== '001';
   });
   mergedRecord.fields.push(createField({
@@ -327,11 +327,11 @@ export function add500ReprintInfo(preferredRecord, otherRecord, mergedRecordPara
     .filter(field => field.tag === '250')
     .filter(field => {
       return !mergedRecord.fields.some(fieldInMerged => fieldIsEqual(fieldInMerged, field));
-    }).map(function (field) {
+    }).map((field) => {
       return field.subfields
         .filter(sub => sub.code === 'a')
         .map(sub => sub.value.trim());
-    }).forEach(function (reprintText) {
+    }).forEach((reprintText) => {
       let text = 'Lisäpainokset: ' + reprintText;
       const f008 = _.head(otherRecord.fields.filter(field => field.tag === '008'));
 
@@ -439,7 +439,7 @@ export function sortMergedRecordFields(preferredRecord, otherRecord, mergedRecor
 }
 
 export function select773Fields(preferredHostRecordId, othterHostRecordId) {
-  return function (preferredRecord, otherRecord, mergedRecord) {
+  return (preferredRecord, otherRecord, mergedRecord) => {
 
     const linksToPreferredHost = mergedRecord.fields.filter(field => {
       return field.tag === '773' && field.subfields.filter(s => s.code === 'w').some(s => s.value === `(FI-MELINDA)${preferredHostRecordId}`);
@@ -484,7 +484,7 @@ function markAsPostmergeField(field) {
 
 function createField(fieldContent) {
   return _.assign({}, {
-    uuid: uuid.v4(),
+    uuid: uuid(),
     fromPostmerge: true,
     ind1: ' ',
     ind2: ' '

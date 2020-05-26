@@ -29,7 +29,7 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import HttpStatus from 'http-status-codes';
+import httpStatus from 'http-status';
 import { corsOptions, requireBodyParams } from 'server/utils';
 import { logger } from 'server/logger';
 import { readSessionMiddleware, requireSession } from 'server/session-controller';
@@ -54,7 +54,7 @@ duplicateDatabaseController.get('/pairs/count', cors(corsOptions), (req, res) =>
     .then(count => res.send({count}))
     .catch(error => {
       logger.log('error', error);
-      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     });
 
 });
@@ -66,7 +66,7 @@ duplicateDatabaseController.get('/pairs/next', cors(corsOptions), requireSession
     .then(pair => res.send(pair))
     .catch(error => {
       logger.log('error', error);
-      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     });
 
 });
@@ -80,7 +80,7 @@ duplicateDatabaseController.put('/pairs/:id/mark-as-merged', cors(corsOptions), 
     .then(pair => res.send(pair))
     .catch(error => {
       logger.log('error', error);
-      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     });
 
 });
@@ -93,7 +93,7 @@ duplicateDatabaseController.put('/pairs/:id/mark-as-skipped', cors(corsOptions),
     .then(pair => res.send(pair))
     .catch(error => {
       logger.log('error', error);
-      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     });
 
 });
@@ -107,7 +107,7 @@ duplicateDatabaseController.put('/pairs/:id/mark-as-not-duplicates', cors(corsOp
     .then(pair => res.send(pair))
     .catch(error => {
       logger.log('error', error);
-      res.sendStatus(HttpStatus.INTERNAL_SERVER_ERROR);
+      res.sendStatus(httpStatus.INTERNAL_SERVER_ERROR);
     });
 
 });

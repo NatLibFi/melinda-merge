@@ -31,7 +31,7 @@ import * as actions from '../js/ui-actions';
 import _ from 'lodash';
 import { INITIAL_STATE } from '../js/root-reducer';
 import reducer from '../js/root-reducer';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import { subrecordRows } from '../js/selectors/subrecord-selectors';
 
 describe('ui reducers', () => {

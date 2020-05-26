@@ -30,109 +30,103 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import request from 'supertest';
-import HttpStatus from 'http-status-codes';
-import { __RewireAPI__ as RewireAPI } from '../merge-controller';
-import { mergeController } from '../merge-controller';
-import { createSessionToken } from 'server/session-crypt';
+import httpStatus from 'http-status';
+import {__RewireAPI__ as RewireAPI} from '../merge-controller';
+import {mergeController} from '../merge-controller';
+import {createSessionToken} from 'server/session-crypt';
+import {MarcRecord} from '@natlibfi/marc-record';
 
+MarcRecord.setValidationOptions({fields: false, subfields: false, subfieldValues: false});
 chai.use(sinonChai);
 
 const sessionToken = createSessionToken('test-user', 'test-pass');
 
 describe('MARC IO controller', () => {
-
   describe('commit-merge', () => {
-
     let commitMergeStub;
     let createArchiveStub;
-    let loadRecordStub;
+    let getRecordStub;
+    let loggerStub;
 
     beforeEach(() => {
+      loggerStub = {log: sinon.stub()};
+      getRecordStub = sinon.stub();
       commitMergeStub = sinon.stub();
-      loadRecordStub = sinon.stub();
+      const createApiClientStub = sinon.stub().returns({
+        getRecord: getRecordStub
+      });
       createArchiveStub = sinon.stub().resolves({
         filename: 'FAKE-FILENAME',
         size: 'FAKE-SIZE'
       });
       RewireAPI.__Rewire__('commitMerge', commitMergeStub);
       RewireAPI.__Rewire__('createArchive', createArchiveStub);
-      RewireAPI.__Rewire__('loadRecord', loadRecordStub);
-     
+      RewireAPI.__Rewire__('createApiClient', createApiClientStub);
+      RewireAPI.__Rewire__('logger', loggerStub);
     });
     afterEach(() => {
       RewireAPI.__ResetDependency__('commitMerge');
       RewireAPI.__ResetDependency__('createArchive');
-      RewireAPI.__ResetDependency__('loadRecord');
+      RewireAPI.__ResetDependency__('newClient');
+      RewireAPI.__ResetDependency__('logger');
     });
 
     it('returns UNAUTHORIZED if credentials are missing', (done) => {
-
       request(mergeController)
         .post('/commit-merge')
-        .expect(HttpStatus.UNAUTHORIZED, done);
-        
+        .expect(httpStatus.UNAUTHORIZED, done);
     });
 
     it('returns BAD_REQUEST if records are missing', (done) => {
-
       commitMergeStub.rejects('Error');
 
       request(mergeController)
         .post('/commit-merge')
         .set('Cookie', `sessionToken=${sessionToken}`)
-        .expect(HttpStatus.BAD_REQUEST, done);
-
+        .expect(httpStatus.BAD_REQUEST, done);
     });
 
     it('returns 200 if commit is successful', (done) => {
-
       commitMergeStub.resolves('Ok');
-      const { record, subrecords } = createFakeRecordFamily();
-      record.fields.push({'tag': '001', 'value': '123'});
-      loadRecordStub.resolves({record, subrecords});
+      const {record, subrecords} = createFakeRecordFamily('123');
+      getRecordStub.resolves({record, subrecords});
 
       request(mergeController)
         .post('/commit-merge')
         .set('Cookie', `sessionToken=${sessionToken}`)
         .send({
-          'otherRecord': createFakeRecordFamily(), 
-          'preferredRecord': createFakeRecordFamily(), 
+          'otherRecord': createFakeRecordFamily(),
+          'preferredRecord': createFakeRecordFamily(),
           'mergedRecord': createFakeRecordFamily(),
           'unmodifiedRecord': createFakeRecordFamily()
         })
-        .expect(HttpStatus.OK, done);
-        
+        .expect(httpStatus.OK, done);
     });
 
     it('returns error from server if commit-merge fails', (done) => {
-
       commitMergeStub.rejects('Error from backend server');
 
       request(mergeController)
         .post('/commit-merge')
         .set('Cookie', `sessionToken=${sessionToken}`)
         .send({
-          'otherRecord': createFakeRecordFamily(), 
-          'preferredRecord': createFakeRecordFamily(), 
+          'otherRecord': createFakeRecordFamily(),
+          'preferredRecord': createFakeRecordFamily(),
           'mergedRecord': createFakeRecordFamily(),
           'unmodifiedRecord': createFakeRecordFamily()
         })
-        .expect(HttpStatus.INTERNAL_SERVER_ERROR, done);
-        
+        .expect(httpStatus.INTERNAL_SERVER_ERROR, done);
     });
   });
-
 });
 
-function createFakeRecord() {
-  return {
-    fields: []
-  };
+function createFakeRecord(value = '""') {
+  return MarcRecord.fromString(`001    ${value}`);
 }
 
-function createFakeRecordFamily() {
+function createFakeRecordFamily(value = '""') {
   return {
-    record: createFakeRecord(),
+    record: createFakeRecord(value),
     subrecords: []
   };
 }

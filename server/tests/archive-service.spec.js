@@ -33,11 +33,11 @@ import sinonChai from 'sinon-chai';
 import archiver from 'archiver';
 import { __RewireAPI__ as RewireAPI } from '../archive-service';
 import { createArchive, anonymizeRecord } from '../archive-service';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
+
+MarcRecord.setValidationOptions({fields: false, subfields: false, subfieldValues: false});
 const Writable = require('stream').Writable;
-
 const expect = chai.expect;
-
 chai.use(sinonChai);
 
 describe('Archive service', () => {

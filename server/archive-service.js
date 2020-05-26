@@ -31,7 +31,7 @@ import path from 'path';
 import archiver from 'archiver';
 import mkdirp from 'mkdirp';
 import moment from 'moment';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import { readEnvironmentVariable } from 'server/utils';
 import _ from 'lodash';
 
@@ -101,7 +101,7 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
 }
 
 export function anonymizeRecord(record) {
-  const anonRecord = record.toJsonObject();
+  const anonRecord = record.toObject();
   anonRecord.fields = anonRecord.fields.filter(f => f.tag !== 'CAT');
   return new MarcRecord(anonRecord);
 }

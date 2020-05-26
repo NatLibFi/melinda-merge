@@ -28,15 +28,15 @@
 
 import sinon from 'sinon';
 import _ from 'lodash';
-import { expect } from 'chai';
+import {expect} from 'chai';
 import path from 'path';
 import fs from 'fs';
 import * as MarcRecordMergePostmergeService from './marc-record-merge-postmerge-service';
-import { __RewireAPI__ as RewireAPI } from './marc-record-merge-postmerge-service';
-import { decorateFieldsWithUuid } from './record-utils';
-import uuid from 'uuid';
+import {__RewireAPI__ as RewireAPI} from './marc-record-merge-postmerge-service';
+import {decorateFieldsWithUuid} from './record-utils';
+import {v4 as uuid} from 'uuid';
 
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 const TEST_CASE_SEPARATOR = '\n\n\n\n';
 
@@ -45,7 +45,7 @@ const storiesPath = path.resolve(__dirname, '../test/marc-record-merge-postmerge
 describe('marc-record-merge-validate-service', () => {
 
   before(() => {
-  
+
     const formatDateStub = sinon.stub();
 
     formatDateStub.returns('2016-11-29T13:25:21+02:00');
@@ -54,30 +54,30 @@ describe('marc-record-merge-validate-service', () => {
 
     // Prepare select773 fields with host record ids. The test runner is used to test the prepared function.
     MarcRecordMergePostmergeService.preparedSelect773Fields = MarcRecordMergePostmergeService.select773Fields('00001', '00002');
-    
+
   });
   after(() => {
     RewireAPI.__ResetDependency__('formatDate');
-    delete(MarcRecordMergePostmergeService.preparedSelect773Fields);
+    delete (MarcRecordMergePostmergeService.preparedSelect773Fields);
   });
 
   const files = fs.readdirSync(storiesPath);
   const storyFiles = files.filter(filename => filename.substr(-6) === '.story').sort();
-  
+
   storyFiles.map(loadStoriesFromFile).forEach(testSuite => {
-    
+
     describe(testSuite.suiteName, () => {
 
       testSuite.testCases.forEach(testCase => {
 
         it(testCase.testName, () => {
-          
+
           const functionUnderTest = prepareTestFunction(testSuite.functionUnderTest);
 
           const {mergedRecord, notes} = functionUnderTest.call(null, testCase.preferredRecord, testCase.otherRecord, testCase.mergedRecord);
           expect(mergedRecord.toString()).to.eql(testCase.expectedMergedRecord.toString());
           expect(notes || []).to.eql(testCase.notes);
-          
+
         });
       });
     });
@@ -107,7 +107,7 @@ function prepareTestFunction(testFn) {
 }
 
 function loadStoriesFromFile(filename) {
-  
+
   const storyText = fs.readFileSync(path.resolve(storiesPath, filename), 'utf8');
 
   const fnName = filename.slice(0, -6);
@@ -144,7 +144,7 @@ function parseStories(storyText) {
         const equalFieldsInOther = otherRecord.fields.filter(f => fieldsEqual(field, f));
 
         const uuidCandidates = _.concat(equalFieldsInPreferred, equalFieldsInOther).map(field => field.uuid);
-        field.uuid = _.get(uuidCandidates, '[0]', uuid.v4());
+        field.uuid = _.get(uuidCandidates, '[0]', uuid());
       });
 
       const expectedMergedRecordStartIndex = lines.indexOf('Expected record after postmerge:') + 1;
@@ -158,7 +158,7 @@ function parseStories(storyText) {
         .map(matchResult => matchResult[1])
         .value();
 
-      return { testName, preferredRecord, otherRecord, mergedRecord, expectedMergedRecord, notes };
+      return {testName, preferredRecord, otherRecord, mergedRecord, expectedMergedRecord, notes};
     });
 
 }

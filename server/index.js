@@ -29,24 +29,25 @@
 'use strict';
 import express from 'express';
 import path from 'path';
-import { logger, expressWinston } from 'server/logger';
-import { readEnvironmentVariable } from 'server/utils';
-import { sessionController } from 'server/session-controller';
-import { marcIOController } from 'server/marc-io-controller';
-import { duplicateDatabaseController } from './duplicate-db-controller';
-import { mergeController } from './merge-controller';
+import {Utils} from '@natlibfi/melinda-commons';
+import {sessionController} from 'server/session-controller';
+import {marcIOController} from 'server/marc-io-controller';
+import {duplicateDatabaseController} from './duplicate-db-controller';
+import {mergeController} from './merge-controller';
 import cookieParser from 'cookie-parser';
+import {port} from './config';
 
 process.on('SIGINT', () => {
   process.exit(-1);
 });
 
-//const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
-const PORT = readEnvironmentVariable('HTTP_PORT', 3001);
+const {createLogger, createExpressLogger} = Utils;
+const logger = createLogger();
+// const NODE_ENV = readEnvironmentVariable('NODE_ENV', 'dev');
 
 const app = express();
 
-app.use(expressWinston);
+app.use(createExpressLogger);
 app.use(cookieParser());
 
 
@@ -58,6 +59,6 @@ app.use('/merge', mergeController);
 app.use(express.static(path.resolve(__dirname, 'public')));
 
 
-const server = app.listen(PORT, () => logger.log('info', `Application started on port ${PORT}`));
+const server = app.listen(port, () => logger.log('info', `Application started on port ${port}`));
 
 server.timeout = 1800000; // Half an hour

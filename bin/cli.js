@@ -27,22 +27,21 @@
 */
 
 /* eslint no-console:0 */
-import { readEnvironmentVariable } from '../melinda-ui-commons/server/utils';
-import MelindaClient from '@natlibfi/melinda-api-client';
+import {Utils, createApiClient} from '@natlibfi/melinda-commons';
 import _ from 'lodash';
-import { stdin } from 'process';
-import MarcRecord from 'marc-record-js';
+import {stdin} from 'process';
+import {MarcRecord} from '@natlibfi/marc-record';
 import fs from 'fs';
 import path from 'path';
+import {newApiUrl, username, password} from './config';
 
-const alephUrl = readEnvironmentVariable('ALEPH_URL');
-const username = readEnvironmentVariable('ALEPH_USER');
-const password = readEnvironmentVariable('ALEPH_PASS');
+const {createLogger, logError} = Utils;
+const logger = createLogger();
 
-const clientConfig = {
-  endpoint: `${alephUrl}/API`,
-  user: username,
-  password: password
+const newClientConfig = {
+  restApiUrl: newApiUrl,
+  restApiUsername: username,
+  restApiPassword: password
 };
 
 const argv = require('yargs').argv;
@@ -51,28 +50,26 @@ if (!isNaN(parseInt(argv._[0])) && argv._.length < 2) {
   argv._.unshift('get');
 }
 
-const client = new MelindaClient(clientConfig);
+const client = createApiClient(newClientConfig);
 
 const [command, arg] = argv._;
 
 if (command === 'get') {
   const recordId = arg;
 
-  client.loadRecord(recordId, {handle_deleted: 1, bypass_low_validation: 1}).then(record => {
-    console.log(record.toString());
+  client.getRecord(recordId).then(record => {
+    logger.log('info', record.toString());
   }).catch(error => {
-    console.error(error);
+    logError(error);
   });
 }
 
 
 if (command === 'create') {
-
   readRecordFromStdin()
-    .then(record => client.createRecord(record, {handle_deleted: 1, bypass_low_validation: 1}))
-    .then(printResponse)
-    .catch(printError);
-
+  .then(record => client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}))
+  .then(printResponse)
+  .catch(printError);
 }
 
 if (command === 'create-family') {
@@ -81,13 +78,14 @@ if (command === 'create-family') {
   readRecordsFromDir(recordDirectory)
     .then(records => {
 
-      return client.createRecord(records.record).then(res => {
-        console.log(`Parent saved: ${res.recordId}`);
+      return client.postPrio({params: {noop: 0}, body: JSON.stringify(records.record.toObject())}).then(res => {
+        const {id} = response;
+        logger.log('info', `Parent saved: ${id}`);
 
         return Promise.all(records.subrecords.map(record => {
-          updateParent(record, res.recordId);
+          updateParent(record, id);
 
-          return client.createRecord(record);
+          return client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())});
         }));
 
 
@@ -95,43 +93,43 @@ if (command === 'create-family') {
     })
     .then(subrecords => {
       subrecords.forEach(res => {
-        console.log(`Subrecord saved: ${res.recordId}`);
+        logger.log('info', `Subrecord saved: ${res.recordId}`);
       });
-      
+
     })
     .catch(printError);
 
 }
 
 if (command === 'update') {
-
   readRecordFromStdin()
-    .then(record => client.updateRecord(record, {handle_deleted: 1, bypass_low_validation: 1}))
+    .then(record => {
+      const recordId = getRecordId(record);
+      client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}, recordId);
+    })
     .then(printResponse)
     .catch(printError);
-
 }
 
 if (command === 'set') {
-
   readRecordFromStdin()
     .then(record => {
       const updateRecordChangeMetadata = _.curry(setRecordChangeMetadata)(record);
 
       const recordId = getRecordId(record);
-      return client.loadRecord(recordId, {handle_deleted: 1, bypass_low_validation: 1})
+      return client.getRecord(recordId)
         .then(getRecordChangeMetadata)
         .then(updateRecordChangeMetadata);
-
     })
-    .then(record => client.updateRecord(record, {handle_deleted: 1}))
+    .then(record => {
+      const recordId = getRecordId(record);
+      client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}, recordId);
+    })
     .then(printResponse)
     .catch(printError);
-
 }
 
 function updateParent(record, id) {
-
   record.fields = record.fields.map(field => {
     if (field.tag === '773') {
       field.subfields = field.subfields.map(sub => {
@@ -148,20 +146,21 @@ function updateParent(record, id) {
 }
 
 function getRecordId(record) {
-  const f001 = _.head(record.getControlfields().filter(f => f.tag === '001'));
+  const f001 = record.get(/^001$/u).shift();
   return f001.value;
 }
 
 function getRecordChangeMetadata(record) {
-  const f005 = _.head(record.getControlfields().filter(f => f.tag === '005'));
-  const fCAT = record.getDatafields().filter(f => f.tag === 'CAT');
+  const f005 = record.get(/^005$/u).shift();
+  const fCAT = record.get(/^CAT$/u);
   return [f005.value, fCAT];
 }
 
 function setRecordChangeMetadata(record, [timestamp, CATFields]) {
-  const f005 = _.head(record.getControlfields().filter(f => f.tag === '005'));
+  const f005 = record.get(/^005$/u).shift();
   f005.value = timestamp;
-  record.fields = record.fields.filter(f => f.tag !== 'CAT').concat(CATFields);
+	record.get(/^CAT$/u).forEach(field => record.removeField(field));
+  record.fields.concat(CATFields);
   return record;
 }
 
@@ -178,11 +177,11 @@ function readRecordFromStdin() {
 
     stdin.on('end', function () {
       try {
-        
+
         const filteredInputChinks = inputChunks.split('\n').filter(_.identity).join('\n');
         const record = MarcRecord.fromString(filteredInputChinks);
         resolve(record);
-      } catch(e) {
+      } catch (e) {
         reject(e);
       }
     });
@@ -191,7 +190,6 @@ function readRecordFromStdin() {
 
 function readRecordsFromDir(dir) {
   return new Promise((resolve, reject) => {
-
     const files = fs.readdirSync(dir);
     const subrecordNames = files.filter(n => n.startsWith('sub')).map(n => path.join(dir, n));
 
@@ -199,7 +197,6 @@ function readRecordsFromDir(dir) {
       record: bufferToRecord(fs.readFileSync(path.join(dir, 'main.rec'))),
       subrecords: subrecordNames.map((file) => fs.readFileSync(file)).map(bufferToRecord)
     });
-
   });
 }
 
@@ -214,31 +211,27 @@ function strToRecord(str) {
 }
 
 function printResponse(response) {
+  logger.log('info', 'Messages:');
+  response.messages.forEach(msg => logger.log('info', ` ${msg.code} ${msg.message}`));
 
-  console.log('Messages:');
-  response.messages.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
-  console.log('Errors:');
-  response.errors.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
-  console.log('Triggers:');
-  response.triggers.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
-  console.log('Warnings:');
-  response.warnings.forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
+  logger.log('info', 'Errors:');
+  response.errors.forEach(msg => logger.log('info', ` ${msg.code} ${msg.message}`));
+
+  logger.log('info', 'Triggers:');
+  response.triggers.forEach(msg => logger.log('info', ` ${msg.code} ${msg.message}`));
+
+  logger.log('info', 'Warnings:');
+  response.warnings.forEach(msg => logger.log('info', ` ${msg.code} ${msg.message}`));
 }
 
 function printError(error) {
-  console.log(error);
-  
-  console.log('Errors:');
-  _.get(error, 'errors', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
-  console.log('Triggers:');
-  _.get(error, 'triggers', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
-  console.log('Warnings:');
-  _.get(error, 'warnings', []).forEach(msg => console.log(` ${msg.code} ${msg.message}`));
-  
+  logError(error);
+  logger.log('error', 'Errors:');
+  _.get(error, 'errors', []).forEach(msg => logger.log('error', ` ${msg.code} ${msg.message}`));
+
+  logger.log('error', 'Triggers:');
+  _.get(error, 'triggers', []).forEach(msg => logger.log('error', ` ${msg.code} ${msg.message}`));
+
+  logger.log('error', 'Warnings:');
+  _.get(error, 'warnings', []).forEach(msg => logger.log('error', ` ${msg.code} ${msg.message}`));
 }

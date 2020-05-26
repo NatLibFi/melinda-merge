@@ -27,7 +27,7 @@
 */
 
 import fetch from 'isomorphic-fetch';
-import HttpStatus from 'http-status-codes';
+import httpStatus from 'http-status';
 import _ from 'lodash';
 import Notifications from 'react-notification-system-redux';
 
@@ -58,7 +58,7 @@ export function fetchCount() {
     return fetch(`${APIBasePath}/pairs/count`, fetchOptions)
       .then(response => {
 
-        if (response.status == HttpStatus.OK) {
+        if (response.status == httpStatus.OK) {
 
           response.text().then(res => {
             const json = JSON.parse(res);
@@ -70,7 +70,7 @@ export function fetchCount() {
 
         } else {
           switch (response.status) {
-            case HttpStatus.UNAUTHORIZED: return dispatch(fetchDuplicateCountError('Käyttäjätunnus ja salasana eivät täsmää.'));
+            case httpStatus.UNAUTHORIZED: return dispatch(fetchDuplicateCountError('Käyttäjätunnus ja salasana eivät täsmää.'));
           }
 
           dispatch(fetchDuplicateCountError('Tuplien lukumäärän haussa tapahtui virhe.'));
@@ -104,7 +104,7 @@ export function fetchNextPair() {
     return fetch(`${APIBasePath}/pairs/next`, fetchOptions)
       .then(response => {
 
-        if (response.status == HttpStatus.OK) {
+        if (response.status == httpStatus.OK) {
 
           response.json().then(res => {
 
@@ -118,7 +118,7 @@ export function fetchNextPair() {
 
         } else {
           switch (response.status) {
-            case HttpStatus.UNAUTHORIZED:
+            case httpStatus.UNAUTHORIZED:
               dispatch(Notifications.error({
                 title: 'Virhe',
                 message: 'Käyttäjätunnus ja salasana eivät täsmää.',
@@ -182,7 +182,7 @@ export function skipPair() {
 
     return fetch(`${APIBasePath}/pairs/${id}/mark-as-skipped`, fetchOptions)
       .then(response => {
-        if (response.status == HttpStatus.OK) {
+        if (response.status == httpStatus.OK) {
           dispatch(skipPairSuccess());
           dispatch(resetWorkspace());
           dispatch(fetchNextPair());
@@ -190,7 +190,6 @@ export function skipPair() {
           dispatch(skipPairError());
         }
       }).catch((error) => dispatch(skipPairError('There has been a problem with operation: ' + error.message)));
-
   };
 }
 export function skipPairStart() {
@@ -225,7 +224,7 @@ export function markAsNotDuplicate() {
 
     return fetch(`${APIBasePath}/pairs/${id}/mark-as-not-duplicates`, fetchOptions)
       .then(response => {
-        if (response.status == HttpStatus.OK) {
+        if (response.status == httpStatus.OK) {
           dispatch(markAsNotDuplicateSuccess());
           dispatch(resetWorkspace());
           dispatch(fetchNextPair());
@@ -233,9 +232,7 @@ export function markAsNotDuplicate() {
           dispatch(markAsNotDuplicateError());
         }
       }).catch((error) => dispatch(markAsNotDuplicateError('There has been a problem with operation: ' + error.message)));
-
   };
-
 }
 
 export function markAsNotDuplicateStart() {
@@ -284,14 +281,12 @@ export function markAsMerged() {
 
     return fetch(`${APIBasePath}/pairs/${id}/mark-as-merged`, fetchOptions)
       .then(response => {
-        if (response.status == HttpStatus.OK) {
+        if (response.status == httpStatus.OK) {
           dispatch(markAsMergedSuccess());
         } else {
           dispatch(markAsMergedError());
         }
       }).catch((error) => dispatch(markAsMergedError('There has been a problem with operation: ' + error.message)));
-
-
   };
 }
 export function markAsMergedStart() {
