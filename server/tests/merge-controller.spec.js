@@ -67,7 +67,7 @@ describe('MARC IO controller', () => {
     afterEach(() => {
       RewireAPI.__ResetDependency__('commitMerge');
       RewireAPI.__ResetDependency__('createArchive');
-      RewireAPI.__ResetDependency__('newClient');
+      RewireAPI.__ResetDependency__('creteApiClient');
       RewireAPI.__ResetDependency__('logger');
     });
 

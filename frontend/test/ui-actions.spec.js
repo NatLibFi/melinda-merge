@@ -32,14 +32,14 @@ import sinonChai from 'sinon-chai';
 import * as actions from '../js/ui-actions';
 import {__RewireAPI__ as ActionsRewireAPI} from '../js/ui-actions';
 import Immutable from 'immutable';
-import {MarcRecord} from '@natlibfi/marc-record';
-import {Error as MergeError} from '@natlibfi/melinda-commons'
 
 chai.use(sinonChai);
 const expect = chai.expect;
 
 const fetchRecord = actions.fetchRecord;
-const commitMerge = actions.commitMerge;
+
+// For local testing
+// const commitMerge = actions.commitMerge;
 
 describe('ui actions', () => {
   describe('swapRecords', () => {

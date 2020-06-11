@@ -123,6 +123,7 @@ export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) 
 
   function createRecord(record) {
     logger.log('info', `${jobId}] Creating new record`);
+
     return client.postPrio({params: {noop: 0, unique: 0}, body: JSON.stringify(record)}).then(res => {
       const {recordId} = res;
       logger.log('info', `${jobId}] Create record ok for ${recordId}`);

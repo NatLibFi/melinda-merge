@@ -118,18 +118,18 @@ export function commitMerge() {
             }
 
             if (response.status === HttpStatus.INTERNAL_SERVER_ERROR) {
-              return dispatch(commitMergeError(`Tietueen tallennuksessa tapahtui virhe.`, res));
+              return dispatch(commitMergeError('Tietueen tallennuksessa tapahtui virhe.', res));
             }
 
             if (response.status === HttpStatus.NOT_FOUND) {
               return dispatch(commitMergeError('Merge onnistui, mutta tietueen päivityksessä tapahtui virhe.'));
             }
 
-            return dispatch(commitMergeError(`Tietueen tallennuksessa odottamaton virhe.`, res));
+            return dispatch(commitMergeError('Tietueen tallennuksessa odottamaton virhe.', res));
           });
         });
     } catch (error) {
-      dispatch(commitMergeError(`There has been a problem with operation.`, error));
+      dispatch(commitMergeError('There has been a problem with operation.', error));
     }
   };
 }
@@ -449,7 +449,6 @@ function recordFetch(APIBasePath, loadRecordAction, setRecordAction, setRecordEr
         if (currentRecordId === recordId) {
           const uuidRecord = decorateFieldsWithUuid(new MarcRecord(json.record));
           const uuidSubrecords = json.subrecords.map(subrecord => decorateFieldsWithUuid(new MarcRecord(subrecord)));
-          console.log(uuidRecord);
           dispatch(setRecordAction(uuidRecord, uuidSubrecords, recordId));
           dispatch(updateMergedRecord());
         }
