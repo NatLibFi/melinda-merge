@@ -16,6 +16,9 @@ module.exports = {
       chunks: 'all'
     }
   },
+  node: {
+    fs: 'empty'
+  },
   resolve: {
     alias: {
       commons: path.resolve(PATHS.commons_frontend, 'js'),
@@ -69,10 +72,10 @@ module.exports = {
     new webpack.optimize.OccurrenceOrderPlugin(),
     // fi locale import instead of all (moment)
     new webpack.ContextReplacementPlugin(
-      /moment[/\\]locale$/,/fi/
+      /moment[/\\]locale$/, /fi/
     )
     // visual map of webpack output files, comment out for use
-    
+
     // new BundleAnalyzerPlugin({
     //   generateStatsFile: true
     // }),

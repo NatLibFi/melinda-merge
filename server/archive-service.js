@@ -101,7 +101,7 @@ export function createArchive(user, removedRecord, preferredRecord, mergedRecord
 }
 
 export function anonymizeRecord(record) {
-  const anonRecord = record.toJsonObject();
+  const anonRecord = record;
   anonRecord.fields = anonRecord.fields.filter(f => f.tag !== 'CAT');
   return new MarcRecord(anonRecord);
 }

@@ -1,4 +1,4 @@
-FROM node:8-alpine
+FROM node:10-alpine
 CMD ["/usr/local/bin/node", "index.js"]
 ENV ARCHIVE_PATH /data
 WORKDIR /home/node

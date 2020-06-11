@@ -30,16 +30,18 @@ import sinon from 'sinon';
 import chai from 'chai';
 import sinonChai from 'sinon-chai';
 import * as actions from '../js/ui-actions';
-import { __RewireAPI__ as ActionsRewireAPI } from '../js/ui-actions';
+import {__RewireAPI__ as ActionsRewireAPI} from '../js/ui-actions';
 import Immutable from 'immutable';
+import {MarcRecord} from '@natlibfi/marc-record';
+import {Error as MergeError} from '@natlibfi/melinda-commons'
 
 chai.use(sinonChai);
 const expect = chai.expect;
 
 const fetchRecord = actions.fetchRecord;
+const commitMerge = actions.commitMerge;
 
 describe('ui actions', () => {
-
   describe('swapRecords', () => {
     const swapRecords = actions.swapRecords;
     let fetchRecordStub;
@@ -59,23 +61,20 @@ describe('ui actions', () => {
 
       const dispatchSpy = sinon.spy();
       const getStateStub = sinon.stub().returns(Immutable.fromJS({
-        sourceRecord: { id: 100 },
-        targetRecord: { id: 200 }
+        sourceRecord: {id: 100},
+        targetRecord: {id: 200}
       }));
 
       swapRecordsThunk(dispatchSpy, getStateStub);
 
       expect(fetchRecordStub).to.have.been.calledWith(100, 'TARGET');
       expect(fetchRecordStub).to.have.been.calledWith(200, 'SOURCE');
-      
-    });
 
+    });
   });
 
   describe('fetchRecord', () => {
-
     it('returns a thunk', () => {
-
       const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
 
       expect(fetchRecordThunk).to.be.a('function');
@@ -100,7 +99,7 @@ describe('ui actions', () => {
 
         const result = {
           record: {
-            leader: 'test-leader', 
+            leader: 'test-leader',
             fields: []
           },
           subrecords: []
@@ -110,7 +109,7 @@ describe('ui actions', () => {
           status: 200,
           json: sinon.stub().resolves(result)
         });
-    
+
         const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
 
         const dispatchSpy = sinon.spy();
@@ -120,16 +119,16 @@ describe('ui actions', () => {
           expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecord(sinon.match.object, sinon.match.array, sinon.match.number));
           done();
         }).catch(done);
-        
+
       });
 
       it('should dispatch setSourceRecordError on 404', () => {
 
         const result = {
-          leader: 'test-leader', 
+          leader: 'test-leader',
           fields: []
         };
-    
+
         fetchStub.resolves({
           status: 404,
           json: sinon.stub().resolves(result)
@@ -146,9 +145,8 @@ describe('ui actions', () => {
       });
 
       it('should dispatch setSourceRecordError on network error', () => {
-
         fetchStub.rejects({
-          message: 'error'
+          payload: 'error'
         });
 
         const fetchRecordThunk = fetchRecord(30000, 'SOURCE');
@@ -158,8 +156,71 @@ describe('ui actions', () => {
         fetchRecordThunk(dispatchSpy).then(() => {
           expect(dispatchSpy).to.have.been.calledWith(actions.setSourceRecordError(sinon.match.string));
         });
-        
+
       });
     });
   });
+
+  /* For local testing
+  describe('commitMerge', () => {
+    let fetchStub;
+    let subrecordRowsStub;
+    let dispatchSpy;
+    let errorSpy;
+
+    beforeEach(() => {
+      fetchStub = sinon.stub();
+      subrecordRowsStub = sinon.stub();
+      ActionsRewireAPI.__Rewire__('fetch', fetchStub);
+      ActionsRewireAPI.__Rewire__('subrecordRows', subrecordRowsStub);
+    });
+    afterEach(() => {
+      ActionsRewireAPI.__ResetDependency__('fetch');
+      ActionsRewireAPI.__ResetDependency__('subrecordRows');
+    });
+
+    it('returns a thunk', () => {
+      const commitMergeThunk = commitMerge();
+
+      expect(commitMergeThunk).to.be.a('function');
+    });
+
+    it('starts', () => {
+      const dispatchSpy = sinon.spy();
+      const errorSpy = sinon.spy();
+      const getStateStub = sinon.stub().returns(Immutable.fromJS({
+        sourceRecord: {record: MarcRecord.fromString(`LDR    00000_a____\n001    100`).toObject()},
+        targetRecord: {record: MarcRecord.fromString(`LDR    00000_a____\n001    101`).toObject()},
+        mergedRecord: {
+          record: MarcRecord.fromString(`LDR    00000_a____\n001    000000000`).toObject(),
+          unmodifiedRecord: MarcRecord.fromString(`LDR    00000_a____\n001    000000100`).toObject()
+        }
+      }));
+
+      subrecordRowsStub.resolves([{
+        isSwapped: false,
+        mergeError: undefined,
+        rowId: 'row61',
+        saveStatus: 'UNSAVED',
+        selectedAction: 'MERGE',
+        sourceRecord: {record: MarcRecord.fromString(`LDR    00000_a____\n001    100`).toObject()},
+        targetRecord: {record: MarcRecord.fromString(`LDR    00000_a____\n001    101`).toObject()},
+        mergedRecord: {record: MarcRecord.fromString(`LDR    00000_a____\n001    000000000`).toObject()},
+        unmodifiedMergedRecord: MarcRecord.fromString(`LDR    00000_a____\n001    000000100`).toObject()
+      }]);
+
+      fetchStub.resolves({
+        status: 200,
+        operation: 'CREATE',
+        recordId: 30000,
+        record: MarcRecord.fromString(`LDR    00000_a____\n001    100`),
+        subrecords: []
+      });
+      const commitMergeThunk = commitMerge();
+
+      const result = commitMergeThunk(dispatchSpy, getStateStub);
+      const [call1] = dispatchSpy.getCall(0).args
+      expect(call1.type, 'WRONG CALL!').to.equals('COMMIT_MERGE_START');
+    });
+  }); */
 });

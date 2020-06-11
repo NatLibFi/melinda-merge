@@ -30,8 +30,9 @@ import React from 'react';
 import PropTypes from 'prop-types';
 import _ from 'lodash';
 import classNames from 'classnames';
-import { CommitMergeStates } from '../constants';
+import {CommitMergeStates} from '../constants';
 import '../../styles/components/merge-dialog.scss';
+import {MarcRecord} from '@natlibfi/marc-record';
 
 export class MergeDialog extends React.Component {
   static propTypes = {
@@ -41,7 +42,7 @@ export class MergeDialog extends React.Component {
     message: PropTypes.string.isRequired,
     response: PropTypes.object,
     statusInfo: PropTypes.string
-  }
+  };
 
   close(event) {
     event.preventDefault();
@@ -60,7 +61,6 @@ export class MergeDialog extends React.Component {
   }
 
   renderResponseMessages(response) {
-
     if (_.isEmpty(response)) {
       return <div className="response-container"><div className="red lighten-5">Tuntematon virhe</div></div>;
     }
@@ -69,19 +69,30 @@ export class MergeDialog extends React.Component {
       return <div className="response-container"><div className="red lighten-5">{response.message}</div></div>;
     }
 
-    const triggers = response.triggers.filter(usefulMessage).map(this.renderSingleMessage);
-    const warnings = response.warnings.filter(usefulMessage).map(this.renderSingleMessage);
-    const errors = response.errors.map(this.renderSingleMessage);
-    const messages = response.messages.map(this.renderSingleMessage);
+    const hostRecord = response.record === undefined ? [] : getId(response.record);
+    const subrecords = response.subrecords === undefined ? [] : response.subrecords.map(record => getId(record));
+
+    const triggers = response.triggers === undefined ? [] : response.triggers.filter(usefulMessage).map(this.renderSingleMessage);
+    const warnings = response.warnings === undefined ? [] : response.warnings.filter(usefulMessage).map(this.renderSingleMessage);
+    const errors = response.errors === undefined ? [] : response.errors.map(this.renderSingleMessage);
+    const messages = response.messages === undefined ? [] : response.messages.map(this.renderSingleMessage);
 
     return (
       <div className="response-container">
+        {hostRecord.length ? <div className="green lighten-4">New host record: {hostRecord}</div> : null}
+        {subrecords.length ? <div className="green lighten-4">New subrecords:{'\n'}{subrecords.join('\n')}</div> : null}
         {messages.length ? <div className="green lighten-4">{messages}</div> : null}
         {errors.length ? <div className="red lighten-5">{errors}</div> : null}
         {warnings.length ? <div className="lime lighten-4">{warnings}</div> : null}
         {triggers.length ? <div className="light-blue lighten-5">{triggers}</div> : null}
       </div>
     );
+
+    function getId(record) {
+      const mRecord = new MarcRecord(record);
+      const [f001] = mRecord.get(/^001$/u);
+      return f001.value;
+    }
 
     function usefulMessage(message) {
       return message.code !== '0121' && message.code !== '0101';
@@ -118,7 +129,6 @@ export class MergeDialog extends React.Component {
   }
 
   render() {
-
     const buttonClasses = classNames({
       disabled: !this.props.closable
     });

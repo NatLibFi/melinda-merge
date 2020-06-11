@@ -47,7 +47,7 @@ adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
 */
 
 import _ from 'lodash';
-import MarcRecord from 'marc-record-js';
+import {MarcRecord} from '@natlibfi/marc-record';
 import uuid from 'node-uuid';
 import moment from 'moment';
 import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual} from './record-utils';
@@ -55,12 +55,12 @@ import {fieldOrderComparator} from './marc-field-sort';
 
 const defaultPreset = [
   check041aLength, addLOWSIDFieldsFromOther, addLOWSIDFieldsFromPreferred, add035zFromOther, add035zFromPreferred, removeExtra035aFromMerged, mergeUniqueF042,
-  setAllZeroRecordId, add583NoteAboutMerge, removeCATHistory, add500ReprintInfo, handle880Fields, sortMergedRecordFields];
+  setAllZeroRecordId, add583NoteAboutMerge, add500ReprintInfo, handle880Fields, sortMergedRecordFields, removeCATHistory];
 
 // Note: We don't handle LOW/SID tags when subrecord action=COPY.
 // LOW-SYNC will handle that after the record has been added to melinda.
-const subrecordCopyOther = [check041aLength, addLOWSIDFieldsFromOther, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
-const subrecordCopyPrefer = [check041aLength, addLOWSIDFieldsFromPreferred, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, removeCATHistory, sortMergedRecordFields];
+const subrecordCopyOther = [check041aLength, addLOWSIDFieldsFromOther, add035zFromOther, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, sortMergedRecordFields, removeCATHistory];
+const subrecordCopyPrefer = [check041aLength, addLOWSIDFieldsFromPreferred, add035zFromPreferred, removeExtra035aFromMerged, add583NoteAboutMerge, setAllZeroRecordId, sortMergedRecordFields, removeCATHistory];
 
 export const preset = {
   defaults: defaultPreset,
@@ -288,6 +288,8 @@ export function setAllZeroRecordId(preferredRecord, otherRecord, mergedRecordPar
 
 export function add583NoteAboutMerge(preferredRecord, otherRecord, mergedRecordParam) {
   const mergedRecord = new MarcRecord(mergedRecordParam);
+  // Remove earlier merge note
+  mergedRecord.get(/^583$/u).forEach(field => mergedRecord.removeField(field));
   const preferredRecordId = (preferredRecord) ? selectRecordId(preferredRecord) : undefined;
   const otherRecordId = (otherRecord) ? selectRecordId(otherRecord) : undefined;
 
