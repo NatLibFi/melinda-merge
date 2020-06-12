@@ -26,7 +26,7 @@
 *
 */
 
-import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status';
 import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
 import {exceptCoreErrors} from '../utils';

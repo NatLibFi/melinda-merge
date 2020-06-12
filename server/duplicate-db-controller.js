@@ -29,12 +29,12 @@
 import express from 'express';
 import cors from 'cors';
 import bodyParser from 'body-parser';
-import HttpStatus from 'http-status-codes';
-import { corsOptions, requireBodyParams } from 'server/utils';
-import { logger } from 'server/logger';
-import { readSessionMiddleware, requireSession } from 'server/session-controller';
+import HttpStatus from 'http-status';
+import {corsOptions, requireBodyParams} from 'server/utils';
+import {logger} from 'server/logger';
+import {readSessionMiddleware, requireSession} from 'server/session-controller';
 
-import { getDuplicateCount, getNextDuplicatePair, markDuplicatePairAsMerged, skipPair, markPairAsNotDuplicates } from './duplicate-db-service';
+import {getDuplicateCount, getNextDuplicatePair, markDuplicatePairAsMerged, skipPair, markPairAsNotDuplicates} from './duplicate-db-service';
 
 export const duplicateDatabaseController = express();
 

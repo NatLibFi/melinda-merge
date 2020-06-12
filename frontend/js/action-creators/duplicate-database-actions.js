@@ -27,7 +27,7 @@
 */
 
 import fetch from 'isomorphic-fetch';
-import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status';
 import _ from 'lodash';
 import Notifications from 'react-notification-system-redux';
 

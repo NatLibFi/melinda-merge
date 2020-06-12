@@ -27,7 +27,7 @@
 */
 
 import {SAVE_RECORD_START, SAVE_RECORD_SUCCESS, SAVE_RECORD_FAILURE} from '../constants/action-type-constants';
-import HttpStatus from 'http-status-codes';
+import HttpStatus from 'http-status';
 import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
 import {exceptCoreErrors} from '../utils';
