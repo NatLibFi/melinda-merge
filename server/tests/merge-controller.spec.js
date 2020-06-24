@@ -45,29 +45,36 @@ describe('MARC IO controller', () => {
   describe('commit-merge', () => {
     let commitMergeStub;
     let createArchiveStub;
-    let getRecordStub;
+    let readStub;
     let loggerStub;
+    let readSubrecordsStub;
 
     beforeEach(() => {
-      loggerStub = {log: sinon.stub()};
-      getRecordStub = sinon.stub();
       commitMergeStub = sinon.stub();
-      const createApiClientStub = sinon.stub().returns({
-        getRecord: getRecordStub
-      });
       createArchiveStub = sinon.stub().resolves({
         filename: 'FAKE-FILENAME',
         size: 'FAKE-SIZE'
       });
+      readStub = sinon.stub();
+      loggerStub = {log: sinon.stub()};
+      readSubrecordsStub = sinon.stub();
+      const createSubrecordPickerStub = sinon.stub().returns({
+        readSubrecords: readSubrecordsStub
+      });
+      const createApiClientStub = sinon.stub().returns({
+        read: readStub
+      });
       RewireAPI.__Rewire__('commitMerge', commitMergeStub);
       RewireAPI.__Rewire__('createArchive', createArchiveStub);
       RewireAPI.__Rewire__('createApiClient', createApiClientStub);
+      RewireAPI.__Rewire__('createSubrecordPicker', createSubrecordPickerStub);
       RewireAPI.__Rewire__('logger', loggerStub);
     });
     afterEach(() => {
       RewireAPI.__ResetDependency__('commitMerge');
       RewireAPI.__ResetDependency__('createArchive');
       RewireAPI.__ResetDependency__('creteApiClient');
+      RewireAPI.__ResetDependency__('createSubrecordPicker');
       RewireAPI.__ResetDependency__('logger');
     });
 
@@ -89,7 +96,8 @@ describe('MARC IO controller', () => {
     it('returns 200 if commit is successful', (done) => {
       commitMergeStub.resolves('Ok');
       const {record, subrecords} = createFakeRecordFamily('123');
-      getRecordStub.resolves({record, subrecords});
+      readStub.resolves({record});
+      readSubrecordsStub.resolves(subrecords);
 
       request(mergeController)
         .post('/commit-merge')

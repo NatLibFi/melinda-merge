@@ -57,7 +57,7 @@ const [command, arg] = argv._;
 if (command === 'get') {
   const recordId = arg;
 
-  client.getRecord(recordId).then(record => {
+  client.read(recordId).then(record => {
     logger.log('info', record.toString());
   }).catch(error => {
     logError(error);
@@ -67,9 +67,9 @@ if (command === 'get') {
 
 if (command === 'create') {
   readRecordFromStdin()
-  .then(record => client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}))
-  .then(printResponse)
-  .catch(printError);
+    .then(record => client.create(record.toObject(), {noop: 0}))
+    .then(printResponse)
+    .catch(printError);
 }
 
 if (command === 'create-family') {
@@ -78,17 +78,15 @@ if (command === 'create-family') {
   readRecordsFromDir(recordDirectory)
     .then(records => {
 
-      return client.postPrio({params: {noop: 0}, body: JSON.stringify(records.record.toObject())}).then(res => {
-        const {id} = response;
+      return client.create(records.record.toObject(), {noop: 0}).then(res => {
+        const {id} = res;
         logger.log('info', `Parent saved: ${id}`);
 
         return Promise.all(records.subrecords.map(record => {
           updateParent(record, id);
 
-          return client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())});
+          return client.create(record.toObject(), {noop: 0});
         }));
-
-
       });
     })
     .then(subrecords => {
@@ -105,7 +103,7 @@ if (command === 'update') {
   readRecordFromStdin()
     .then(record => {
       const recordId = getRecordId(record);
-      client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}, recordId);
+      client.update(record.toObject(), recordId, {noop: 0});
     })
     .then(printResponse)
     .catch(printError);
@@ -117,13 +115,13 @@ if (command === 'set') {
       const updateRecordChangeMetadata = _.curry(setRecordChangeMetadata)(record);
 
       const recordId = getRecordId(record);
-      return client.getRecord(recordId)
+      return client.read(recordId)
         .then(getRecordChangeMetadata)
         .then(updateRecordChangeMetadata);
     })
     .then(record => {
       const recordId = getRecordId(record);
-      client.postPrio({params: {noop: 0}, body: JSON.stringify(record.toObject())}, recordId);
+      client.update(record.toObject(), recordId, {noop: 0});
     })
     .then(printResponse)
     .catch(printError);
@@ -159,7 +157,7 @@ function getRecordChangeMetadata(record) {
 function setRecordChangeMetadata(record, [timestamp, CATFields]) {
   const f005 = record.get(/^005$/u).shift();
   f005.value = timestamp;
-	record.get(/^CAT$/u).forEach(field => record.removeField(field));
+  record.get(/^CAT$/u).forEach(field => record.removeField(field));
   record.fields.concat(CATFields);
   return record;
 }
