@@ -67,7 +67,7 @@ if (command === 'get') {
 
 if (command === 'create') {
   readRecordFromStdin()
-    .then(record => client.create(record.toObject(), {noop: 0}))
+    .then(record => client.create(record.toObject()))
     .then(printResponse)
     .catch(printError);
 }
@@ -78,14 +78,14 @@ if (command === 'create-family') {
   readRecordsFromDir(recordDirectory)
     .then(records => {
 
-      return client.create(records.record.toObject(), {noop: 0}).then(res => {
+      return client.create(records.record.toObject()).then(res => {
         const {id} = res;
         logger.log('info', `Parent saved: ${id}`);
 
         return Promise.all(records.subrecords.map(record => {
           updateParent(record, id);
 
-          return client.create(record.toObject(), {noop: 0});
+          return client.create(record.toObject());
         }));
       });
     })
@@ -96,7 +96,6 @@ if (command === 'create-family') {
 
     })
     .catch(printError);
-
 }
 
 if (command === 'update') {
@@ -155,7 +154,7 @@ function getRecordChangeMetadata(record) {
 }
 
 function setRecordChangeMetadata(record, [timestamp, CATFields]) {
-  const f005 = record.get(/^005$/u).shift();
+  const [f005] = record.get(/^005$/u);
   f005.value = timestamp;
   record.get(/^CAT$/u).forEach(field => record.removeField(field));
   record.fields.concat(CATFields);
