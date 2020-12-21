@@ -29,7 +29,7 @@
     "test": "npm run test:frontend && npm run test:server",
     "test:frontend": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./frontend/test/test_bootstrap.js \"frontend/**/*@(.spec.js|.spec.jsx)\"",
     "test:frontend:watch": "npm run test:frontend -- --watch --watch-extensions story,stories",
-    "test:server": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/tests/test_bootstrap.js --require @natlibfi/melinda-ui-commons/dist/server/test_helpers/test_bootstrap.js \"./server/tests\"",
+    "test:server": "BABEL_ENV=test mocha --compilers js:babel-core/register --require ./server/tests/test_bootstrap.js --require @natlibfi/melinda-merge-ui-commons/dist/server/test_helpers/test_bootstrap.js \"./server/tests\"",
     "test:server:watch": "npm run test:server -- --watch",
     "lint": "eslint --ext .jsx,.js .",
     "dev": "npm run watch:ui & npm run watch:server concurrently",
@@ -42,7 +42,7 @@
   "dependencies": {
     "@natlibfi/marc-record-merge": "^5.0.0",
     "@natlibfi/melinda-api-client": "^2.0.0",
-    "@natlibfi/melinda-ui-commons": "git+https://github.com/NatLibFi/melinda-ui-commons.git#feature-add-children-nonmono",
+    "@natlibfi/melinda-merge-ui-commons": "^1.0.1",
     "archiver": "^2.1.0",
     "babel-eslint": "^7.1.0",
     "body-parser": "^1.19.0",

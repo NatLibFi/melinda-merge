@@ -27,7 +27,7 @@
 */
 
 /* eslint no-console:0 */
-import { readEnvironmentVariable } from '../melinda-ui-commons/server/utils';
+import { readEnvironmentVariable } from '../melinda-merge-ui-commons/server/utils';
 import MelindaClient from '@natlibfi/melinda-api-client';
 import _ from 'lodash';
 import { stdin } from 'process';

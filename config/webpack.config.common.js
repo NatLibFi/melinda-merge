@@ -19,7 +19,7 @@ module.exports = {
   resolve: {
     alias: {
       commons: path.resolve(PATHS.commons_frontend, 'js'),
-      styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-ui-commons/dist/frontend/styles'),
+      styles: path.resolve(__dirname, '../node_modules/@natlibfi/melinda-merge-ui-commons/dist/frontend/styles'),
       transformations: path.resolve(PATHS.commons_server, 'record-transformations')
     },
     // We can now require('file') instead of require('file.jsx')

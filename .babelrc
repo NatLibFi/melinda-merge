@@ -12,8 +12,8 @@
     ["module-resolver", {
       "root": ["."],
       "alias": {
-        "server": "@natlibfi/melinda-ui-commons/dist/server/",
-        "commons": "@natlibfi/melinda-ui-commons/dist/frontend/js/",
+        "server": "@natlibfi/melinda-merge-ui-commons/dist/server/",
+        "commons": "@natlibfi/melinda-merge-ui-commons/dist/frontend/js/",
       }
     }]
   ]
