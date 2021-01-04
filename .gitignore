@@ -46,3 +46,4 @@ tmp
 merge-action-archive
 .env
 dist
+.DS_Store
