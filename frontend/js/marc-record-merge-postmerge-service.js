@@ -48,7 +48,7 @@ adds 500 a "Lisäpainokset: " (inferred from 250, and 008)
 
 import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
-import uuid from 'node-uuid';
+import {v4 as uuid} from 'uuid';
 import moment from 'moment';
 import {selectValues, selectRecordId, selectFieldsByValue, fieldHasSubfield, resetComponentHostLinkSubfield, isLinkedFieldOf, fieldIsEqual} from './record-utils';
 import {fieldOrderComparator} from './marc-field-sort';
@@ -484,7 +484,7 @@ function markAsPostmergeField(field) {
 
 function createField(fieldContent) {
   return _.assign({}, {
-    uuid: uuid.v4(),
+    uuid: uuid(),
     fromPostmerge: true,
     ind1: ' ',
     ind2: ' '

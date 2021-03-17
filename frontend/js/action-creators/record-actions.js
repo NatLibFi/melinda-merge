@@ -32,7 +32,7 @@ import MarcRecord from 'marc-record-js';
 import fetch from 'isomorphic-fetch';
 import {exceptCoreErrors} from '../utils';
 import {FetchNotOkError} from '../errors';
-import uuid from 'node-uuid';
+import { v4 as uuid} from 'uuid';
 
 
 export function saveRecordStart(recordId) {
@@ -77,7 +77,7 @@ export const saveRecord = (function () {
           const marcRecord = new MarcRecord(mainRecord);
 
           marcRecord.fields.forEach(field => {
-            field.uuid = uuid.v4();
+            field.uuid = uuid();
           });
 
           dispatch(saveRecordSuccess(recordId, marcRecord));

@@ -27,7 +27,7 @@
 */
 
 import _ from 'lodash';
-import jsonSimilarity from 'json-similarity';
+import jsonSimilarity from '@natlibfi/json-similarity';
 import similarityDefinition from './similarity-definition';
 
 export function match(recordSet1, recordSet2) {

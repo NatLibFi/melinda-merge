@@ -29,7 +29,7 @@
 import { match } from '../frontend/js/component-record-match-service';
 import _ from 'lodash';
 import MarcRecord from 'marc-record-js';
-import uuid from 'node-uuid';
+import { v4 as uuid } from 'uuid';
 import fetch from 'isomorphic-fetch';
 import path from 'path';
 import fs from 'fs';
@@ -126,12 +126,12 @@ function loadRecord(recordId) {
      
       marcSubRecords.forEach(record => {
         record.fields.forEach(field => {
-          field.uuid = uuid.v4();
+          field.uuid = uuid();
         });
       });
 
       marcRecord.fields.forEach(field => {
-        field.uuid = uuid.v4();
+        field.uuid = uuid();
       });
 
       return {
