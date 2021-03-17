@@ -1,3 +1,4 @@
+---
 kind: pipeline
 type: docker
 name: Default
@@ -52,4 +53,8 @@ steps:
   kind: secret
   name: docker_password
   data: b88hKbU1r91ZQcnzIu53Kc3XgyrShCB9X5exzjh7Ndk8J0BO/ESsptVemHap18kgdY/X4OZBFqoZiuGDeAEQcKntsXL0ePYU5ZVh/GlbazkzOnTRypf0VczhpCQ=
+---
+kind: signature
+hmac: c7fa73afd40643a5d63e852a8b97e78a0ea82133985e65017189509344e240f8
+
 ...
