@@ -27,7 +27,7 @@
 */
 
 import _ from 'lodash';
-import uuid from 'uuid';
+import {v4 as uuid} from 'uuid';
 
 const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
 
@@ -87,7 +87,7 @@ export function selectFirstValue(field, subcode) {
 
 export function decorateFieldsWithUuid(record) {
   record.fields.forEach(field => {
-    field.uuid = uuid.v4();
+    field.uuid = uuid();
   });
 }
 
@@ -98,7 +98,7 @@ export function resetRecordId(record) {
   });
 
   record.fields.unshift({
-    uuid: uuid.v4(),
+    uuid: uuid(),
     tag: '001',
     value: '000000000'
   });
