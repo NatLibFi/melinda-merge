@@ -24,7 +24,7 @@ steps:
   - chmod -R o+w /drone/src
 
 - name: build
-  image: node:10
+  image: node:12
   user: node
   commands:
   - npm install

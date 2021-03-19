@@ -1,0 +1,567 @@
+[
+    {
+        "leader": "00000cja^a22004454i^4500",
+        "fields": [
+            {
+                "tag": "001",
+                "value": "016330610"
+            },
+            {
+                "tag": "003",
+                "value": "FI-MELINDA"
+            },
+            {
+                "tag": "005",
+                "value": "20201117002650.0"
+            },
+            {
+                "tag": "008",
+                "value": "000130s1997^^^^xx^pp|||||||||||||||fin||"
+            },
+            {
+                "tag": "031",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "t",
+                        "value": "Kortteleihin sokkeloisiin aikaan puolen päivän"
+                    }
+                ]
+            },
+            {
+                "tag": "033",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "1954----"
+                    }
+                ]
+            },
+            {
+                "tag": "035",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "(FI-MELINDA)016330610"
+                    }
+                ]
+            },
+            {
+                "tag": "041",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "d",
+                        "value": "fin"
+                    }
+                ]
+            },
+            {
+                "tag": "042",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "finbd"
+                    }
+                ]
+            },
+            {
+                "tag": "100",
+                "ind1": "1",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Donida, Carlo,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1920-1998,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "säveltäjä."
+                    }
+                ]
+            },
+            {
+                "tag": "245",
+                "ind1": "1",
+                "ind2": "0",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Laulu kahdesta pennistä ="
+                    },
+                    {
+                        "code": "b",
+                        "value": "Canzone da due soldi."
+                    }
+                ]
+            },
+            {
+                "tag": "306",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "000307"
+                    }
+                ]
+            },
+            {
+                "tag": "336",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "esitetty musiikki"
+                    },
+                    {
+                        "code": "b",
+                        "value": "prm"
+                    },
+                    {
+                        "code": "2",
+                        "value": "rdacontent"
+                    }
+                ]
+            },
+            {
+                "tag": "500",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Foxtrot."
+                    }
+                ]
+            },
+            {
+                "tag": "500",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Ohessa esittelylehtinen."
+                    }
+                ]
+            },
+            {
+                "tag": "500",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Alkup. julk. 1954."
+                    }
+                ]
+            },
+            {
+                "tag": "500",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Musiikin esityskokoonpano: naisääniä."
+                    }
+                ]
+            },
+            {
+                "tag": "511",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Tähti, Annikki (lauluääni). Viljanen, Matti (johtaja). Scandia-orkesteri (orkesteri)."
+                    }
+                ]
+            },
+            {
+                "tag": "518",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Äänitys: 1954."
+                    }
+                ]
+            },
+            {
+                "tag": "655",
+                "ind1": " ",
+                "ind2": "7",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "iskelmät"
+                    },
+                    {
+                        "code": "2",
+                        "value": "slm/fin"
+                    },
+                    {
+                        "code": "0",
+                        "value": "http://urn.fi/URN:NBN:fi:au:slm:s771"
+                    },
+                    {
+                        "code": "9",
+                        "value": "VIOLA<KEEP>"
+                    }
+                ]
+            },
+            {
+                "tag": "655",
+                "ind1": " ",
+                "ind2": "7",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "schlager"
+                    },
+                    {
+                        "code": "2",
+                        "value": "slm/swe"
+                    },
+                    {
+                        "code": "0",
+                        "value": "http://urn.fi/URN:NBN:fi:au:slm:s771"
+                    }
+                ]
+            },
+            {
+                "tag": "700",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Pinchi,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1900-1971,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "sanoittaja."
+                    }
+                ]
+            },
+            {
+                "tag": "700",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Saukki,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1928-2014,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "sanoittaja."
+                    }
+                ]
+            },
+            {
+                "tag": "700",
+                "ind1": "1",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Viljanen, Matti,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1927-1987,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "sovittaja."
+                    }
+                ]
+            },
+            {
+                "tag": "700",
+                "ind1": "1",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Tähti, Annikki,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1929-2017,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "esittäjä."
+                    }
+                ]
+            },
+            {
+                "tag": "700",
+                "ind1": "1",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Viljanen, Matti,"
+                    },
+                    {
+                        "code": "d",
+                        "value": "1927-1987,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "johtaja."
+                    }
+                ]
+            },
+            {
+                "tag": "710",
+                "ind1": "2",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "Scandia-orkesteri,"
+                    },
+                    {
+                        "code": "e",
+                        "value": "esittäjä."
+                    }
+                ]
+            },
+            {
+                "tag": "773",
+                "ind1": "0",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "7",
+                        "value": "nnjm"
+                    },
+                    {
+                        "code": "w",
+                        "value": "(FI-MELINDA)016327398"
+                    },
+                    {
+                        "code": "t",
+                        "value": "Muistatko Monrepos'n / Annikki Tähti. -"
+                    },
+                    {
+                        "code": "d",
+                        "value": "[Helsinki] : Fazer Records, ℗1997. -"
+                    },
+                    {
+                        "code": "h",
+                        "value": "1 CD-äänilevy. -"
+                    },
+                    {
+                        "code": "k",
+                        "value": "20 suosikkia. -"
+                    },
+                    {
+                        "code": "o",
+                        "value": "Fazer 0630-18469-2"
+                    }
+                ]
+            },
+            {
+                "tag": "SID",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "c",
+                        "value": "261352"
+                    },
+                    {
+                        "code": "b",
+                        "value": "viola"
+                    }
+                ]
+            },
+            {
+                "tag": "CAT",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "LOAD-VIOLA"
+                    },
+                    {
+                        "code": "b",
+                        "value": "20"
+                    },
+                    {
+                        "code": "c",
+                        "value": "20190813"
+                    },
+                    {
+                        "code": "l",
+                        "value": "FIN01"
+                    },
+                    {
+                        "code": "h",
+                        "value": "1102"
+                    }
+                ]
+            },
+            {
+                "tag": "CAT",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "LOAD-ID"
+                    },
+                    {
+                        "code": "b",
+                        "value": "00"
+                    },
+                    {
+                        "code": "c",
+                        "value": "20190830"
+                    },
+                    {
+                        "code": "l",
+                        "value": "FIN01"
+                    },
+                    {
+                        "code": "h",
+                        "value": "0247"
+                    }
+                ]
+            },
+            {
+                "tag": "CAT",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "LOAD-ID"
+                    },
+                    {
+                        "code": "b",
+                        "value": "00"
+                    },
+                    {
+                        "code": "c",
+                        "value": "20190831"
+                    },
+                    {
+                        "code": "l",
+                        "value": "FIN01"
+                    },
+                    {
+                        "code": "h",
+                        "value": "0203"
+                    }
+                ]
+            },
+            {
+                "tag": "CAT",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "LOAD-FIX"
+                    },
+                    {
+                        "code": "b",
+                        "value": "30"
+                    },
+                    {
+                        "code": "c",
+                        "value": "20191010"
+                    },
+                    {
+                        "code": "l",
+                        "value": "FIN01"
+                    },
+                    {
+                        "code": "h",
+                        "value": "1813"
+                    }
+                ]
+            },
+            {
+                "tag": "CAT",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "LOAD-FIX"
+                    },
+                    {
+                        "code": "b",
+                        "value": "30"
+                    },
+                    {
+                        "code": "c",
+                        "value": "20201117"
+                    },
+                    {
+                        "code": "l",
+                        "value": "FIN01"
+                    },
+                    {
+                        "code": "h",
+                        "value": "0026"
+                    }
+                ]
+            },
+            {
+                "tag": "LOW",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "VIOLA"
+                    }
+                ]
+            },
+            {
+                "tag": "LOW",
+                "ind1": " ",
+                "ind2": " ",
+                "subfields": [
+                    {
+                        "code": "a",
+                        "value": "FIKKA"
+                    }
+                ]
+            }
+        ]
+    }
+]
