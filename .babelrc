@@ -13,7 +13,7 @@
       "root": ["."],
       "alias": {
         "server": "@natlibfi/melinda-merge-ui-commons/dist/server/",
-        "commons": "@natlibfi/melinda-merge-ui-commons/dist/frontend/js/",
+        "commons": "@natlibfi/melinda-merge-ui-commons/dist/frontend/js/"
       }
     }]
   ]

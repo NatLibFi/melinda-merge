@@ -1,18 +1,40 @@
+---
 kind: pipeline
-name: default
+type: docker
+name: Default
+
+trigger:
+  event:
+    - push
+
 steps:
+
 - name: generate-tags
   image: quay.io/natlibfi/drone-gen-tags
+
+# No audit
+ #- name: audit
+ #   image: node:10
+ #   commands:
+ #     - npm audit --package-lock-only --audit-level=moderate --production
+
 - name: test-init
   image: busybox
   commands:
   - chmod -R o+w /drone/src
+
 - name: build
-  image: node:10
+  image: node:12
   user: node
   commands:
   - npm install
   - npm test
+
+- name: static-security-scan
+  image: quay.io/natlibfi/njsscan
+  commands:
+    - njsscan dist
+
 - name: docker
   image: plugins/docker
   settings:
@@ -22,8 +44,7 @@ steps:
       from_secret: docker_username
     password:
       from_secret: docker_password
-  when:
-    branch: [master, test]
+
 ---
   kind: secret
   name: docker_username
@@ -32,4 +53,8 @@ steps:
   kind: secret
   name: docker_password
   data: b88hKbU1r91ZQcnzIu53Kc3XgyrShCB9X5exzjh7Ndk8J0BO/ESsptVemHap18kgdY/X4OZBFqoZiuGDeAEQcKntsXL0ePYU5ZVh/GlbazkzOnTRypf0VczhpCQ=
+---
+kind: signature
+hmac: c7fa73afd40643a5d63e852a8b97e78a0ea82133985e65017189509344e240f8
+
 ...

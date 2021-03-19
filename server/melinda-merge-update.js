@@ -29,14 +29,14 @@
 import {executeTransaction, RollbackError} from './async-transaction';
 import _ from 'lodash';
 import { logger } from 'server/logger';
-import uuid from 'uuid';
+import { v4 as uuid}  from 'uuid';
 
 const FUTURE_HOST_ID_PLACEHOLDER = '(FI-MELINDA)[future-host-id]';
 
 
 export function commitMerge(client, preferredRecord, otherRecord, mergedRecord) {
 
-  const jobId = uuid.v4().slice(0,8);
+  const jobId = uuid().slice(0,8);
 
   const preferredId = getFamilyId(preferredRecord);
   const otherId = getFamilyId(otherRecord);

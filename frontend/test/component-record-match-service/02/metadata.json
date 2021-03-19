@@ -1,0 +1,4 @@
+{
+  "description": "Should detect matches for all 1 subrecord (identical contents)",
+  "expectedResults": [["015417367","016330610"]]
+}
