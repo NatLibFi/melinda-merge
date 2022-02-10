@@ -107,7 +107,7 @@
     "json-similarity": "git+https://github.com/NatLibFi/json-similarity.git#c70cb1ac3270143440c6450463e4ffdee2a15ce2",
     "mini-css-extract-plugin": "^0.8.0",
     "mocha": "^4.0.1",
-    "node-sass": "^4.12.0",
+    "node-sass": "^7.0.0",
     "node-uuid": "^1.4.8",
     "nodemon": "^1.19.1",
     "optimize-css-assets-webpack-plugin": "^5.0.1",
