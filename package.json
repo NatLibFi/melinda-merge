@@ -102,7 +102,7 @@
     "html-webpack-plugin": "^3.2.0",
     "iso9_1995": "0.0.2",
     "js-cookie": "^2.2.0",
-    "jsdom": "^11.5.1",
+    "jsdom": "^16.5.0",
     "json-loader": "^0.5.7",
     "json-similarity": "git+https://github.com/NatLibFi/json-similarity.git#c70cb1ac3270143440c6450463e4ffdee2a15ce2",
     "mini-css-extract-plugin": "^0.8.0",
