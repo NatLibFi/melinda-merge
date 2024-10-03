@@ -1,3 +1,6 @@
+# ARCHIVED
+This repository is archaived. New version of melina merge ui can be found [here](https://github.com/NatLibFi/melinda-ui-merge)
+
 # UI for merging MARC records in Melinda [![Build Status](https://travis-ci.org/NatLibFi/melinda-merge.svg?branch=master)](https://travis-ci.org/NatLibFi/melinda-merge)
 ## Building the application
 
